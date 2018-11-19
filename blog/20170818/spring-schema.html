@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Spring Schema 扩展 - LiuXi | Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://www.liuxi.name/blog/20170818/spring-schema.html">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/article_header/article_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Spring Schema" title="Spring Schema">Spring Schema</a>
+                            
+                        </div>
+                        <h1>Spring Schema 扩展</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by LiuXi on
+                            2017-08-18
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">LiuXi</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>在使用Spring时候，一般会采用基于xml的配置方式。Spring基于xml schema提供了丰富的xml配置方式，以支持Spring的各种特性（例如：事物相关的tx schema，任务调度相关的task schema等）。</p>
+<p>Spring在官方提供的xml schema配置方式外（可参考官方文档X<a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#xsd-configuration" target="_blank" rel="noopener">ML Schema-based configuration</a>），还提供了自定义方式来扩展Spring schema。下面来说说如何扩展Spring Schema（翻译自官方文档<a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#xml-custom" target="_blank" rel="noopener">Extensible XML authoring</a>）</p>
+<blockquote>
+<p>spring版本：4.3.10.RELEASE</p>
+</blockquote>
+<h1><span id="42-可扩展的xml-schema">42 可扩展的xml schema</span></h1>
+<h2><span id="421-介绍">42.1 介绍</span></h2>
+<p>Spring从2.0版开始，在官方的XML配置的基础上，提供了以xml schema的方式来扩展Spring XML配置，从而扩展了Spring Bean的定义和配置方式。本部分详细说明基于XML schema的自定义Spring Bean的配置、解析以及与Spring IOC容器的集成。</p>
+<p>在了解扩展Spring Schema前，可先了解下Spring官方提供的基础的schema声明<a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#xsd-configuration" target="_blank" rel="noopener">ML Schema-based configuration</a></p>
+<p>扩展Spring schema分为以下几步：</p>
+<ul>
+<li><strong>自定义xml scheme</strong>：用于描述需要配置的元素（xml schema用于定义和描述xml节点）</li>
+<li><strong>自定义NamespaceHandler</strong>：自定义NamespaceHandler实现类，用于处理自定义的xml schema</li>
+<li><strong>自定义BeanDefinitionParser</strong>：自定义BeanDefinitionParser实现类，用于将xml声明解析成Spring bean元数据对象BeanDefinition</li>
+<li><strong>注册</strong>：注册自定义信息，与Spring框架集成</li>
+</ul>
+<p>下面通过一个实践示例来逐一解释各个步骤内容，本示例采用扩展Spring schema的方式，更方便地声明<code>java.text.SimpleDateFormat</code>类的实例。完成了本示例的扩展Spring schema实践后，声明bean的方式如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">myns:dateformat</span> <span class="attr">id</span>=<span class="string">"dateFormat"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">pattern</span>=<span class="string">"yyyy-MM-dd HH:mm"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">lenient</span>=<span class="string">"true"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>xml相关的一些概念：</p>
+<ul>
+<li>格式规范的XML：符合XML的声明结构（例如：元素需要有开始标签、结束标签；元素需要被尖括号包含）</li>
+<li>合法的XML：合法的XML需要满足一定的约束（这个约束一般会定义一个元素下可以包含那些属性、那些子元素，属性的值的范围等，约束定义了xml元素的含义与逻辑），xml文件的约束有两种方式DTD（.dtd文件）和Schema（.xsd文件 Spring使用的schema）</li>
+<li>xml schema：定义xml文件的一种方式，即xsd文件的内容</li>
+<li>xml命名空间：一个xml schema一般就是一个命名空间，多个schema下可以有相同的元素，但是schema不同，含义和格式可能不同</li>
+</ul>
+</blockquote>
+<h2><span id="422-自定义xml-schema">42.2 自定义xml schema</span></h2>
+<p>扩展spring xml的配置，与spring IOC集成，首先需要自定义配置bean的xml 元素定义，即自定义xml schema。本例中配置<code>SimpleDateFormat</code>对象，xml schema定义如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- myns.xsd (inside package org/springframework/samples/xml) --&gt;</span></span><br><span class="line"></span><br><span class="line">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">xsd:schema</span> <span class="attr">xmlns</span>=<span class="string">"http://www.mycompany.com/schema/myns"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">xmlns:xsd</span>=<span class="string">"http://www.w3.org/2001/XMLSchema"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">xmlns:beans</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">targetNamespace</span>=<span class="string">"http://www.mycompany.com/schema/myns"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">elementFormDefault</span>=<span class="string">"qualified"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">attributeFormDefault</span>=<span class="string">"unqualified"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">xsd:import</span> <span class="attr">namespace</span>=<span class="string">"http://www.springframework.org/schema/beans"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">xsd:element</span> <span class="attr">name</span>=<span class="string">"dateformat"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">xsd:complexType</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">xsd:complexContent</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">xsd:extension</span> <span class="attr">base</span>=<span class="string">"beans:identifiedType"</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">xsd:attribute</span> <span class="attr">name</span>=<span class="string">"lenient"</span> <span class="attr">type</span>=<span class="string">"xsd:boolean"</span>/&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">xsd:attribute</span> <span class="attr">name</span>=<span class="string">"pattern"</span> <span class="attr">type</span>=<span class="string">"xsd:string"</span> <span class="attr">use</span>=<span class="string">"required"</span>/&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">xsd:extension</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">xsd:complexContent</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">xsd:complexType</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">xsd:element</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">xsd:schema</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>上面schema定义中引入了spring beans的schema，是为了让自定义的配置bean继承<code>beans:identifiedType</code>（<code>identifiedType</code>定义了一个id属性，作为被声明对象在spring IOC容器中的标识）。</p>
+<p>上面定义的schema，在spring xml配置文件中，只需要配置<code>&lt;myns:dateformat/&gt;</code>元素即可声明<code>SimpleDateFormat</code>对象，如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">myns:dateformat</span> <span class="attr">id</span>=<span class="string">"dateFormat"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">pattern</span>=<span class="string">"yyyy-MM-dd HH:mm"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">lenient</span>=<span class="string">"true"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p>通过上面的方式扩展Spring schema，与Spring提供的bean配置方式本质上是一致的，都能达到在Spring IOC容器中声明对象的目的，被声明对象标识为<code>dateFormat</code>，类型为<code>SimpleDateFormat</code>，同时给属性赋值。Spring提供的bean配置方式如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"dateFormat"</span> <span class="attr">class</span>=<span class="string">"java.text.SimpleDateFormat"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">constructor-arg</span> <span class="attr">value</span>=<span class="string">"yyyy-HH-dd HH:mm"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"lenient"</span> <span class="attr">value</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2><span id="423-实现namespacehandler接口">42.3 实现NamespaceHandler接口</span></h2>
+<p>除了自定义xml schema，在Spring解析xml配置文件，解析自定义元素，需要自定义<code>NamespaceHandler</code>接口的实现类完成。对于本例，需要解析的元素是<code>myns:dateformat</code>。</p>
+<p><code>NamespaceHandler</code>接口包含以下三个方法：</p>
+<ul>
+<li><code>init()</code>：用于初始化，在使用该接口前由Spring触发调用</li>
+<li><code>BeanDefinition parse(Element, ParserContext)</code>：当Spring解析到一个顶级元素（不包含嵌套声明或者在其他命名空间元素中声明）时候被调用。这个方法可实现注册和返回bean definitions</li>
+<li><code>BeanDefinitionHolder decorate(Node, BeanDefinitionHolder, ParserContext)</code>：当Spring解析到属性或其他命名空间下的元素时被调用。本例中没用到这个方法，下面有一个例子进行说明。</li>
+</ul>
+<p>编写一个自定义的<code>NamespaceHandler</code>接口实现类来解析整个命名空间下的元素看起来可能是比较完美的，通常Spring xml配置文件中一个顶级元素对应声明一个对象（本例中<code>&lt;myns:dateformat/&gt;</code>元素对应声明了<code>SimpleDateFormat</code>对象）。Spring提供了一些类来支持xml元素的解析，本利中使用<code>NamespaceHandlerSupport</code>类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.springframework.samples.xml;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.xml.NamespaceHandlerSupport;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyNamespaceHandler</span> <span class="keyword">extends</span> <span class="title">NamespaceHandlerSupport</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        registerBeanDefinitionParser(<span class="string">"dateformat"</span>, <span class="keyword">new</span> SimpleDateFormatBeanDefinitionParser());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从上面代码中可发现，并没有解析元素的详细逻辑。其实，解析逻辑由<code>NamespaceHandlerSupport</code>辅助类代理完成，通过支持注册多个<code>BeanDefinitionParser</code>,在解析到元素时候，由对应的<code>BeanDefinitionParser</code>代理完成真正的解析逻辑。这种注册与解析的分离，可让<code>NamespaceHandler</code>接口的实现类关注当前命名空间需要解析的所有元素，而真正的解析逻辑由对应的<code>BeanDefinitionParser</code>完成，意思就是一个<code>BeanDefinitionParser</code>只需要关注一个元素的解析即可，下面章节会做说明。</p>
+<h2><span id="424-实现beandefinitionparser接口">42.4 实现BeanDefinitionParser接口</span></h2>
+<p>从上面章节的注册逻辑可看出，在自定义的xml schema中，一个解析器<code>BeanDefinitionParser</code>只负责解析一个顶级元素（本例中是<code>dateformat</code>）。在解析器<code>BeanDefinitionParser</code>中可访问xml元素（包括子元素），从而实现解析逻辑。如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.springframework.samples.xml;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.support.BeanDefinitionBuilder;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;</span><br><span class="line"><span class="keyword">import</span> org.springframework.util.StringUtils;</span><br><span class="line"><span class="keyword">import</span> org.w3c.dom.Element;</span><br><span class="line"><span class="keyword">import</span> java.text.SimpleDateFormat;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SimpleDateFormatBeanDefinitionParser</span> <span class="keyword">extends</span> <span class="title">AbstractSingleBeanDefinitionParser</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">protected</span> Class <span class="title">getBeanClass</span><span class="params">(Element element)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> SimpleDateFormat.class;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doParse</span><span class="params">(Element element, BeanDefinitionBuilder bean)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// this will never be null since the schema explicitly requires that a value be supplied</span></span><br><span class="line">        String pattern = element.getAttribute(<span class="string">"pattern"</span>);</span><br><span class="line">        bean.addConstructorArg(pattern);</span><br><span class="line">        <span class="comment">// this however is an optional property</span></span><br><span class="line">        String lenient = element.getAttribute(<span class="string">"lenient"</span>);</span><br><span class="line">        <span class="keyword">if</span> (StringUtils.hasText(lenient)) &#123;</span><br><span class="line">            bean.addPropertyValue(<span class="string">"lenient"</span>, Boolean.valueOf(lenient));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>通过继承<code>AbstractSingleBeanDefinitionParser</code>完成创建<code>BeanDefinition</code>（xml bean定义的元数据封装对象）的一些基本逻辑</li>
+<li><code>getBeanClass</code>方法用于声明当前bean的类型</li>
+</ul>
+<p>如上代码，即可完成自定义元素的解析。被声明元素的元数据封装对象<code>BeanDefinition</code>由父类<code>AbstractSingleBeanDefinitionParser</code>完成。同时，父类也会获取和设置bean的id。</p>
+<h2><span id="425-handler和schema的注册">42.5 handler和schema的注册</span></h2>
+<p>至此，代码部分已经完成，接下来需要将自定义的<code>namespaceHandler</code>和 XSD 文件注册到特定的properties属性文件中，从而是Spring的XML解析框架能够识别自定义扩展的Spring schema及其处理类。这些特性的properties属性文件都需要在应用（当前应用或者依赖的JAR包）的<code>META-INF</code>目录下。Spring的XML解析框架会自动读取这些特定的配置文件，这些配置文件格式描述如下：</p>
+<h3><span id="4251-meta-infspringhandlers">42.5.1 META-INF/spring.handlers</span></h3>
+<p><code>spring.handlers</code>这个属性配置文件中声明 <strong>XML schema URL</strong> 与 <strong>schema处理类</strong> 的映射关系。对于本例，需要配置的信息如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http\://www.mycompany.com/schema/myns=org.springframework.samples.xml.MyNamespaceHandler</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>如上配置中</p>
+<ul>
+<li>**:**是java属性配置文件的保留字符，需要进行转义</li>
+<li>配置属性key是扩展spring schema的命名空间URL，需要与自定义的xml schema文件（即XSD文件)中的<code>targetNamespace</code>属性的值相同</li>
+</ul>
+</blockquote>
+<h3><span id="4252-meta-infspringschemas">42.5.2 META-INF/spring.schemas</span></h3>
+<p><code>spring.schemas</code>这个属性配置文件中声明 <strong>XML schema XSD路径</strong>（在Spring xml中使用自定义schema时，需要引入自定义schema，本属性在<code>xsi:schemaLocation</code>中声明） 与 <strong>XSD文件的类路径</strong> 的映射关系。这个配置文件可以让Spring在读取自定义schema的XSD文件时候，从本地类路径中获取，而避免了从远程获取。对于本例来说，自定义schema的XSD文件<code>myns.xsd</code>在<code>org.springframework.samples.xml</code>包下，配置信息如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http\://www.mycompany.com/schema/myns/myns.xsd=org/springframework/samples/xml/myns.xsd</span><br></pre></td></tr></table></figure>
+<h2><span id="426-扩展spring-schema的使用">42.6 扩展Spring schema的使用</span></h2>
+<p>以上，完成了Spring schema的扩展，使用自定义的schema和使用Spring提供的schema其实一样。</p>
+<p>本例扩展的schema配置使用如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:myns</span>=<span class="string">"http://www.mycompany.com/schema/myns"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xsi:schemaLocation</span>=<span class="string">"</span></span></span><br><span class="line"><span class="tag"><span class="string">        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">        http://www.mycompany.com/schema/myns http://www.mycompany.com/schema/myns/myns.xsd"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- as a top-level bean --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">myns:dateformat</span> <span class="attr">id</span>=<span class="string">"defaultDateFormat"</span> <span class="attr">pattern</span>=<span class="string">"yyyy-MM-dd HH:mm"</span> <span class="attr">lenient</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"jobDetailTemplate"</span> <span class="attr">abstract</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dateFormat"</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- as an inner bean --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">myns:dateformat</span> <span class="attr">pattern</span>=<span class="string">"HH:mm MM-dd-yyyy"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2><span id="427-进阶版示例">42.7 进阶版示例</span></h2>
+<p>下面有几个进阶版的扩展Spring schema的示例</p>
+<h3><span id="4271-自定义元素的嵌套">42.7.1 自定义元素的嵌套</span></h3>
+<p>自定义元素的嵌套使用，配置示例如下，翻译略 -_-</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:foo</span>=<span class="string">"http://www.foo.com/schema/component"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xsi:schemaLocation</span>=<span class="string">"</span></span></span><br><span class="line"><span class="tag"><span class="string">        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">        http://www.foo.com/schema/component http://www.foo.com/schema/component/component.xsd"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">foo:component</span> <span class="attr">id</span>=<span class="string">"bionic-family"</span> <span class="attr">name</span>=<span class="string">"Bionic-1"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">foo:component</span> <span class="attr">name</span>=<span class="string">"Mother-1"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">foo:component</span> <span class="attr">name</span>=<span class="string">"Karate-1"</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">foo:component</span> <span class="attr">name</span>=<span class="string">"Sport-1"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">foo:component</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">foo:component</span> <span class="attr">name</span>=<span class="string">"Rock-1"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">foo:component</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3><span id="4272-自定义属性">42.7.2 自定义属性</span></h3>
+<p>在正常的Spring声明中使用自定义的元素，配置示例如下，翻译略 -_-</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"checkingAccountService"</span> <span class="attr">class</span>=<span class="string">"com.foo.DefaultCheckingAccountService"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">jcache:cache-name</span>=<span class="string">"checking.account"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- other dependencies here... --&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2><span id="428-参考文档">42.8 参考文档</span></h2>
+<p>下面有一些XML schema的参考文档</p>
+<ul>
+<li><a href="https://www.w3.org/TR/2004/REC-xmlschema-1-20041028/" target="_blank" rel="noopener">XML Schema Part 1: Structures Second Edition</a></li>
+<li><a href="https://www.w3.org/TR/2004/REC-xmlschema-2-20041028/" target="_blank" rel="noopener">XML Schema Part 2: Datatypes Second Edition</a></li>
+</ul>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/blog/20171023/java-io-summary.html" data-toggle="tooltip" data-placement="top" title="Java I/O简介">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/blog/20170817/mybatis-spring-scan.html" data-toggle="tooltip" data-placement="top" title="MyBatis-Spring源码之基于xml的自动扫描">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="42-&#x53EF;&#x6269;&#x5C55;&#x7684;xml-schema">42 &#x53EF;&#x6269;&#x5C55;&#x7684;xml schema</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text"><span id="421-&#x4ECB;&#x7ECD;">42.1 &#x4ECB;&#x7ECD;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text"><span id="422-&#x81EA;&#x5B9A;&#x4E49;xml-schema">42.2 &#x81EA;&#x5B9A;&#x4E49;xml schema</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text"><span id="423-&#x5B9E;&#x73B0;namespacehandler&#x63A5;&#x53E3;">42.3 &#x5B9E;&#x73B0;NamespaceHandler&#x63A5;&#x53E3;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text"><span id="424-&#x5B9E;&#x73B0;beandefinitionparser&#x63A5;&#x53E3;">42.4 &#x5B9E;&#x73B0;BeanDefinitionParser&#x63A5;&#x53E3;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.5.</span> <span class="toc-nav-text"><span id="425-handler&#x548C;schema&#x7684;&#x6CE8;&#x518C;">42.5 handler&#x548C;schema&#x7684;&#x6CE8;&#x518C;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.5.1.</span> <span class="toc-nav-text"><span id="4251-meta-infspringhandlers">42.5.1 META-INF/spring.handlers</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.5.2.</span> <span class="toc-nav-text"><span id="4252-meta-infspringschemas">42.5.2 META-INF/spring.schemas</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.6.</span> <span class="toc-nav-text"><span id="426-&#x6269;&#x5C55;spring-schema&#x7684;&#x4F7F;&#x7528;">42.6 &#x6269;&#x5C55;Spring schema&#x7684;&#x4F7F;&#x7528;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.7.</span> <span class="toc-nav-text"><span id="427-&#x8FDB;&#x9636;&#x7248;&#x793A;&#x4F8B;">42.7 &#x8FDB;&#x9636;&#x7248;&#x793A;&#x4F8B;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.7.1.</span> <span class="toc-nav-text"><span id="4271-&#x81EA;&#x5B9A;&#x4E49;&#x5143;&#x7D20;&#x7684;&#x5D4C;&#x5957;">42.7.1 &#x81EA;&#x5B9A;&#x4E49;&#x5143;&#x7D20;&#x7684;&#x5D4C;&#x5957;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.7.2.</span> <span class="toc-nav-text"><span id="4272-&#x81EA;&#x5B9A;&#x4E49;&#x5C5E;&#x6027;">42.7.2 &#x81EA;&#x5B9A;&#x4E49;&#x5C5E;&#x6027;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.8.</span> <span class="toc-nav-text"><span id="428-&#x53C2;&#x8003;&#x6587;&#x6863;">42.8 &#x53C2;&#x8003;&#x6587;&#x6863;</span></span></a></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Spring Schema" title="Spring Schema">Spring Schema</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://blog.csdn.net/liuxigiant" target="_blank">CSDN Blog LiuXi</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/liuxigiant">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; LiuXi 2018 
+                    <br>
+                    Theme by <a href="http://www.huweihuang.com">huweihuang</a> 
+                    | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huweihuang&repo=hexo-theme-huweihuang&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://www.liuxi.name/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-79292205-1';
+    var _gaDomain = 'liuxi.name';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="https://www.liuxi.name/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

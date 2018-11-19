@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Disruptor框架简介 - LiuXi | Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://www.liuxi.name/blog/20180613/disruptor-introduction.html">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/article_header/article_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Disruptor" title="Disruptor">Disruptor</a>
+                            
+                              <a class="tag" href="/tags/#Ringbuffer" title="Ringbuffer">Ringbuffer</a>
+                            
+                        </div>
+                        <h1>Disruptor框架简介</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by LiuXi on
+                            2018-06-13
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">LiuXi</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>Disruptor是由LMAX公司开源的一个基于内存的、在线程间传递数据的组件，以无锁化的方式实现数据传递的低延迟、高吞吐</p>
+<blockquote>
+<p>上面的事件可以是消息、事件等，下面以事件这个名词进行继续说明，即线程间的事件传递</p>
+</blockquote>
+<p>从上面的一句话总结可摘取出以下几个特点：</p>
+<ul>
+<li><strong>基于内存</strong>：即事件不持久化</li>
+<li><strong>线程间事件传递</strong>：即基于JVM的（并不是分布式）生成者/消费者模型</li>
+<li><strong>无锁化</strong>：多生产者/多消费者对临界资源的共享不以锁的方式实现</li>
+</ul>
+<h1><span id="1-核心概念">1 核心概念</span></h1>
+<h2><span id="11-生产者消费者模型">1.1 生产者/消费者模型</span></h2>
+<p><img src="/images/cust/disruptor/concept.png" alt=""></p>
+<p>在了解Disruptor之前，可先看看官方给出的图例</p>
+<p>我们从<strong>生产者/消费者模型</strong>来看上图，即只需要关注<code>Producer</code> <code>*Consumer</code> <code>RingBuffer</code>，其余的都是Disruptor的实现细节</p>
+<ul>
+<li><code>Producer</code>: 事件生产者</li>
+<li><code>*Consumer</code>：事件消费者</li>
+<li><code>RingBuffer</code>：事件存储结构（基于内存）</li>
+</ul>
+<h2><span id="12-核心概念">1.2 核心概念</span></h2>
+<p>通过<strong>生产者/消费者模型</strong>对Disruptor有个大致的了解后，下面介绍下图例中Disruptor涉及的一些核心概念：</p>
+<ul>
+<li>
+<p><strong>Product</strong> : 调用Disruptor发送事件的应用程序，在Disruptor框架中并没有对应的实体类</p>
+</li>
+<li>
+<p><strong>Ring Buffer</strong> : Disruptor框架的核心，事件存储的数据结构（其实底层就是个数组，下面会介绍），在框架中对应的实体类就是<code>RingBuffer</code></p>
+</li>
+<li>
+<p><strong>EventProcessor</strong> : 事件处理器，即消费者。在框架中是一个接口，其实现类<code>BatchEventProcessor</code>支持批量消费。</p>
+</li>
+<li>
+<p><strong>EventHandler</strong> : 在框架中是一个接口，应用程序实现这个接口，完成事件的处理逻辑。所以<code>EventHandler</code>是真正的事件处理实现，而上面的<code>EventProcessor</code>其实是封装了事件的获取、调度执行和异常处理等。</p>
+</li>
+<li>
+<p><strong>Event</strong> : 事件，生产者和消费者直接传递的数据，在Disruptor框架中没有对应的实体类，由应用程序自己定义</p>
+</li>
+</ul>
+<p>下面几个概念是Disruptor实现无锁化的核心：</p>
+<p>多生产者/多消费者并发往<code>RingBuffer</code>（数组）中写/读数据，其实是通过生成者/消费者各自维护了当前处理的数据的一个序列，通过各自维护的序列来实现无锁化的并发控制</p>
+<ul>
+<li>
+<p><strong>Sequence</strong> : 上面提到的序列（对于生产者来说，序列的名称为cursor）。<code>Sequence</code>这个类的功能特性和<code>AtomicLong</code>类似。其最大不同是<code>Sequence</code>通过填充缓存行来优化伪共享问题</p>
+</li>
+<li>
+<p><strong>Sequencer</strong> : 生产者通过<code>Sequencer</code>来与<code>RingBuffer</code>交互，这个交互指控制生产者的序列<code>cursor</code>。其两个实现类<code>SingleProducerSequencer</code>和<code>MultiProducerSequencer</code>分别支持Disruptor框架的单生产者和多生产者模型</p>
+</li>
+<li>
+<p><strong>Sequence Barrier:</strong>  消费者<code>EventProcessor</code>通过<code>SequenceBarrier</code>与<code>RingBuffer</code>交互，同理，这个交互指控制消费者的序列</p>
+</li>
+<li>
+<p><strong>Wait Strategy</strong> : 等待策略，指定消费者在无事件可消费的情况下的等待策略</p>
+</li>
+</ul>
+<h1><span id="2-ringbuffer">2 RingBuffer</span></h1>
+<p>在简单了解了Disruptor框架的核心概念之后，下面来了解下Disruptor框架的核心<code>RingBuffer</code></p>
+<h2><span id="21-特点">2.1 特点</span></h2>
+<p><code>RingBuffer</code>有以下一些特点：</p>
+<ul>
+<li>
+<p>是一个首尾相连的环，可用在不同的上线文（线程）间传递数据</p>
+</li>
+<li>
+<p>底层是一个数组</p>
+</li>
+<li>
+<p>数组大小一般设置为<strong>2的N次方</strong><br>
+这样生产者/消费者序列映射到数组的下标可通过位操作获取  sequence &amp; （array length－1） = array index</p>
+<blockquote>
+<p>这里有个关键点，即序列是从0开始逐渐递增的long型数值，而数组长度是固定的。<br>
+生产者在写入数组最后一个数据后，下次会从数组下标为0处开始写入。<br>
+这样即形成了RingBuffer的<strong>环形覆盖</strong>写入。<br>
+同时写入的时候会判断消费者是否已经处理完了被覆盖的数据，否则写入会阻塞等待 – <strong>覆盖判定</strong></p>
+</blockquote>
+</li>
+</ul>
+<ul>
+<li>RingBuffer拥有一个序号cursor，指向数组中写入并提交的最后一个数据，通过这个序列可获取下一个可写入的序列号<br>
+在Disruptor的2.x之后的版本中，生产者访问RingBuffer的Sequencer被整合到RingBuffer类中了，即RingBuffer拥有序列cursor。<br>
+且多个生产者是共享一个序列cursor的（而多消费者有自己的序列），这也是多生产这并发控制的核心</li>
+</ul>
+<h2><span id="22-读">2.2 读</span></h2>
+<p>消费者（事件处理器EventProcessor）是一个从RingBuffer里读取数据的线程，消费者维护了自己当前处理的事件的序列，然后通过 sequenceBarrier 获取RingBuffer当前可处理的数据的序列。</p>
+<p>若RingBuffer中可处理数据的序列大于当前消费者维护的序列，则获取事件处理；否则，根据指定的消费者等待策略<code>WaitStrategy</code>等待生产者写入事件。</p>
+<blockquote>
+<p>关于消费者依赖问题，也是通过序列来控制的。<br>
+例如：消费者A和消费者B都从RingBuffer中消费数据，若A依赖于B，则A的序列必须小于等于B</p>
+</blockquote>
+<p>下面看下BatchEventProcessor处理事件的核心方法<code>BatchEventProcessor#processEvents</code>的部分源码</p>
+<figure class="highlight java"><figcaption><span>processEvents</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="keyword">long</span> availableSequence = sequenceBarrier.waitFor(nextSequence);</span><br><span class="line"><span class="keyword">if</span> (batchStartAware != <span class="keyword">null</span>)</span><br><span class="line">&#123;</span><br><span class="line">    batchStartAware.onBatchStart(availableSequence - nextSequence + <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (nextSequence &lt;= availableSequence)</span><br><span class="line">&#123;</span><br><span class="line">    event = dataProvider.get(nextSequence);</span><br><span class="line">    eventHandler.onEvent(event, nextSequence, nextSequence == availableSequence);</span><br><span class="line">    nextSequence++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">sequence.set(availableSequence);</span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">下面分析下上面的源码  </span><br><span class="line"></span><br><span class="line">- 该方法的调用链可以从`Disruptor#handleEventsWith`方法和`Disruptor#start`方法分析，前者封装EventProcessor，后者启动Disruptor调度线程执行EventProcessor  </span><br><span class="line">- `processEvents` 方法由`BatchEventProcessor`的`run`调用（EventProcessor实现Runable接口）  </span><br><span class="line">- `nextSequence` 是当前消费者希望获取的事件的序列（当前序列加<span class="number">1</span> `sequence.get() + <span class="number">1L</span>`）  </span><br><span class="line">- `sequenceBarrier.waitFor(nextSequence)`  获取`RingBuffer`可处理的最大序列，包含等待策略以及消费者依赖的处理  </span><br><span class="line">- `dataProvider`即`RingBuffer`，负责提供事件数据  </span><br><span class="line">- `BatchEventProcessor`的批处理体现在若获取的序列比当前序列大于<span class="number">1</span>，则处理完事件后，不用再次获取可用序列  </span><br><span class="line"></span><br><span class="line">## 2.3 写</span><br><span class="line"></span><br><span class="line">生产者通过 `Sequencer` 来写入`RingBuffer`，通过**<span class="number">2</span>PC-两阶段提交**（申请与提交）的方式，保证数据的不重叠  </span><br><span class="line"></span><br><span class="line">### 2.3.1 申请</span><br><span class="line"></span><br><span class="line">由 `Sequencer` 负责所有的交互细节来从 `RingBuffer` 中找到下一个节点，然后才允许生产者向它写入数据。  </span><br><span class="line"></span><br><span class="line">下面看下`Sequencer`多生产者模式的实现类`MultiProducerSequencer`申请节点的方法`MultiProducerSequencer#next(int)`的部分源码  </span><br><span class="line"></span><br><span class="line">```<span class="function">java <span class="title">next</span><span class="params">(<span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">do</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    current = cursor.get();</span><br><span class="line">    next = current + n;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">long</span> wrapPoint = next - bufferSize;</span><br><span class="line">    <span class="keyword">long</span> cachedGatingSequence = gatingSequenceCache.get();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (wrapPoint &gt; cachedGatingSequence || cachedGatingSequence &gt; current)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">long</span> gatingSequence = Util.getMinimumSequence(gatingSequences, current);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (wrapPoint &gt; gatingSequence)</span><br><span class="line">        &#123;</span><br><span class="line">            LockSupport.parkNanos(<span class="number">1</span>); <span class="comment">// TODO, should we spin based on the wait strategy?</span></span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        gatingSequenceCache.set(gatingSequence);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (cursor.compareAndSet(current, next))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">while</span> (<span class="keyword">true</span>);</span><br></pre></td></tr></table></figure>
+<p>下面分析下上面的源码</p>
+<ul>
+<li>该方法的调用链可以从<code>Disruptor#publishEvent</code>方法开始分析</li>
+<li><code>next(n)</code>方法表示向RingBuffer申请n个事件，即支持事件的单条以及批量发送</li>
+<li><code>wrapPoint</code>等于申请的序列<code>next</code>减去数组大小<code>bufferSize</code></li>
+<li><code>wrapPoint</code>与消费者序列对比<code>wrapPoint &gt; cachedGatingSequence</code>是为了判断生产者申请的序列是否要覆盖消费者未处理的数据，若出现这种情况，则生产者需要<strong>自旋等待</strong></li>
+<li><code>gatingSequences</code>维护了消费者的序列，<code>cachedGatingSequence</code>是缓存下来的最小消费者序列</li>
+</ul>
+<p>从上面分析可知：</p>
+<p>生产者通过<code>Sequencer</code>申请节点，且<code>Sequencer</code>维护了所有消费者的序列。<br>
+若申请序列要覆盖未消费的数据，则生产者自旋。结束自旋后继续申请。<br>
+申请校验成功后，则使用<code>CAS</code>设置<code>RingBuffer</code>序列，成功则退出；否则继续进行申请校验。</p>
+<h3><span id="232-提交">2.3.2 提交</span></h3>
+<p>生产者完成了事件数据的处理后，提交事件，其实就是提交事件对应的序列，由<code>Sequencer</code>负责提交</p>
+<p>可参照<code>MultiProducerSequencer#publish</code>源码，主要完成以下两个动作</p>
+<ul>
+<li>设置当前序列可用</li>
+<li>唤醒等待的消费者</li>
+</ul>
+<h3><span id="231-多生产者写入">2.3.1 多生产者写入</span></h3>
+<p>现在来回顾下，多生产者情况下，并发写入RingBuffer情况，其实就是考虑多生产者情况下的并发申请和并发提交的问题</p>
+<p><strong>并发申请</strong></p>
+<p>这是Disruptor框架中涉及到的一个并发问题，即并发申请下一节点</p>
+<p>由于多生产者都是向同一个<code>Sequencer</code>申请节点，所以并发的处理由<code>Sequencer</code>控制，即其实现类<code>MultiProducerSequencer</code>控制。</p>
+<p>从上面<strong>2.3.1</strong>章节源码可看出来，其实是由<code>cursor.compareAndSet</code>来实现CAS控制并发</p>
+<p><strong>并发提交</strong></p>
+<p>由于各个生产者申请节点后，对应的序列不相同，其实此处不存在并发问题</p>
+<blockquote>
+<p>网上有些老版本Disruptor的文章，说提交的时候有先后顺序。<br>
+若生产者A申请的序列为1，生产者B申请的序列为2，则A需要先提交。<br>
+但是Disruptor 3.4.2发现提交时候并没有这个限制，而是提交时候设置各自的序列为可用。<br>
+Disruptor 3.4.2是处理后面的序列先提交的问题，是通过消费者获取最大可用序列来控制的，即1不提交，2不能被消费</p>
+</blockquote>
+<h2><span id="24-特点">2.4 特点</span></h2>
+<ul>
+<li>
+<p>多生产者的写入，由一个<code>Sequencer</code>控制并发问题</p>
+</li>
+<li>
+<p>生产者、消费者之间的协调，由各自的序列来协调控制</p>
+</li>
+<li>
+<p>支持多生产者和多消费者，且无需加锁</p>
+</li>
+</ul>
+<h1><span id="3-消费者等待策略">3 消费者等待策略</span></h1>
+<p>在<code>RingBuffer</code>中无可处理的事件时候，消费者有多种等待策略(busy wait策略，可能回造成CPU使用率过高)</p>
+<ul>
+<li>
+<p><strong>BlockingWaitStrategy</strong></p>
+<p>阻塞策略 （默认的等待策略）</p>
+<p><strong>实现方式</strong>：<br>
+使用可重入锁 Lock 和 Condition 变量处理线程的阻塞和唤起</p>
+<p><strong>优缺点</strong>：<br>
+阻塞策略最慢，但是CPU使用率最低（不会一直占用CPU）</p>
+<p><strong>适用场景</strong>：<br>
+吞吐量不高（不需要一直占用CPU来提高事件处理效率）</p>
+</li>
+</ul>
+<ul>
+<li>
+<p><strong>SleepingWaitStrategy</strong></p>
+<p>休眠策略</p>
+<p>和阻塞策略一样，休眠策略也相对来说对CPU使用率不是很高</p>
+<p><strong>实现方式</strong>：<br>
+前100次重试 – 直接计数器递减<br>
+第101次到200次  – 计数器递减且让出CPU  Thread.yield()<br>
+后续重试  –  休眠线程 LockSupport.parkNanos(sleepTimeNs)</p>
+<p><strong>优缺点</strong>：<br>
+对生产线程影响最小  – 生产线程无需考虑增加计数器，也不需要通知Lock Condition<br>
+事件传递（生产者到事件处理器）事件更长</p>
+<p><strong>适用场景</strong>：<br>
+不要求低延迟、高吞吐，期望对生产者线程影响较小（异步日志）</p>
+</li>
+<li>
+<p><strong>YieldingWaitStrategy</strong></p>
+<p>两种用于低延迟、高吞吐场景的等待策略之一</p>
+<p><strong>实现方式</strong>：<br>
+前100次重试 – 直接计数器递减<br>
+后续重试  – 让出CPU  Thread.yield()  （隐含一个问题，让出CPU其实是可能会被CPU再次调度）</p>
+<p><strong>优缺点</strong>：<br>
+CPU占用率高  （Thread.yield让出CPU，其实是可能会被CPU再次调度）<br>
+提高性能和吞吐量</p>
+<p><strong>适用场景</strong>：<br>
+要求低延迟、高吞吐、高性能（事件处理器线程小于逻辑CPU核数）</p>
+</li>
+</ul>
+<ul>
+<li>
+<p><strong>BusySpinWaitStrategy</strong></p>
+<p>性能最高的等待策略</p>
+<p><strong>实现方式</strong>：<br>
+ThreadHints.onSpinWait()  – 调用java.lang.Thread.onSpinWait() 或者 什么也不做<br>
+当Thread.onSpinWait不可调用时候，等待策略相当于没有，一直while循环</p>
+<p><strong>优缺点</strong>：<br>
+CPU占用率高<br>
+提高性能和吞吐量</p>
+<p><strong>适用场景</strong>：<br>
+要求低延迟、高吞吐、高性能（事件处理器线程小于物理CPU核数）</p>
+</li>
+</ul>
+<h1><span id="4-参考">4 参考</span></h1>
+<p>本文部分内容翻译自官网：</p>
+<p><a href="https://github.com/LMAX-Exchange/disruptor/wiki/Introduction" target="_blank" rel="noopener">Introduction</a><br>
+<a href="https://github.com/LMAX-Exchange/disruptor/wiki/Getting-Started" target="_blank" rel="noopener">Getting-Started</a></p>
+<p>Disruptor一些翻译的文章链接(版本比较老)：</p>
+<p><a href="http://ifeve.com/disruptor/" target="_blank" rel="noopener">ifeve disruptor</a></p>
+<p>文章中Disruptor源码版本 3.4.2</p>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/blog/20180613/disruptor-api-pattern.html" data-toggle="tooltip" data-placement="top" title="Disruptor核心API和应用模式">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/blog/20180524/rxjava-concurrency-example.html" data-toggle="tooltip" data-placement="top" title="RxJava并发示例">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-&#x6838;&#x5FC3;&#x6982;&#x5FF5;">1 &#x6838;&#x5FC3;&#x6982;&#x5FF5;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text"><span id="11-&#x751F;&#x4EA7;&#x8005;&#x6D88;&#x8D39;&#x8005;&#x6A21;&#x578B;">1.1 &#x751F;&#x4EA7;&#x8005;/&#x6D88;&#x8D39;&#x8005;&#x6A21;&#x578B;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text"><span id="12-&#x6838;&#x5FC3;&#x6982;&#x5FF5;">1.2 &#x6838;&#x5FC3;&#x6982;&#x5FF5;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-ringbuffer">2 RingBuffer</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text"><span id="21-&#x7279;&#x70B9;">2.1 &#x7279;&#x70B9;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text"><span id="22-&#x8BFB;">2.2 &#x8BFB;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.1.</span> <span class="toc-nav-text"><span id="232-&#x63D0;&#x4EA4;">2.3.2 &#x63D0;&#x4EA4;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.2.</span> <span class="toc-nav-text"><span id="231-&#x591A;&#x751F;&#x4EA7;&#x8005;&#x5199;&#x5165;">2.3.1 &#x591A;&#x751F;&#x4EA7;&#x8005;&#x5199;&#x5165;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text"><span id="24-&#x7279;&#x70B9;">2.4 &#x7279;&#x70B9;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.</span> <span class="toc-nav-text"><span id="3-&#x6D88;&#x8D39;&#x8005;&#x7B49;&#x5F85;&#x7B56;&#x7565;">3 &#x6D88;&#x8D39;&#x8005;&#x7B49;&#x5F85;&#x7B56;&#x7565;</span></span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.</span> <span class="toc-nav-text"><span id="4-&#x53C2;&#x8003;">4 &#x53C2;&#x8003;</span></span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Disruptor" title="Disruptor">Disruptor</a>
+                        
+                          <a class="tag" href="/tags/#Ringbuffer" title="Ringbuffer">Ringbuffer</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://blog.csdn.net/liuxigiant" target="_blank">CSDN Blog LiuXi</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/liuxigiant">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; LiuXi 2018 
+                    <br>
+                    Theme by <a href="http://www.huweihuang.com">huweihuang</a> 
+                    | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huweihuang&repo=hexo-theme-huweihuang&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://www.liuxi.name/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-79292205-1';
+    var _gaDomain = 'liuxi.name';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="https://www.liuxi.name/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

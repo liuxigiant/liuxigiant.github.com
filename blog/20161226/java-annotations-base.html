@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Java注解基础 - LiuXi | Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://www.liuxi.name/blog/20161226/java-annotations-base.html">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/article_header/article_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Java Annotation" title="Java Annotation">Java Annotation</a>
+                            
+                        </div>
+                        <h1>Java注解基础</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by LiuXi on
+                            2016-12-26
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">LiuXi</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p><strong>Java 注解（Annotations）<strong>是程序的一种</strong>元数据</strong>形式（可理解为程序的描述信息），而不是程序本身。注解对被注解的代码没有直接的影响。</p>
+<p>下面是一个使用注解的简单例子，MyClass类上有一个Author注解，Author注解包含两个元素，name和date</p>
+<blockquote>
+<p>若注解中只包含一个元素，且元素名称是value，则在使用注解的时候可以省略元素名称，直接声明元素值</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Author</span>(</span><br><span class="line">   name = <span class="string">"Benjamin Franklin"</span>,</span><br><span class="line">   date = <span class="string">"3/27/2003"</span></span><br><span class="line">)</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyClass</span>() </span>&#123; ... &#125;</span><br></pre></td></tr></table></figure>
+<h1><span id="1-基础">1 基础</span></h1>
+<h2><span id="11-注解的用处">1.1 注解的用处</span></h2>
+<p>注解在程序从编译到运行的各个时期都能提供不同的作用，主要包含以下几个方面：</p>
+<ul>
+<li>通知编译器：编译器可以通过注解做错误检查（后面提到的checker框架）和忽略告警（SuppressWarnings注解）</li>
+<li>编译期和部署期处理：通过注解生成代码、XML文件等</li>
+<li>运行期处理：程序运行期通过注解信息，执行特定逻辑处理（自定义注解与Spring结合的处理）</li>
+</ul>
+<h2><span id="12-注解的使用方式">1.2 注解的使用方式</span></h2>
+<p>注解可被用在类、成员变量、成员方法等程序元素的声明上（类、成员变量、方法等声明）。</p>
+<h2><span id="13-类型注解-type-annotation">1.3 类型注解 Type Annotation</span></h2>
+<p>Java SE 8之前，注解仅能被使用在程序元素的声明上。Java SE 8后，注解可以被使用在类型（这里的类型指类的使用，而非类的声明）之前，这种注解称之为<strong>类型注解</strong>。例如：实例化对象new表达式、类型转换、实现接口语句和throws语句</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">- Class instance creation expression:</span><br><span class="line">    <span class="keyword">new</span> <span class="meta">@Interned</span> MyObject();</span><br><span class="line">- Type cast:</span><br><span class="line">    myString = (<span class="meta">@NonNull</span> String) str;</span><br><span class="line">- implements clause:</span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">UnmodifiableList</span>&lt;<span class="title">T</span>&gt; <span class="keyword">implements</span></span></span><br><span class="line"><span class="class">    @<span class="title">Readonly</span> <span class="title">List</span>&lt;@<span class="title">Readonly</span> <span class="title">T</span>&gt; </span>&#123; ... &#125;</span><br><span class="line">- Thrown exception declaration:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">monitorTemperature</span><span class="params">()</span> <span class="keyword">throws</span></span></span><br><span class="line"><span class="function">    @Critical TemperatureException </span>&#123; ... &#125;</span><br></pre></td></tr></table></figure>
+<h2><span id="14-类型系统组件-pluggable-type-systems">1.4 类型系统组件  Pluggable Type Systems</span></h2>
+<p><strong>类型注解</strong>的引入是为了提高对Java程序的分析，以确保增强对代码的类型检查。Java SE 8没有提供类型检查框架，但是可以在编译器上集成类型检查插件。下面的例子使用了一个类型检查的注解，以及简要说了何为类型检查的插件。</p>
+<p>例如：在程序中，一个变量被声明，且在程序逻辑上不可能为<code>null</code>，为了避免程序运行过程中的<code>NullPointerException</code>，可以在变量前声明特定<strong>类型检查注解</strong>，并实现对注解的校验。此时对类型检查注解声明的元素的校验程序即为<strong>类型检查插件</strong>。声明方式如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NonNull</span> String str;</span><br></pre></td></tr></table></figure>
+<p>通过上面变量的注解和检查插件，在编译过程中，若编译器检测变量在某些地方可能为空，则会输出警告信息。通过排查警告并修复，就能避免运行时的<code>NullPointerException</code>。</p>
+<p>通过集成各种不同类型的类型检查插件模块，可以避免更多运行时错误，从而构建更稳当的系统。</p>
+<blockquote>
+<p>华盛顿大学开发了第三方的类型检查框架，提供了<code>NonNull</code>模块，同时包含了常规表达式模块、互斥锁模块等，更多信息，详见 <a href="http://types.cs.washington.edu/checker-framework/" target="_blank" rel="noopener">Checker Framework</a></p>
+</blockquote>
+<h1><span id="2-注解分类">2. 注解分类</span></h1>
+<h2><span id="21-java内置注解">2.1 Java内置注解</span></h2>
+<p>Java的内置注解包含：<code>@Deprecated</code>、 <code>@Override</code> 和 <code>@SuppressWarnings</code></p>
+<p><strong>@Deprecated注解</strong><br>
+<code>@Deprecated注解</code>表示被注解的元素是过时的，不应该再被使用。若程序元素被声明了<code>@Deprecated注解</code>,编译器会在使用了该程序元素的地方生成一条告警信息。当一个元素被声明为过时的，不仅仅需要加上<code>@Deprecated注解</code>,同时需要在Javadoc中使用<code>@deprecated标签</code>,如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Javadoc comment follows</span></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@deprecated</span></span></span><br><span class="line"><span class="comment">    * explanation of why it was deprecated</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="meta">@Deprecated</span></span><br><span class="line">   <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">deprecatedMethod</span><span class="params">()</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>@Override注解</strong><br>
+<code>@Override注解</code>用于告知编译器被注解元素是对父类的重写。<code>@Override注解</code>不是必须的，更多的是用于防止重写错误。若使用<code>@Override注解</code>注解，在重写错误的情况下，编译器会生成错误信息。</p>
+<p><strong>@SuppressWarnings注解</strong><br>
+<code>@SuppressWarnings注解</code>用于告知编译器忽略特定类型的告警信息。下面的例子中，使用了一个过时的方法，编译器会生成告警信息，然而，在使用了<code>@SuppressWarnings注解</code>后，可以使编译器忽略这个过时告警</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// use a deprecated method and tell </span></span><br><span class="line">  <span class="comment">// compiler not to generate a warning</span></span><br><span class="line">  <span class="meta">@SuppressWarnings</span>(<span class="string">"deprecation"</span>)</span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">useDeprecatedMethod</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="comment">// deprecation warning</span></span><br><span class="line">       <span class="comment">// - suppressed</span></span><br><span class="line">       objectOne.deprecatedMethod();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>每个编译器告警都归属于一种告警类型，Java包含的告警类型有<code>deprecation</code>和<code>unchecked</code>。如果要使编译器忽略多种类型的告警，可以使用如下语法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SuppressWarnings</span>(&#123;<span class="string">"unchecked"</span>, <span class="string">"deprecation"</span>&#125;)</span><br></pre></td></tr></table></figure>
+<h2><span id="22-元注解">2.2 元注解</span></h2>
+<p>元注解是指被用于定义其他注解的注解（可理解为：元注解用于定义自定义注解）。元注解被定义在<code>java.lang.annotation</code>包下。</p>
+<p><strong>@Retention注解</strong><br>
+<code>@Retention注解</code>指定了注解信息如何被存储，有以下三种选项：</p>
+<ul>
+<li>RetentionPolicy.SOURCE 注解信息仅在源码级别保留，会被编译器忽略</li>
+<li>RetentionPolicy.CLASS 注解信息在编译期间被编译器保留，但是会被JVM忽略</li>
+<li>RetentionPolicy.RUNTIME 注解信息在运行时被JVM保留</li>
+</ul>
+<p><strong>@Documented注解</strong><br>
+<code>@Documented注解</code>用于声明注解信息是否需要被Javadoc工具生成的文档包含（默认情况下，Javadoc不包含注解信息）。</p>
+<p><strong>@Target注解</strong><br>
+<code>@Target注解</code>指定自定义注解可以被用在哪些程序元素上，有以下几种选项：</p>
+<ul>
+<li>ElementType.ANNOTATION_TYPE 可用于注解类型</li>
+<li>ElementType.CONSTRUCTOR 可用于构造器</li>
+<li>ElementType.FIELD 可用于成员变量</li>
+<li>ElementType.LOCAL_VARIABLE 可用于局部变量</li>
+<li>ElementType.METHOD 可用于方法上</li>
+<li>ElementType.PACKAGE 可用于包声明上</li>
+<li>ElementType.PARAMETER 可用于方法的参数上</li>
+<li>ElementType.TYPE 可用于类的任何元素上</li>
+</ul>
+<p><strong>@Inherited注解</strong><br>
+<code>@Inherited注解</code>用于指定注解是否可以从父类继承（默认是否）。当在类A上搜索指定的注解（该注解的<code>@Inherited</code>声明为<code>true</code>），若在类A上未搜到到注解，则会去父类中搜索。</p>
+<blockquote>
+<p><code>@Inherited注解</code>是被标注过的class的子类所继承。类并不从它所实现的接口继承annotation，方法并不从它所重载的方法继承annotation</p>
+</blockquote>
+<p><strong>@Repeatable注解</strong><br>
+<code>@Repeatable注解</code>在Java SE 8被引入，用于指定注解是否可以声明多次。</p>
+<hr>
+<p><strong>本文翻译整理自java官网：</strong><br>
+<a href="https://docs.oracle.com/javase/tutorial/java/annotations/index.html" target="_blank" rel="noopener">Lesson: Annotations</a><br>
+<a href="https://docs.oracle.com/javase/tutorial/java/annotations/basics.html" target="_blank" rel="noopener">Annotations Basics</a><br>
+<a href="https://docs.oracle.com/javase/tutorial/java/annotations/predefined.html" target="_blank" rel="noopener">Predefined Annotation Types</a><br>
+<a href="https://docs.oracle.com/javase/tutorial/java/annotations/type_annotations.html" target="_blank" rel="noopener">Type Annotations and Pluggable Type Systems</a></p>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/blog/20161227/java-annotations-customize.html" data-toggle="tooltip" data-placement="top" title="Java自定义注解">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/blog/20160803/spring-data-es.html" data-toggle="tooltip" data-placement="top" title="Spring Data ElasticSearch">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-&#x57FA;&#x7840;">1 &#x57FA;&#x7840;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text"><span id="11-&#x6CE8;&#x89E3;&#x7684;&#x7528;&#x5904;">1.1 &#x6CE8;&#x89E3;&#x7684;&#x7528;&#x5904;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text"><span id="12-&#x6CE8;&#x89E3;&#x7684;&#x4F7F;&#x7528;&#x65B9;&#x5F0F;">1.2 &#x6CE8;&#x89E3;&#x7684;&#x4F7F;&#x7528;&#x65B9;&#x5F0F;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text"><span id="13-&#x7C7B;&#x578B;&#x6CE8;&#x89E3;-type-annotation">1.3 &#x7C7B;&#x578B;&#x6CE8;&#x89E3; Type Annotation</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text"><span id="14-&#x7C7B;&#x578B;&#x7CFB;&#x7EDF;&#x7EC4;&#x4EF6;-pluggable-type-systems">1.4 &#x7C7B;&#x578B;&#x7CFB;&#x7EDF;&#x7EC4;&#x4EF6;  Pluggable Type Systems</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-&#x6CE8;&#x89E3;&#x5206;&#x7C7B;">2. &#x6CE8;&#x89E3;&#x5206;&#x7C7B;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text"><span id="21-java&#x5185;&#x7F6E;&#x6CE8;&#x89E3;">2.1 Java&#x5185;&#x7F6E;&#x6CE8;&#x89E3;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text"><span id="22-&#x5143;&#x6CE8;&#x89E3;">2.2 &#x5143;&#x6CE8;&#x89E3;</span></span></a></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Java Annotation" title="Java Annotation">Java Annotation</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://blog.csdn.net/liuxigiant" target="_blank">CSDN Blog LiuXi</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/liuxigiant">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; LiuXi 2018 
+                    <br>
+                    Theme by <a href="http://www.huweihuang.com">huweihuang</a> 
+                    | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huweihuang&repo=hexo-theme-huweihuang&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://www.liuxi.name/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-79292205-1';
+    var _gaDomain = 'liuxi.name';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="https://www.liuxi.name/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

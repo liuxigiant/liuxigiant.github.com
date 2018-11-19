@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          LiuXi | Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://www.liuxi.name/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('http://ozilwgpje.bkt.clouddn.com/scenery/car.jpg?imageslim') 
+            /*config*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="site-heading">
+                        <h1>LiuXi</h1>
+                        <!--<hr class="small">-->
+                        <span class="subheading">个人博客</span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">LiuXi</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Main Content -->
+<div class="container">
+    <div class="row">
+        
+
+<!-- USE SIDEBAR -->
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-1
+                col-md-8 col-md-offset-1
+                col-sm-12
+                col-xs-12
+                post-container
+            ">
+            
+                <!-- Main Content -->
+
+
+<div class="post-preview">
+
+    <a href="/blog/20181118/octopress-to-hexo.html">
+        <h2 class="post-title">
+            Octopress迁移到Hexo
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            1 起因
+某次上网查找问题，找到一篇文章，发现也是一个静态的个人博客，用Hexo生成挂到了Github Pages上。
+后面上网搜了下Hexo相关的文章，发现Hexo搭建的博客整体样式比Octopress好看很多，受众和文档也比较多。
+然后开始折腾把Octopress迁移到Hexo
+2 迁移
+2.1 选择主题
+迁移前，先去hexo官网选一个主题，或者上网搜索选一下主题
+本博客现在使用的主题其......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by LiuXi on
+            2018-11-18
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#Personal" title="Personal">Personal</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/blog/20180614/disruptor-concurrency-example.html">
+        <h2 class="post-title">
+            Disruptor并发消费示例
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            在Rxjava并发示例中以一个实际的场景，介绍了RxJava并发消费的实现方式，下面根据同样的场景，实现Disruptor的并发消费。
+先来回顾下场景，场景如下：
+现需要根据一个商家列表获取各个商家下面的商品，然后根据每个商品，获取商品的价格
+包含如下两个接口：
+
+获取商品接口 ： 入参是商家ID，出参是商品列表
+获取商品价格接口 ： 入参是商品ID，出参是价格
+
+1 期望效果
+期望效果和商......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by LiuXi on
+            2018-06-14
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#Disruptor" title="Disruptor">Disruptor</a>
+            
+              <a href="/tags/#Ringbuffer" title="Ringbuffer">Ringbuffer</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/blog/20180613/disruptor-api-pattern.html">
+        <h2 class="post-title">
+            Disruptor核心API和应用模式
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            上篇文章Disruptor框架简介主要介绍了Disruptor框架中的一些概念及实现方式
+本篇文章主要针对Disruptor这个类的一些核心API进行说明，包括以下几个方面：
+
+创建
+事件处理
+启动
+事件发送
+异常处理
+关闭
+
+同时本篇文章也会介绍Disruptor框架在实际应用中的一些模式，包括以下几个方面：
+
+生产者端：支持单生产者和多生产者
+消费者端：支持多线程并发消费、事件广播
+消费......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by LiuXi on
+            2018-06-13
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#Disruptor" title="Disruptor">Disruptor</a>
+            
+              <a href="/tags/#Ringbuffer" title="Ringbuffer">Ringbuffer</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/blog/20180613/disruptor-introduction.html">
+        <h2 class="post-title">
+            Disruptor框架简介
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            Disruptor是由LMAX公司开源的一个基于内存的、在线程间传递数据的组件，以无锁化的方式实现数据传递的低延迟、高吞吐
+
+上面的事件可以是消息、事件等，下面以事件这个名词进行继续说明，即线程间的事件传递
+
+从上面的一句话总结可摘取出以下几个特点：
+
+基于内存：即事件不持久化
+线程间事件传递：即基于JVM的（并不是分布式）生成者/消费者模型
+无锁化：多生产者/多消费者对临界资源的共享不以锁......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by LiuXi on
+            2018-06-13
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#Disruptor" title="Disruptor">Disruptor</a>
+            
+              <a href="/tags/#Ringbuffer" title="Ringbuffer">Ringbuffer</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/blog/20180524/rxjava-concurrency-example.html">
+        <h2 class="post-title">
+            RxJava并发示例
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            上篇文章Rxjava并发有介绍Rxjava中实现并发的方案，本篇文章主要借一个实际的场景，来实践下并发执行的方案。
+场景如下：
+现需要根据一个商家列表获取各个商家下面的商品，然后根据每个商品，获取商品的价格
+包含如下两个接口：
+
+获取商品接口 ： 入参是商家ID，出参是商品列表
+获取商品价格接口 ： 入参是商品ID，出参是价格
+
+1 方案描述
+1.1 期望效果
+期望获取商品和获取价格都能并发......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by LiuXi on
+            2018-05-24
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#Rxjava" title="Rxjava">Rxjava</a>
+            
+              <a href="/tags/#Concurrency" title="Concurrency">Concurrency</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/blog/20180524/rxjava-concurrency.html">
+        <h2 class="post-title">
+            RxJava并发
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            RxJava 在 GitHub 主页上的介绍是:
+&quot;a library for composing asynchronous and event-based programs using observable sequences for the Java VM&quot;
+一个在 Java VM 上使用可观测的序列来组成异步的、基于事件的程序的库
+本篇主要探讨RxJava实现异步并......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by LiuXi on
+            2018-05-24
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#Rxjava" title="Rxjava">Rxjava</a>
+            
+              <a href="/tags/#Concurrency" title="Concurrency">Concurrency</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/blog/20180207/spring-cache-redis.html">
+        <h2 class="post-title">
+            Spring Cache Abstraction集成Redis
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            Spring Cache Abstraction提供了几种默认的第三方存储集成，实现了缓存注解的开箱即用。
+而本篇要探讨的是自定义实现其他的第三方缓存的集成，特别是现在广泛使用的Redis或者某些公司自己实现的类Redis缓存。
+spring_cache_abstraction作为一种缓存逻辑的抽象封装，实现方式上就是屏蔽底层缓存存储的细节，抽象了缓存管理和操作的接口，便于不同的第三方缓存的......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by LiuXi on
+            2018-02-07
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#Spring Cache" title="Spring Cache">Spring Cache</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/blog/20180206/spring-cache-source-code.html">
+        <h2 class="post-title">
+            Spring Cache Abstraction实现原理
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            上篇文章 Spring Cache Abstraction简介 中介绍了 Spring Cache Abstraction支持的特性以及使用方式。
+本文从源码的角度，分析下Spring Cache Abstraction注解方式的实现原理，主要包含以下几个方面：
+
+注解驱动
+代理类生成
+注解处理
+
+1 注解驱动
+Spring Cache Abstraction支持注解的方式，但是要是注解生效......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by LiuXi on
+            2018-02-06
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#Spring Cache" title="Spring Cache">Spring Cache</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/blog/20180116/spring-cache-abstraction.html">
+        <h2 class="post-title">
+            Spring Cache Abstraction简介
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            Spring Cache Abstraction是对通过注解的方式对缓存逻辑的抽象与封装，而不涉及底层缓存存储的读写（仅提供几种默认的底层缓存存储的读写集成）。
+场景：
+一个典型的场景是获取数据库数据的需求，在读取数据库之前，先读取缓存，缓存有数据，则直接返回；没有数据则读取数据库数据后，回写缓存。  Spring Cache Abstraction提供的@Cacheable即可完成上述逻辑......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by LiuXi on
+            2018-01-16
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#Spring Cache" title="Spring Cache">Spring Cache</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/blog/20171208/io-thread-model-outline.html">
+        <h2 class="post-title">
+            JAVA I/O模型及线程模型系列
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            通过对Netty的学习和了解，梳理下JAVA中支持的I/O模型以及常用的线程模型
+
+JAVA I/O模型
+
+JAVA对I/O的支持，包含 BIO、NIO 和 AIO，梳理详见如下：
+Java I/O简介
+Java OIO NIO AIO简介
+
+线程模型
+
+常用的线程模型 Reactor 和 PReactor，详见： Reactor和PReactor线程模型
+...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by LiuXi on
+            2017-12-08
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#Java IO" title="Java IO">Java IO</a>
+            
+              <a href="/tags/#Reactor" title="Reactor">Reactor</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+
+
+<!-- Pager -->
+
+<ul class="pager">
+    
+    
+        <li class="next">
+            <a href="/archives/2/">Older Posts &rarr;</a>
+        </li>
+    
+</ul>
+
+
+
+                <br>
+
+                <!-- require APlayer -->
+                
+
+                <!-- 如果开启评论功能 -->
+                
+            </div>
+
+          <!-- Sidebar Container -->
+<div class="
+    col-lg-3 col-lg-offset-0
+    col-md-3 col-md-offset-0
+    col-sm-12
+    col-xs-12
+    sidebar-container
+">
+    
+        <!-- Featured Tags -->
+
+<section>
+    <!-- no hr -->
+    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+            
+            <a href="/tags/#Personal" title="Personal" rel="2">Personal</a>
+            
+        
+            
+            <a href="/tags/#MySQL Partitioning" title="MySQL Partitioning" rel="3">MySQL Partitioning</a>
+            
+        
+            
+        
+            
+        
+            
+            <a href="/tags/#Java Annotation" title="Java Annotation" rel="4">Java Annotation</a>
+            
+        
+            
+            <a href="/tags/#MyBatis Spring" title="MyBatis Spring" rel="6">MyBatis Spring</a>
+            
+        
+            
+            <a href="/tags/#Java IO" title="Java IO" rel="4">Java IO</a>
+            
+        
+            
+            <a href="/tags/#Reactor" title="Reactor" rel="2">Reactor</a>
+            
+        
+            
+        
+            
+            <a href="/tags/#Spring Cache" title="Spring Cache" rel="3">Spring Cache</a>
+            
+        
+            
+            <a href="/tags/#Rxjava" title="Rxjava" rel="2">Rxjava</a>
+            
+        
+            
+            <a href="/tags/#Concurrency" title="Concurrency" rel="2">Concurrency</a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+            <a href="/tags/#Disruptor" title="Disruptor" rel="3">Disruptor</a>
+            
+        
+            
+            <a href="/tags/#Ringbuffer" title="Ringbuffer" rel="3">Ringbuffer</a>
+            
+        
+            
+        
+            
+        
+    </div>
+</section>
+
+        <hr>
+    
+        <!-- Short About -->
+<section class="visible-md visible-lg">
+    <h5><a href="/about/">ABOUT ME</a></h5>
+    <div class="short-about">
+
+        
+            <img id = "avatar_pic" src="/img/avatar/ironman.png" />
+        
+
+        
+            <p>一亩三分地</p>
+        
+
+        <!-- SNS Link -->
+        <ul class="list-inline">
+            
+            
+            
+
+            
+
+            
+
+            
+                <li>
+                    <a target="_blank"  href="https://github.com/liuxigiant">
+                        <span class="fa-stack fa-lg">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </a>
+                </li>
+            
+            
+            
+            
+        </ul>
+    </div>
+</section>
+
+        <hr>
+    
+        
+  <h5>RECENT POSTS</h3>
+  <div class="widget">
+    <ul>
+      
+        <li>
+          <a href="/blog/20181118/octopress-to-hexo.html">Octopress迁移到Hexo</a>
+        </li>
+      
+        <li>
+          <a href="/blog/20180614/disruptor-concurrency-example.html">Disruptor并发消费示例</a>
+        </li>
+      
+        <li>
+          <a href="/blog/20180613/disruptor-api-pattern.html">Disruptor核心API和应用模式</a>
+        </li>
+      
+        <li>
+          <a href="/blog/20180613/disruptor-introduction.html">Disruptor框架简介</a>
+        </li>
+      
+        <li>
+          <a href="/blog/20180524/rxjava-concurrency-example.html">RxJava并发示例</a>
+        </li>
+      
+    </ul>
+  </div>
+
+        <hr>
+    
+        <!-- Friends Blog -->
+
+<h5>FRIENDS</h5>
+<ul class="list-inline">
+
+    
+        <li><a href="https://blog.csdn.net/liuxigiant" target="_blank">CSDN Blog LiuXi</a></li>
+    
+</ul>
+
+        <hr>
+    
+        
+    <h5>ARCHIVES</h5>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">November 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+
+        <hr>
+    
+</div>
+
+        
+    </div>
+</div>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/liuxigiant">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; LiuXi 2018 
+                    <br>
+                    Theme by <a href="http://www.huweihuang.com">huweihuang</a> 
+                    | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huweihuang&repo=hexo-theme-huweihuang&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://www.liuxi.name/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-79292205-1';
+    var _gaDomain = 'liuxi.name';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="https://www.liuxi.name/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

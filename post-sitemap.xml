@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type="text/xsl" href="sitemap.xsl"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://www.liuxi.name</loc>
+        <changefreq>daily</changefreq>
+        <priority>1</priority>
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20181118/octopress-to-hexo.html</loc>
+        <lastmod>2018-11-19T06:30:06.608Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20180614/disruptor-concurrency-example.html</loc>
+        <lastmod>2018-11-19T06:03:38.686Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20180613/disruptor-introduction.html</loc>
+        <lastmod>2018-11-19T06:03:38.683Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20180613/disruptor-api-pattern.html</loc>
+        <lastmod>2018-11-19T06:03:38.680Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20180524/rxjava-concurrency.html</loc>
+        <lastmod>2018-11-19T06:03:38.676Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20180524/rxjava-concurrency-example.html</loc>
+        <lastmod>2018-11-19T06:03:38.673Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20180207/spring-cache-redis.html</loc>
+        <lastmod>2018-11-19T06:03:38.671Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20180206/spring-cache-source-code.html</loc>
+        <lastmod>2018-11-19T06:03:38.668Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20180116/spring-cache-abstraction.html</loc>
+        <lastmod>2018-11-19T06:03:38.664Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20171208/mybatis-spring-outline.html</loc>
+        <lastmod>2018-11-19T06:03:38.661Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20171208/io-thread-model-outline.html</loc>
+        <lastmod>2018-11-19T06:03:38.658Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20171111/spring-transaction-proxy.html</loc>
+        <lastmod>2018-11-19T06:03:38.655Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20171107/thread-model.html</loc>
+        <lastmod>2018-11-19T06:03:38.652Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20171106/java-oio-nio-aio.html</loc>
+        <lastmod>2018-11-19T06:03:38.648Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20171023/java-io-summary.html</loc>
+        <lastmod>2018-11-19T06:03:38.645Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20170818/spring-schema.html</loc>
+        <lastmod>2018-11-19T06:03:38.642Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20170817/mybatis-spring-scan.html</loc>
+        <lastmod>2018-11-19T06:03:38.639Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20170817/mybatis-spring-mapperscannerconfigurer.html</loc>
+        <lastmod>2018-11-19T06:03:38.636Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20170817/mybatis-spring-mapperfactorybean.html</loc>
+        <lastmod>2018-11-19T06:03:38.633Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20170814/mybatis-spring-sqlsessiontemplate.html</loc>
+        <lastmod>2018-11-19T06:03:38.630Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20170802/mybatis-spring-sessionfactory.html</loc>
+        <lastmod>2018-11-19T06:03:38.627Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20170718/mybatis-spring-usage.html</loc>
+        <lastmod>2018-11-19T06:03:38.624Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20161228/spring-container-extension.html</loc>
+        <lastmod>2018-11-19T06:03:38.620Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20161228/spring-annotations.html</loc>
+        <lastmod>2018-11-19T06:03:38.617Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20161227/java-annotations-customize.html</loc>
+        <lastmod>2018-11-19T06:03:38.614Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20161227/java-annotations-api.html</loc>
+        <lastmod>2018-11-19T06:03:38.611Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20161226/java-annotations-base.html</loc>
+        <lastmod>2018-11-19T06:03:38.608Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20160803/spring-data-es.html</loc>
+        <lastmod>2018-11-19T06:03:38.606Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20160624/mysql-save-or-update.html</loc>
+        <lastmod>2018-11-19T06:03:38.603Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20160608/jvm-full-gc-hourly.html</loc>
+        <lastmod>2018-11-19T06:03:38.600Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20160607/mysql-partition-unique-key.html</loc>
+        <lastmod>2018-11-19T06:03:38.597Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20160606/mysql-partition-what.html</loc>
+        <lastmod>2018-11-19T06:03:38.593Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20160606/mysql-partition-start.html</loc>
+        <lastmod>2018-11-19T06:03:38.590Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20160301/start-blog.html</loc>
+        <lastmod>2018-11-19T06:03:38.587Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+</urlset>
+<!-- XML Sitemap generated by Hexo SEO Friendly Sitemap Generator -->

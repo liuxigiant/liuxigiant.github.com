@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          MySQL分区概念 - LiuXi | Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://www.liuxi.name/blog/20160606/mysql-partition-what.html">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/article_header/article_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#MySQL Partitioning" title="MySQL Partitioning">MySQL Partitioning</a>
+                            
+                        </div>
+                        <h1>MySQL分区概念</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by LiuXi on
+                            2016-06-06
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">LiuXi</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p><strong>参考自官网：<a href="https://dev.mysql.com/doc/refman/5.5/en/partitioning-overview.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.5/en/partitioning-overview.html</a></strong></p>
+<h2><span id="概念">概念</span></h2>
+<ul>
+<li>**分区：**使用特定的分区规则将一个表的数据分布到操作系统的不同目录和磁盘上。实际上，单个表的各个部分数据是作为分离的表存储在不同的位置的。</li>
+<li>**分区规则：**完成分离表数据的分区方法，MySQL提供了<a href="https://dev.mysql.com/doc/refman/5.5/en/partitioning-types.html" target="_blank" rel="noopener">四种分区类型（range, list, hash, key）</a>。</li>
+<li>**水平分区：**将一张表的不同行的数据分离到不同的物理分区，MySQL目前的分区方式就是水平分区。</li>
+<li>**垂直分区：**将一张表的不同列的数据分离到不同的物理分区，MySQL 5.5不支持垂直分区。</li>
+</ul>
+<h2><span id="mysql存储引擎和分区">MySQL存储引擎和分区</span></h2>
+<p>MySQL Server中的大部分存储引擎都支持分区表的创建（<code>MERGE</code>、<code>CSV</code>、<code>FEDERATED</code>存储引擎不支持），分区引擎与存储引擎运行在隔离的系统层面，并且可以相互交互。在MySQL 5.5，同一个分区表的所有分区必须是同一种存储引擎。<br>
+例如：一个分区使用<code>MyISAM</code>存储引擎，而另一个分区使用<code>InnoDB</code>存储引擎。然而，MySQL Server也没有机制阻止不同的分区使用不同的存储引擎。</p>
+<blockquote>
+<p>注意：<br>
+分区针对一张表的所有数据和所有索引生效。不能只对数据分区而不对索引分区，反之亦然。也不能只对表的部分数据分区。</p>
+</blockquote>
+<h2><span id="分区的优势">分区的优势</span></h2>
+<ul>
+<li>分区能让一张表存储更多的数据</li>
+<li>当一些数据不再有较高的价值的时候，可以通过删除数据所在的分区，方便的删除数据。同样，需要增加一个特殊数据，也可以添加新的分区来存储</li>
+<li>查询优化：对于查询语句，可以根据<code>WHERE</code>条件过滤出需要查询的分区，而不用去查询其他数据不存在的分区（可以通过<code>EXPLAIN PARTITIONS SELECT</code>分析查询语句的执行计划）。对于已经存在的分区表，当前的分区方式若不能满足高频查询的需求，可以通过分区重建的方式来优化查询效率。</li>
+</ul>
+<p><strong>下面还有一些优化点：</strong></p>
+<ul>
+<li>对于<code>SUM()</code>、<code>COUNT()</code>等统计函数，分区查询能做到并行处理。例如：<code>SELECT salesperson_id, COUNT(orders) as order_total FROM sales GROUP BY salesperson_id;</code>这个查询语句，分区查询的并行处理优化的方式是，每个分区同时执行查询，最后对各分区结果做聚合。</li>
+<li>对于多个磁盘数据查询，实现更高的查询吞吐量</li>
+</ul>
+<h2><span id="分区的限制">分区的限制</span></h2>
+<p>分区表也存在一些限制：</p>
+<ul>
+<li>算数运算符和逻辑运算符<br>
+加减乘<code>+ - *</code>这三个运算符是支持的，但是表达式结果必须是<strong>整数</strong>或者<a href="https://dev.mysql.com/doc/refman/5.5/en/partitioning-handling-nulls.html" target="_blank" rel="noopener">NULL</a><br>
+除法<a href="https://dev.mysql.com/doc/refman/5.5/en/arithmetic-functions.html#operator_div" target="_blank" rel="noopener">DIV</a>运算符也是支持的，但不支持<code>/</code>运算符<br>
+位运算符<code>| &amp; ^ &lt;&lt; &gt;&gt; ~</code>是不支持的</li>
+<li>锁表：在表上执行分区操作时候，会对表加上写锁，会影响对表的写入操作，不影响读操作。</li>
+<li>最大分区数：一张表的最大分区数为1024（表的存储引擎不是使用的NDB存储引擎，NDB存储引擎的最大分区数受MySQL Cluster版本、数据节点个数、和一些其他因素影响，详情可查看<a href="https://dev.mysql.com/doc/refman/5.5/en/mysql-cluster-nodes-groups.html#mysql-cluster-nodes-groups-user-partitioning" target="_blank" rel="noopener">NDB and user-defined partitioning</a>）。1024包含分区及子分区。</li>
+<li>分区键（分区列）：对于分区列的限制在下篇单独说明</li>
+</ul>
+<blockquote>
+<p>以上只是简单的罗列出几点，详细情况可参考<a href="https://dev.mysql.com/doc/refman/5.5/en/partitioning-limitations.html" target="_blank" rel="noopener">官网文档</a></p>
+</blockquote>
+<h2><span id="分区表管理">分区表管理</span></h2>
+<p>MySQL提供了<a href="https://dev.mysql.com/doc/refman/5.5/en/partitioning-types.html" target="_blank" rel="noopener">四种分区类型（range, list, hash, key）</a>。常用方式一般是根据时间进行分区，MySQL对<code>TO_DAYS()</code>, <code>YEAR()</code>, <code>TO_SECONDS()</code>这些处理时间的函数也进行了优化。下面给出一个简单示例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  创建分区表</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t_test`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">BIGINT</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'id'</span>,</span><br><span class="line">  <span class="string">`create_time`</span> DATETIME <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'创建时间'</span>,</span><br><span class="line">  <span class="string">`user_name`</span> <span class="built_in">VARCHAR</span>(<span class="number">100</span>) <span class="keyword">COMMENT</span> <span class="string">'用户名'</span>,</span><br><span class="line">   PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>,<span class="string">`create_time`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">INNODB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8</span><br><span class="line">  <span class="keyword">PARTITION</span> <span class="keyword">BY</span> <span class="keyword">RANGE</span> (<span class="keyword">TO_DAYS</span>(<span class="string">`create_time`</span>))</span><br><span class="line"> (</span><br><span class="line">    <span class="keyword">PARTITION</span> p0 <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span>   (<span class="keyword">TO_DAYS</span>(<span class="string">'2016-07-01'</span>))</span><br><span class="line"> );</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> <span class="comment">/*</span></span><br><span class="line"><span class="comment">   增加分区</span></span><br><span class="line"><span class="comment"> */</span> </span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> t_test <span class="keyword">ADD</span> <span class="keyword">PARTITION</span>(<span class="keyword">PARTITION</span> p1 <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> (<span class="keyword">TO_DAYS</span>(<span class="string">'2016-07-01'</span>)));</span><br></pre></td></tr></table></figure>
+<p>上面的示例只是简单的创建分区表和给分区表增加分区，还要其他关于删除分区、重建分区等操作，可以参考官方文档：<a href="https://dev.mysql.com/doc/refman/5.5/en/partitioning-management.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.5/en/partitioning-management.html</a></p>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/blog/20160607/mysql-partition-unique-key.html" data-toggle="tooltip" data-placement="top" title="MySQL分区字段的约束">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/blog/20160606/mysql-partition-start.html" data-toggle="tooltip" data-placement="top" title="MySQL 对分区的支持">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="&#x6982;&#x5FF5;">&#x6982;&#x5FF5;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="mysql&#x5B58;&#x50A8;&#x5F15;&#x64CE;&#x548C;&#x5206;&#x533A;">MySQL&#x5B58;&#x50A8;&#x5F15;&#x64CE;&#x548C;&#x5206;&#x533A;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.</span> <span class="toc-nav-text"><span id="&#x5206;&#x533A;&#x7684;&#x4F18;&#x52BF;">&#x5206;&#x533A;&#x7684;&#x4F18;&#x52BF;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.</span> <span class="toc-nav-text"><span id="&#x5206;&#x533A;&#x7684;&#x9650;&#x5236;">&#x5206;&#x533A;&#x7684;&#x9650;&#x5236;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.</span> <span class="toc-nav-text"><span id="&#x5206;&#x533A;&#x8868;&#x7BA1;&#x7406;">&#x5206;&#x533A;&#x8868;&#x7BA1;&#x7406;</span></span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#MySQL Partitioning" title="MySQL Partitioning">MySQL Partitioning</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://blog.csdn.net/liuxigiant" target="_blank">CSDN Blog LiuXi</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/liuxigiant">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; LiuXi 2018 
+                    <br>
+                    Theme by <a href="http://www.huweihuang.com">huweihuang</a> 
+                    | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huweihuang&repo=hexo-theme-huweihuang&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://www.liuxi.name/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-79292205-1';
+    var _gaDomain = 'liuxi.name';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="https://www.liuxi.name/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

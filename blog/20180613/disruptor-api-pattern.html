@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Disruptor核心API和应用模式 - LiuXi | Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://www.liuxi.name/blog/20180613/disruptor-api-pattern.html">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/article_header/article_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Disruptor" title="Disruptor">Disruptor</a>
+                            
+                              <a class="tag" href="/tags/#Ringbuffer" title="Ringbuffer">Ringbuffer</a>
+                            
+                        </div>
+                        <h1>Disruptor核心API和应用模式</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by LiuXi on
+                            2018-06-13
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">LiuXi</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>上篇文章<a href="/blog/20180613/disruptor-introduction.html">Disruptor框架简介</a>主要介绍了Disruptor框架中的一些概念及实现方式</p>
+<p>本篇文章主要针对<code>Disruptor</code>这个类的一些核心API进行说明，包括以下几个方面：</p>
+<ul>
+<li>创建</li>
+<li>事件处理</li>
+<li>启动</li>
+<li>事件发送</li>
+<li>异常处理</li>
+<li>关闭</li>
+</ul>
+<p>同时本篇文章也会介绍<code>Disruptor</code>框架在实际应用中的一些模式，包括以下几个方面：</p>
+<ul>
+<li>生产者端：支持单生产者和多生产者</li>
+<li>消费者端：支持多线程并发消费、事件广播</li>
+<li>消费者依赖关系构造</li>
+</ul>
+<p><strong>注：Disruptor版本3.4.2</strong></p>
+<a id="more"></a>
+<h1><span id="1-核心api">1 核心API</span></h1>
+<h2><span id="11-创建">1.1 创建</span></h2>
+<p><code>Disruptor</code>的创建是通过构造函数来实例化<code>Disruptor</code>对象的，构造函数如下：</p>
+<figure class="highlight java"><figcaption><span>Disruptor构造函数</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Disruptor</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">final</span> EventFactory&lt;T&gt; eventFactory,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">final</span> <span class="keyword">int</span> ringBufferSize,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">final</span> ThreadFactory threadFactory,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">final</span> ProducerType producerType,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">final</span> WaitStrategy waitStrategy)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">this</span>(</span><br><span class="line">        RingBuffer.create(producerType, eventFactory, ringBufferSize, waitStrategy),</span><br><span class="line">        <span class="keyword">new</span> BasicExecutor(threadFactory));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的构造函数会初始化<code>Disruptor</code>对象包含的两个核心对象：</p>
+<ul>
+<li><code>RingBuffer</code>：创建<code>RingBuffer</code>对象需要指定4个基本属性
+<ul>
+<li><code>producerType</code>：生产者类型（单生产者还是多生产者，通过<code>ProducerType</code>枚举指定，不同的类型，生产者对应的<code>Sequencer</code>不同）</li>
+<li><code>eventFactory</code>：生成事件对象的工厂类</li>
+<li><code>ringBufferSize</code>：RingBuffer底层数组的大小</li>
+<li><code>waitStrategy</code>：消费者等待策略</li>
+</ul>
+</li>
+<li><code>BasicExecutor</code> ： 通过线程创建工厂<code>threadFactory</code>构造线程池，用于执行消费者事件处理逻辑</li>
+</ul>
+<h2><span id="12-事件处理">1.2 事件处理</span></h2>
+<p>消费者针对事件的处理，主要有以下两个核心方法：</p>
+<ul>
+<li>
+<p><code>handleEventsWith(EventProcessor[])</code><br>
+入参是一个EventProcessor数组</p>
+<p>该方法会将<strong>每个</strong>EventProcessor封装成EventProcessorInfo，存储到Disruptor的消费者事件处理集合ConsumerRepository中</p>
+<p>注意：事件会被EventProcessor数组中的每一个处理器处理</p>
+</li>
+<li>
+<p><code>handleEventsWith(EventHandler[])</code><br>
+入参是一个EventHandler数组</p>
+<p>该方法会将<strong>每个</strong>EventHandler封装成EventProcessorInfo，存储到Disruptor的消费者事件处理集合ConsumerRepository中<br>
+与上面的方法不同的是：<strong>这个方法通过EventHandler构造成BatchEventProcessor，从而支持消费者端的批处理</strong></p>
+<p>注意：事件会被EventHandler数组中的每一个处理器处理</p>
+</li>
+<li>
+<p><code>handleEventsWithWorkerPool(WorkHandler[])</code><br>
+入参是一个WorkHandler数组</p>
+<p>该方法会将每一个WorkHandler封装成一个WorkProcessor，然后将所有的WorkProcessor封装到一个WorkerPool里面<br>
+最后将这个WorkerPool封装成WorkerPoolInfo，存储到Disruptor的消费者事件处理集合ConsumerRepository中</p>
+<p>注意：事件会被WorkHandler数组中的<strong>一个</strong>WorkHandler处理</p>
+</li>
+</ul>
+<p><em>总结：</em></p>
+<ul>
+<li>前两个方法适用于一个事件多个不同的逻辑处理器并行处理</li>
+<li>第三个方法使用于一个事件只需要被一个事件处理器抢占处理</li>
+</ul>
+<blockquote>
+<p>可类比MQ的消费模式<br>
+方法处理逻辑可参照源码</p>
+</blockquote>
+<h2><span id="13-启动">1.3 启动</span></h2>
+<p>在上述事件处理中只是将处理器封装成ConsumerRepository存储到Disruptor中，而启动方法才是真正的调度线程，执行这个逻辑处理器</p>
+<figure class="highlight java"><figcaption><span>Disruptor启动方法</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> RingBuffer&lt;T&gt; <span class="title">start</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    checkOnlyStartedOnce();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">final</span> ConsumerInfo consumerInfo : consumerRepository)</span><br><span class="line">    &#123;</span><br><span class="line">        consumerInfo.start(executor);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> ringBuffer;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从源码可看出<code>Disruptor</code>启动，会通过线程池异步执行所有的<code>ConsumerInfo</code>，就会启动<code>EventProcessor</code>执行线程（<code>EventProcessor</code>继承自<code>Runnable</code>）</p>
+<p>我们可以通过<code>EventProcessor</code>的子类<code>BatchEventProcessor</code>和<code>WorkProcessor</code>的<code>run</code>方法可以看出</p>
+<p>异步线程启动后的处理逻辑就是循环获取<code>RingBuffer</code>的可处理序列，若可获取到序列，则处理事件；否则根据等待策略等待。</p>
+<h2><span id="14-事件发送">1.4 事件发送</span></h2>
+<p>生产者发送事件主要是调用<code>publishEvent(EventTranslator)</code>实现的，该方法封装了<code>RingBuffer</code>节点申请、事件初始化和<code>RingBuffer</code>序列提交</p>
+<p><code>EventTranslator</code>支持无参<code>EventTranslator</code>、一个参数<code>EventTranslatorOneArg</code>、两个参数<code>EventTranslatorTwoArg</code>、三个参数<code>EventTranslatorThreeArg</code>的多种版本</p>
+<p><code>EventTranslator</code>只处理事件对象的加工，而事件对象的创建（创建<code>Disruptor</code>对象时候提供的事件工厂类）和获取由<code>Disruptor</code>框架封装</p>
+<p>可参照官方<a href="https://github.com/LMAX-Exchange/disruptor/wiki/Getting-Started#using-version-3-translators" target="_blank" rel="noopener">Getting Start – using-version-3-translators</a></p>
+<h2><span id="15-异常处理">1.5 异常处理</span></h2>
+<p>在<code>Disruptor</code>框架中，消费者异步线程处理事件属于异常高发地段，那么Disruptor框架是如何处理和传递异常的呢？消费者事件处理异常是否回造成序列的消费失败，从而卡死RingBuffer环呢？</p>
+<p><strong>异常处理接口声明ExceptionHandler</strong></p>
+<p>下面来了解下<code>Disruptor</code>处理异常的方式。</p>
+<p>在<code>Disruptor</code>中声明了异常处理的接口<code>ExceptionHandler</code>,包含三个方法：</p>
+<ul>
+<li><code>handleEventException</code>：事件消费异常处理（重点关注）</li>
+<li><code>handleOnStartException</code>: 启动异常处理</li>
+<li><code>handleOnShutdownException</code> : 关闭异常处理</li>
+</ul>
+<p><strong>默认的异常处理类FatalExceptionHandler</strong></p>
+<p>我们再回过头开看看<code>Disruptor</code>这个类：</p>
+<ul>
+<li><code>Disruptor</code>里面包含了一个<code>ExceptionHandlerWrapper</code>类型的<code>exceptionHandler</code>对象，这是<code>Disruptor</code>异常处理的一个代理类</li>
+<li>真正的异常处理是由<code>ExceptionHandlerWrapper</code>这个代理类的目标对象<code>delegate</code>来实现的，其默认值为<code>FatalExceptionHandler</code>。</li>
+</ul>
+<p>至此我们知道*<code>Disruptor</code>的异常默认是由<code>FatalExceptionHandler</code>类实现的*。</p>
+<p>看下<code>FatalExceptionHandler</code>的<code>handleEventException</code>方法，消费者处理事件异常，异常处理器会抛出运行时异常。</p>
+<p><strong>异常处理的工作机制</strong></p>
+<p>从上面可知<code>Disruptor</code>对象创建的时候就初始化了异常处理代理类<code>ExceptionHandlerWrapper</code>。</p>
+<p>下面我们看下，在消费者处理事件的时候，异常处理类是如何生效的</p>
+<p>从<code>1.2 事件处理</code>和<code>1.3 启动</code>两部分可知，事件处理主要是封装<code>EventProcessor</code>，而启动时候是将<code>EventProcessor</code>放在线程池中异步执行</p>
+<p>那么还是回到<code>EventProcessor</code>线程执行的<code>run</code>方法</p>
+<blockquote>
+<p>由于EventProcessor继承自Runnable，所以执行时候就看run方法</p>
+</blockquote>
+<p>下面以<code>EventProcessor</code>的子类<code>BatchEventProcessor</code>的<code>run</code>方法为例来看看异常处理类的作用</p>
+<p><code>BatchEventProcessor</code>的<code>run</code>方法调用<code>processEvents</code>方法处理事件</p>
+<figure class="highlight java"><figcaption><span>BatchEventProcessor异常处理</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processEvents</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    T event = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">long</span> nextSequence = sequence.get() + <span class="number">1L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">long</span> availableSequence = sequenceBarrier.waitFor(nextSequence);</span><br><span class="line">            <span class="keyword">if</span> (batchStartAware != <span class="keyword">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                batchStartAware.onBatchStart(availableSequence - nextSequence + <span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">while</span> (nextSequence &lt;= availableSequence)</span><br><span class="line">            &#123;</span><br><span class="line">                event = dataProvider.get(nextSequence);</span><br><span class="line">                eventHandler.onEvent(event, nextSequence, nextSequence == availableSequence);</span><br><span class="line">                nextSequence++;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            sequence.set(availableSequence);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (<span class="keyword">final</span> TimeoutException e)</span><br><span class="line">        &#123;</span><br><span class="line">            notifyTimeout(sequence.get());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (<span class="keyword">final</span> AlertException ex)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (running.get() != RUNNING)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (<span class="keyword">final</span> Throwable ex)</span><br><span class="line">        &#123;</span><br><span class="line">            exceptionHandler.handleEventException(ex, nextSequence, event);</span><br><span class="line">            sequence.set(nextSequence);</span><br><span class="line">            nextSequence++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从上面源码可看出，在消费者处理事件的时候，会捕获异常，并交给<code>exceptionHandler</code>处理</p>
+<blockquote>
+<p>从源码也能看出，默认的异常处理类<code>FatalExceptionHandler</code>在事件消费异常时候，会抛出运行时异常，那么当前<code>sequence</code>并不能被正常消费，这可能会造成<code>RingBuffer</code>环的卡死（无法消费，那么生产者也无法发送事件）</p>
+</blockquote>
+<p><strong>自定义处理异常</strong></p>
+<p>自定义异常其实就是实现<code>ExceptionHandler</code>接口，然后通过<code>Disruptor</code>的<code>setDefaultExceptionHandler</code>来设置到异常处理代理类<code>ExceptionHandlerWrapper</code>中，从而替换掉默认异常处理类</p>
+<p>自定义异常并实现消费异常处理方法<code>handleEventException</code>可以根据实际应用场景来处理（打印异常、设置标志位等等），避免<code>RingBuffer</code>卡死的情形</p>
+<blockquote>
+<p>自定义异常是为了让使用者掌握主动权，根据自己的实际场景来处理异常，在避免潜在问题的前提下，满足业务场景</p>
+</blockquote>
+<p><code>Disruptor</code>中提供了三个方法来设置自定义的异常处理类:</p>
+<ul>
+<li><code>setDefaultExceptionHandler</code>：对所有的<code>EventHandler</code>和<code>WorkerPool</code>都有效</li>
+<li><code>handleExceptionsFor</code>：对指定的<code>EventHandler</code>设置异常处理类</li>
+<li><code>handleExceptionsWith</code>: 对该方法被调用之后设置的<code>EventHandler</code>有效（这种方式使用起来容易出错，已废弃）<br>
+可以参照<a href="https://github.com/LMAX-Exchange/disruptor/issues/122" target="_blank" rel="noopener">Disruptor issue</a></li>
+</ul>
+<h2><span id="16-关闭">1.6 关闭</span></h2>
+<p><code>Disruptor</code>提供了关闭方法<code>shutdown</code>，该方法会等待所有的事件都被处理完成之后，再停止所有的事件处理器<code>EventProcessor.halt</code></p>
+<p>注意：</p>
+<ul>
+<li>该方法不会关闭消费者执行线程池也不会等待消费者执行线程完毕</li>
+<li>该方法被调用的时候，所有的事件发送需要都已经完成</li>
+</ul>
+<h1><span id="2-应用模式">2 应用模式</span></h1>
+<p>在开篇提到，<code>Disruptor</code>框架在实际应用中有多种模式，包括以下几个方面：</p>
+<ul>
+<li>生产者端：支持单生产者和多生产者</li>
+<li>消费者端：支持事件广播、多线程并发消费</li>
+<li>消费者依赖关系构造</li>
+</ul>
+<p><strong>生产者端</strong></p>
+<p>对于生产者来说，<code>Disruptor</code>框架支持单生产者也支持多生产者，其不同支持就是在创建<code>Disruptor</code>对象的时候，指定不同的<code>ProducerType</code></p>
+<p><strong>消费者端</strong></p>
+<p>消费者端主要说明下事件广播和多线程并发消费</p>
+<ul>
+<li>
+<p>事件广播</p>
+<p><em>事件广播</em>其实就是针对一个事件，会有多个处理器来处理，多个处理器完成不同的功能，且互不影响</p>
+<p>从<code>1.2 事件处理</code>中可知，这种情形调用<code>handleEventsWith(EventHandler[])</code>即可实现</p>
+</li>
+<li>
+<p>多线程并发消费</p>
+<p><em>多线程并发消费</em>是指针对一个事件，事件会被提交到多个处理器组成的线程池执行，这个事件只会被一个线程执行。</p>
+<p>从<code>1.2 事件处理</code>中可知，这种情形调用<code>handleEventsWithWorkerPool(WorkHandler[])</code>即可实现</p>
+<blockquote>
+<p>对于事件处理的一个特定逻辑，我们创建多个<code>WorkHandler</code>实例，即多个<code>WorkHandler</code>组成线程池，但是逻辑一致，从而实现多线程并发消费</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>消费者依赖关系构造</strong></p>
+<p>消费者的典型场景就是菱形结构，如下图（图片来自<a href="http://mechanitis.blogspot.com/2011/07/dissecting-disruptor-wiring-up.html" target="_blank" rel="noopener">Dissecting the Disruptor: Wiring up the dependencies</a>）：</p>
+<p><img src="/images/cust/disruptor/consumer-dependency.png" alt=""></p>
+<p>如上图：一个生产者P1，三个消费者C1、C2、C3</p>
+<ul>
+<li>C1 和 C2 直接依赖<code>RingBuffer</code>,获取事件处理</li>
+<li>C3也是直接依赖<code>RingBuffer</code>，但同时也直接依赖C1、C2先对数据处理完成，再从<code>RingBuffer</code>中获取事件处理</li>
+<li>P1在发送事件的时候，依赖三个消费者的处理进度，即依赖C1、C2、C3三者的序列</li>
+<li>C1、C2直接依赖生产者的进度来消费数据，即依赖<code>RingBuffer</code>的序列</li>
+<li>C3不仅仅依赖<code>RingBuffer</code>的序列，同时还要依赖C1和C2的序列（例如：C1消费到了序列7， C2消费到了9，那么C3只能处理7之前的事件）</li>
+</ul>
+<p>下面是这个接口的一个示例代码：</p>
+<figure class="highlight java"><figcaption><span>Disruptor菱形结构</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConsumerDependencyMain</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		ThreadFactory productThreadFactory = generateThreadFactory(<span class="string">"pool-"</span>);</span><br><span class="line">		Disruptor&lt;LongEvent&gt; disruptor =</span><br><span class="line">				<span class="keyword">new</span> Disruptor&lt;&gt;(LongEvent::<span class="keyword">new</span>, <span class="number">4</span>, productThreadFactory,</span><br><span class="line">						ProducerType.SINGLE, <span class="keyword">new</span> BlockingWaitStrategy());</span><br><span class="line"></span><br><span class="line">		EventHandler&lt;LongEvent&gt; c1 = (event, sequence, endOfBatch) -&gt; System.out.println(String.format(<span class="string">"c1 handle sequence %s in %s"</span>, sequence, Thread.currentThread().getName()));</span><br><span class="line">		EventHandler&lt;LongEvent&gt; c2 = (event, sequence, endOfBatch) -&gt; System.out.println(String.format(<span class="string">"c2 handle sequence %s in %s"</span>, sequence, Thread.currentThread().getName()));</span><br><span class="line">		EventHandler&lt;LongEvent&gt; c3 = (event, sequence, endOfBatch) -&gt; System.out.println(String.format(<span class="string">"c3 handle sequence %s in %s"</span>, sequence, Thread.currentThread().getName()));</span><br><span class="line">		disruptor.handleEventsWith(c1, c2).then(c3);</span><br><span class="line"></span><br><span class="line">		disruptor.start();</span><br><span class="line"></span><br><span class="line">		IntStream.range(<span class="number">0</span>, <span class="number">20</span>).forEach( i -&gt;</span><br><span class="line">			disruptor.publishEvent((event, sequence) -&gt; &#123;</span><br><span class="line">				event.setValue(sequence);</span><br><span class="line">				System.out.println(String.format(<span class="string">"p1 publish sequence %s in %s"</span>, sequence, Thread.currentThread().getName()));</span><br><span class="line">			&#125;)</span><br><span class="line">		);</span><br><span class="line"></span><br><span class="line">		disruptor.shutdown();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">static</span> ThreadFactory <span class="title">generateThreadFactory</span><span class="params">(String threadNamePrefix)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> ThreadFactory() &#123;</span><br><span class="line">			<span class="keyword">private</span> <span class="keyword">volatile</span> AtomicInteger counter = <span class="keyword">new</span> AtomicInteger(<span class="number">0</span>);</span><br><span class="line">			<span class="function"><span class="keyword">public</span> Thread <span class="title">newThread</span><span class="params">(Runnable r)</span> </span>&#123;</span><br><span class="line">				<span class="keyword">return</span>  <span class="keyword">new</span> Thread(r,  threadNamePrefix + counter.getAndIncrement());</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中自定义事件类<code>LongEvent</code>包含一个<code>value</code>字段</p>
+<blockquote>
+<p>在多消费者场景下，可能c3会依赖c1和c2的处理结果，而c1和c2可能并发处理同一个事件对象，此时可能会产生并发写的情况<br>
+这种情况下，建议不同的消费者回写事件对象的不同字段来规避并发写的情况</p>
+</blockquote>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/blog/20180614/disruptor-concurrency-example.html" data-toggle="tooltip" data-placement="top" title="Disruptor并发消费示例">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/blog/20180613/disruptor-introduction.html" data-toggle="tooltip" data-placement="top" title="Disruptor框架简介">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-&#x6838;&#x5FC3;api">1 &#x6838;&#x5FC3;API</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text"><span id="11-&#x521B;&#x5EFA;">1.1 &#x521B;&#x5EFA;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text"><span id="12-&#x4E8B;&#x4EF6;&#x5904;&#x7406;">1.2 &#x4E8B;&#x4EF6;&#x5904;&#x7406;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text"><span id="13-&#x542F;&#x52A8;">1.3 &#x542F;&#x52A8;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text"><span id="14-&#x4E8B;&#x4EF6;&#x53D1;&#x9001;">1.4 &#x4E8B;&#x4EF6;&#x53D1;&#x9001;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.5.</span> <span class="toc-nav-text"><span id="15-&#x5F02;&#x5E38;&#x5904;&#x7406;">1.5 &#x5F02;&#x5E38;&#x5904;&#x7406;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.6.</span> <span class="toc-nav-text"><span id="16-&#x5173;&#x95ED;">1.6 &#x5173;&#x95ED;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-&#x5E94;&#x7528;&#x6A21;&#x5F0F;">2 &#x5E94;&#x7528;&#x6A21;&#x5F0F;</span></span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Disruptor" title="Disruptor">Disruptor</a>
+                        
+                          <a class="tag" href="/tags/#Ringbuffer" title="Ringbuffer">Ringbuffer</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://blog.csdn.net/liuxigiant" target="_blank">CSDN Blog LiuXi</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/liuxigiant">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; LiuXi 2018 
+                    <br>
+                    Theme by <a href="http://www.huweihuang.com">huweihuang</a> 
+                    | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huweihuang&repo=hexo-theme-huweihuang&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://www.liuxi.name/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-79292205-1';
+    var _gaDomain = 'liuxi.name';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="https://www.liuxi.name/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

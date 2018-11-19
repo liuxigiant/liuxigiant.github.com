@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          JVM每小时执行一次FULL GC问题 - LiuXi | Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://www.liuxi.name/blog/20160608/jvm-full-gc-hourly.html">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/article_header/article_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#JVM" title="JVM">JVM</a>
+                            
+                        </div>
+                        <h1>JVM每小时执行一次FULL GC问题</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by LiuXi on
+                            2016-06-08
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">LiuXi</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2><span id="引子">引子</span></h2>
+<p>最近分析系统中部分机器内存使用率偏高报警问题，发现这部分机器堆内存使用率持续增长，当堆内存接近上限的时候才会触发一次FULL GC；其余机器内存使用率整体波动比较稳定，且FULL GC频率大致是1个小时。</p>
+<p>针对这个报警问题，考虑将这部分机器的JVM FULL GC也调整成1个小时执行一次。开始增加JVM参数<code>-XX:+UnlockExperimentalVMOptions</code>，没有起作用。后来才发现这个是由tomcat防止内存泄露的监听器JreMemoryLeakPreventionListener（server.xml中配置）触发的，将tomcat版本由6.0.44降低到了6.0.33就OK了。</p>
+<h2><span id="tomcat防止内存泄露监听器">Tomcat防止内存泄露监听器</span></h2>
+<p>tomcat为了防止内存泄露，会注册一个监听器，周期性的触发<code>System.gc()</code>，下面是server.xml中监听器的配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- Prevent memory leaks due to use of particular java/javax APIs--&gt;</span><br><span class="line">&lt;Listener className=&quot;org.apache.catalina.core.JreMemoryLeakPreventionListener&quot; /&gt;</span><br></pre></td></tr></table></figure>
+<p>tomcat 7提出了每隔一小时执行一次FULL GC这个<a href="https://bz.apache.org/bugzilla/show_bug.cgi?id=53267" target="_blank" rel="noopener">bug</a>，<strong>Tomcat 7.0.28</strong>版本中将执行频率由一小时修改成 Long.MAX_VALUE-1。并在<strong>Tomcat 6.0.36</strong>版本中同步修复了这个bug。</p>
+<p><strong>这个bug的修复可以通过下面两个版本修复前和修复后的对比直观的看出来：</strong></p>
+<p>下面是Tomcat 6.0.33版本中，JreMemoryLeakPreventionListener触发FULL GC的实现（代码为反编译），如下：</p>
+<figure class="highlight java"><figcaption><span>Tomcat 6.0.33版本实现</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Class clazz = Class.forName(<span class="string">"sun.misc.GC"</span>);</span><br><span class="line">Method method = clazz.getDeclaredMethod(<span class="string">"requestLatency"</span>, <span class="keyword">new</span> Class[] &#123; Long.TYPE &#125;);</span><br><span class="line">method.invoke(<span class="keyword">null</span>, <span class="keyword">new</span> Object[] &#123; Long.valueOf(<span class="number">3600000L</span>) &#125;);</span><br></pre></td></tr></table></figure>
+<p>再看Tomcat 6.0.44版本中，修复后的实现：</p>
+<figure class="highlight java"><figcaption><span>Tomcat 6.0.44版本实现</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Class clazz = Class.forName(<span class="string">"sun.misc.GC"</span>);</span><br><span class="line">Method method = clazz.getDeclaredMethod(<span class="string">"requestLatency"</span>, <span class="keyword">new</span> Class[] &#123; Long.TYPE &#125;);</span><br><span class="line">method.invoke(<span class="keyword">null</span>, <span class="keyword">new</span> Object[] &#123; Long.valueOf(<span class="number">9223372036854775806L</span>) &#125;);</span><br></pre></td></tr></table></figure>
+<p>jdk sun.misc.GC类的requestLatency方法，传入的参数表示一次gc请求的延迟时间。会有个低优先级的daemon线程执行调用<code>System.gc()</code></p>
+<h2><span id="防止tomcat每小时full-gc">防止Tomcat每小时FULL GC</span></h2>
+<p>在tomcat没修复此bug之前，可以通过如下方式防止每小时FULL GC：（可阅读<a href="http://mail-archives.apache.org/mod_mbox/tomcat-users/201008.mbox/%3CAANLkTino=BjP5LsBCwncB2HvNDzyKLr5y-8yWdt15a89@mail.gmail.com%3E" target="_blank" rel="noopener">原文</a>）</p>
+<ul>
+<li>增加JVM参数<code>-XX:+DisableExplicitGC</code>，这个参数会使显示的调用System.gc()空转，不会执行垃圾回收</li>
+<li>不增加JVM参数<code>-XX:+DisableExplicitGC</code>，换成增加<code>-XX:+ExplicitGCInvokesConcurrent</code>，使FULL GC使用并发垃圾回收器CMS，提高回收效率（CMS并发GC，<code>stop-the-world</code>时间较短）</li>
+<li>修改server.xml配置，<code>gcDaemonProtection</code>参数改为false，默认是true</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> <span class="tag">&lt;<span class="name">Listener</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.core.JreMemoryLeakPreventionListener"</span></span></span><br><span class="line"><span class="tag"><span class="attr">gcDaemonProtection</span>=<span class="string">"false"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>修改server.xml配置，去掉JreMemoryLeakPreventionListener监听器</li>
+</ul>
+<blockquote>
+<p>对于现在，tomcat已经修复了此bug，升级tomcat版本也可以解决每小时执行一次FULL GC问题</p>
+</blockquote>
+<h2><span id="tomcat每小时gc问题">Tomcat每小时GC问题</span></h2>
+<p>在网上查这个问题时候，很多人都把每小时执行一次GC作为bug，寻找解决方案（我是反其道而行之，把系统调整成每小时GC一次 -_-）。</p>
+<p><strong>每小时一次FULL GC到底有何问题？</strong><br>
+我目前是这么理解的：FULL GC会导致<code>stop-the-world</code>，频繁的FULL GC会影响系统的可用性。<br>
+stackoverflow上有个<a href="http://stackoverflow.com/questions/14902928/why-does-the-jvm-of-these-tomcat-servers-perform-a-full-gc-hourly" target="_blank" rel="noopener">提问</a>是这么描述这个问题的：当服务器集群批量启动后，执行FULL GC的频率和时间点大致相同，若FULL GC时间过长，会让负载均衡器觉得各个机器服务不可用，可能导致整个服务下线。</p>
+<blockquote>
+<p>但是从FULL GC的角度考虑，对于调整的这个业务系统，目前没有发现FULL GC的<code>stop-the-world</code>对系统有严重影响（相对来说，实时系统对GC的低停顿、高吞吐量要求更高），所以我还是把系统改成了每小时执行一次FULL GC的模式。<br>
+这个问题有待以后深入学习、理解 -_-</p>
+</blockquote>
+<h2><span id="扩展jstat分析gc">扩展：jstat分析GC</span></h2>
+<p>jdk提供了工具jstat分析系统的GC行为，可以分析minor gc和full gc发生的时间和GC时间<br>
+jstat -gcutil javaPid outputInterval<br>
+jstat -gccause javaPid outputInterval<br>
+<strong>具体的可参考：<a href="http://blog.csdn.net/fenglibing/article/details/6411951" target="_blank" rel="noopener">http://blog.csdn.net/fenglibing/article/details/6411951</a></strong></p>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/blog/20160624/mysql-save-or-update.html" data-toggle="tooltip" data-placement="top" title="MySQL保存或更新 saveOrUpdate">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/blog/20160607/mysql-partition-unique-key.html" data-toggle="tooltip" data-placement="top" title="MySQL分区字段的约束">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="&#x5F15;&#x5B50;">&#x5F15;&#x5B50;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="tomcat&#x9632;&#x6B62;&#x5185;&#x5B58;&#x6CC4;&#x9732;&#x76D1;&#x542C;&#x5668;">Tomcat&#x9632;&#x6B62;&#x5185;&#x5B58;&#x6CC4;&#x9732;&#x76D1;&#x542C;&#x5668;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.</span> <span class="toc-nav-text"><span id="&#x9632;&#x6B62;tomcat&#x6BCF;&#x5C0F;&#x65F6;full-gc">&#x9632;&#x6B62;Tomcat&#x6BCF;&#x5C0F;&#x65F6;FULL GC</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.</span> <span class="toc-nav-text"><span id="tomcat&#x6BCF;&#x5C0F;&#x65F6;gc&#x95EE;&#x9898;">Tomcat&#x6BCF;&#x5C0F;&#x65F6;GC&#x95EE;&#x9898;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.</span> <span class="toc-nav-text"><span id="&#x6269;&#x5C55;jstat&#x5206;&#x6790;gc">&#x6269;&#x5C55;&#xFF1A;jstat&#x5206;&#x6790;GC</span></span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#JVM" title="JVM">JVM</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://blog.csdn.net/liuxigiant" target="_blank">CSDN Blog LiuXi</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/liuxigiant">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; LiuXi 2018 
+                    <br>
+                    Theme by <a href="http://www.huweihuang.com">huweihuang</a> 
+                    | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huweihuang&repo=hexo-theme-huweihuang&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://www.liuxi.name/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-79292205-1';
+    var _gaDomain = 'liuxi.name';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="https://www.liuxi.name/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

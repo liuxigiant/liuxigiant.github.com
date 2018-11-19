@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          RxJava并发示例 - LiuXi | Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://www.liuxi.name/blog/20180524/rxjava-concurrency-example.html">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/article_header/article_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Rxjava" title="Rxjava">Rxjava</a>
+                            
+                              <a class="tag" href="/tags/#Concurrency" title="Concurrency">Concurrency</a>
+                            
+                        </div>
+                        <h1>RxJava并发示例</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by LiuXi on
+                            2018-05-24
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">LiuXi</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>上篇文章<a href="/blog/20180524/rxjava-concurrency.html">Rxjava并发</a>有介绍Rxjava中实现并发的方案，本篇文章主要借一个实际的场景，来实践下并发执行的方案。</p>
+<p><strong>场景如下</strong>：</p>
+<p>现需要根据一个<strong>商家列表</strong>获取各个商家下面的商品，然后根据每个商品，获取商品的价格</p>
+<p>包含如下两个接口：</p>
+<ul>
+<li>获取商品接口 ： 入参是商家ID，出参是商品列表</li>
+<li>获取商品价格接口 ： 入参是商品ID，出参是价格</li>
+</ul>
+<h1><span id="1-方案描述">1 方案描述</span></h1>
+<h2><span id="11-期望效果">1.1 期望效果</span></h2>
+<p>期望获取商品和获取价格都能并发执行</p>
+<p>即多个商家并发获取商品，获取后的商品列表能并发获取价格，二者不相互影响，即先查询到的商品可以先去获取价格，而不必等待所有商家商品都获取成功后执行</p>
+<h2><span id="12-方案调研">1.2 方案调研</span></h2>
+<p>首先，不是很想用<code>java.util.concurrent</code>包下面的那套submit task、future的方案，因为需要自己控制任务的提交和结果的获取</p>
+<p>其次，想用一些现成的框架来实现。</p>
+<p>正好在了解<code>Hystrix</code>框架的时候有了解到<code>Rxjava</code>这个框架，且也比较喜欢JDK8 Lambda那种链式调用API</p>
+<p>So，开始使用Rxjava来作为方案写Demo研究实现方式</p>
+<p>废话好多，下面上代码…</p>
+<h1><span id="2-实现方案">2 实现方案</span></h1>
+<p>环境信息：</p>
+<ul>
+<li>JDK8</li>
+<li>RxJava 2.1.12</li>
+<li>Spring 4.3.7.RELEASE</li>
+</ul>
+<h2><span id="21-实现并发">2.1 实现并发</span></h2>
+<p>实现并发的方案在上篇文章<a href="/blog/20180524/rxjava-concurrency.html">Rxjava并发</a>中有说过：</p>
+<p>通过在源<code>Observable</code>上调用<code>flatMap</code>来实现并发准备数据，在当前场景中源<code>Observable</code>为商家列表，调用<code>flatMap</code>来实现并发获取商品</p>
+<blockquote>
+<p>那么在这个场景中遇到一个问题：如何并发获取价格？<br>
+一开始想的是在观察者<code>Observer</code>中并发获取价格，即<code>Observable</code>并发获取商品，<code>Observer</code>并发获取价格。</p>
+<p>但是在写Demo中发现，并不能并发获取价格，因为商品获取的是list,价格的获取只能是商家维度的并发，并不能达到我想要的整体商品并发获取价格</p>
+<p>所以最后把获取价格放到<code>Observable</code>中，其实就是双重并发</p>
+</blockquote>
+<p>核心代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSync</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">try</span>&#123;</span><br><span class="line">		List&lt;String&gt; venderList = getVenderList();</span><br><span class="line">		List&lt;Product&gt; productList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">		CountDownLatch venderLatch = <span class="keyword">new</span> CountDownLatch(venderList.size());</span><br><span class="line">		ConcurrentHashMap&lt;String, AtomicInteger&gt; venderMap = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;();</span><br><span class="line">		Observable.fromArray(venderList.toArray(<span class="keyword">new</span> String[venderList.size()]))</span><br><span class="line">				.flatMap(s -&gt;</span><br><span class="line">					Observable.just(s).subscribeOn(Schedulers.from(venderPool)).flatMap(ss -&gt; &#123;</span><br><span class="line">						System.out.println(String.format(<span class="string">"emit %s in [%s] "</span>, ss, Thread.currentThread().getName()));</span><br><span class="line">						List&lt;Product&gt; venderProductList = getProductListByVender(ss);</span><br><span class="line">						prepareCountLatch(venderMap, venderLatch, ss, venderProductList.size());</span><br><span class="line">						<span class="keyword">return</span> Observable.fromArray(venderProductList.toArray(<span class="keyword">new</span> Product[venderProductList.size()]));</span><br><span class="line">					&#125;)</span><br><span class="line">				)</span><br><span class="line">				.flatMap(s -&gt;</span><br><span class="line">					Observable.just(s).subscribeOn(Schedulers.from(productPool)).map(ss -&gt; &#123;</span><br><span class="line">						System.out.println(String.format(<span class="string">"emit2 %s in [%s] "</span>, ss.getName(), Thread.currentThread().getName()));</span><br><span class="line">						getProductPrice(ss);</span><br><span class="line">						<span class="keyword">return</span> ss;</span><br><span class="line">					&#125;)</span><br><span class="line">				)</span><br><span class="line">				.observeOn(Schedulers.from(subPool))</span><br><span class="line">				.subscribe(p -&gt; &#123;</span><br><span class="line">					System.out.println(String.format(<span class="string">"sub %s in [%s] "</span>, p.getName(), Thread.currentThread().getName()));</span><br><span class="line">					productList.add(p);</span><br><span class="line">					<span class="keyword">if</span> (<span class="number">0</span> == venderMap.get(p.getVender()).decrementAndGet())&#123;</span><br><span class="line">						venderLatch.countDown();</span><br><span class="line">					&#125;</span><br><span class="line">					System.out.println(String.format(<span class="string">"sub %s out [%s] "</span>, p.getName(), Thread.currentThread().getName()));</span><br><span class="line">				&#125;, error -&gt; &#123;</span><br><span class="line">					System.out.println(<span class="string">"Exception sub "</span> + Thread.currentThread().getName());</span><br><span class="line">					System.out.println(<span class="string">"Exception sub "</span> + error.getMessage());</span><br><span class="line">					releaseLatch(venderLatch, productList);</span><br><span class="line">				&#125;);</span><br><span class="line">		venderLatch.await();</span><br><span class="line"></span><br><span class="line">		System.out.println(<span class="string">"==================="</span> + Thread.currentThread().getName());</span><br><span class="line">		System.out.println(JSON.toJSON(productList));</span><br><span class="line">	&#125; <span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">		System.out.println(<span class="string">"Exception main "</span> + Thread.currentThread().getName());</span><br><span class="line">		System.out.println(<span class="string">"Exception main "</span> + e.getMessage());</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>源<code>Observable</code>实现代理商列表的数据发送</li>
+<li>第一个<code>flatMap</code>实现并发获取商品</li>
+<li>第二个<code>flatMap</code>实现并发获取价格</li>
+<li><code>Observer</code>实现聚合所有的商品</li>
+</ul>
+<p>下面是获取商家、商品和价格的辅助代码</p>
+<blockquote>
+<p><code>netWorkCost</code>方法是为了模拟真实场景中调用外部服务的网络损耗</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> List&lt;String&gt; <span class="title">getVenderList</span><span class="params">()</span> </span>&#123;</span><br><span class="line">   List&lt;String&gt; venderList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">   <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; <span class="number">15</span>; i++)&#123;</span><br><span class="line">	   venderList.add(<span class="string">"v"</span> + i);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> venderList;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">getProductPrice</span><span class="params">(Product p)</span> </span>&#123;</span><br><span class="line">	Random random = <span class="keyword">new</span> Random();</span><br><span class="line">	p.setPrice((Long.parseLong(p.getVender().substring(<span class="number">1</span>)) * Long.parseLong(p.getName().replace(p.getVender(),<span class="string">""</span>).substring(<span class="number">3</span>))));</span><br><span class="line"><span class="comment">//		p.setPrice((long)(random.nextInt(5000)));</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//		if (p.getVender().equals("v2"))&#123;</span></span><br><span class="line"><span class="comment">//			throw new RuntimeException("error price");</span></span><br><span class="line"><span class="comment">//		&#125;</span></span><br><span class="line">	netWorkCost(random.nextInt(<span class="number">1000</span>));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> List&lt;Product&gt; <span class="title">getProductListByVender</span><span class="params">(String vender)</span> </span>&#123;</span><br><span class="line">	System.out.println(String.format(<span class="string">"call %s in [%s] "</span>, vender, Thread.currentThread().getName()));</span><br><span class="line">	List&lt;Product&gt; venderProductList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">	Random random = <span class="keyword">new</span> Random();</span><br><span class="line"><span class="comment">//		netWorkCost(random.nextInt(5000));</span></span><br><span class="line"><span class="comment">//		netWorkCost(2000);</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; <span class="number">130</span>; i++)&#123;</span><br><span class="line">		Product p = <span class="keyword">new</span> Product();</span><br><span class="line">		p.setVender(vender);</span><br><span class="line">		p.setName(vender + <span class="string">"--"</span> + <span class="string">"p"</span> + i);</span><br><span class="line">		venderProductList.add(p);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//		if (vender.equals("v2") )&#123;</span></span><br><span class="line"><span class="comment">//			throw new RuntimeException("error product");</span></span><br><span class="line"><span class="comment">//		&#125;</span></span><br><span class="line">	<span class="keyword">return</span> venderProductList;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">netWorkCost</span><span class="params">(<span class="keyword">long</span> time)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		Thread.sleep(time);</span><br><span class="line">	&#125; <span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2><span id="22-完善方案">2.2 完善方案</span></h2>
+<p>完成并发貌似就实现了上面的场景，但是作为一个要上生产的程序，显然考虑的有点少</p>
+<p>下面说明下针对完成判断、异步线程池和异常处理三个方面来完善实现方案</p>
+<h3><span id="221-判断处理完成">2.2.1 判断处理完成</span></h3>
+<p>由于所有的处理都是异步并发处理的，异步并发是提高效率的手段，结果显然是所有商家的商品，且包含价格</p>
+<p>也就是在当前当前线程如何判断所有的商家的商品都获取完成价格，处理流程描述如下：</p>
+<ul>
+<li>根据商家数据创建<code>CountDownLatch</code>，并在当前线程中<code>CountDownLatch.await</code>，等待所有商家获取完成</li>
+<li>当一个商家获取完商品后，写入<code>map</code>，<code>key</code>为商家ID，<code>value</code>为商品数量<br>
+（这里隐藏一个逻辑，这个商家确实没商品，则不写入<code>map</code>，直接<code>CountDownLatch.countDown</code>数量减1）</li>
+<li>当商家商品获取价格成功后，将<code>map</code>中对应的<code>value</code>减去1</li>
+<li>当<code>map</code>中<code>key</code>对应的<code>value</code>为0，表示该商家获取商品和价格完成，<code>CountDownLatch.countDown</code>数量减1</li>
+<li><code>CountDownLatch</code> 数量为0时，<code>CountDownLatch.await</code>等待结束，获取所有商家商品及价格完成</li>
+</ul>
+<p>处理代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">prepareCountLatch</span><span class="params">(ConcurrentHashMap&lt;String, AtomicInteger&gt; venderMap, CountDownLatch venderLatch, String ss, <span class="keyword">int</span> size)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (size == <span class="number">0</span>)&#123;</span><br><span class="line">		venderLatch.countDown();</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	venderMap.putIfAbsent(ss, <span class="keyword">new</span> AtomicInteger(size));</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">releaseLatch</span><span class="params">(CountDownLatch venderLatch, List&lt;Product&gt; productList)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">while</span> (venderLatch.getCount() &gt; <span class="number">0</span>)&#123;</span><br><span class="line">		venderLatch.countDown();</span><br><span class="line">	&#125;</span><br><span class="line">	productList.clear();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="222-异步线程池">2.2.2 异步线程池</span></h3>
+<ul>
+<li>获取商品和价格分别为两个固定大小的线程池</li>
+<li>需要特别说明下<code>Observer</code>的线程池也是个固定大小的线程池，但是线程数是1<br>
+首先处理逻辑很简单<br>
+其次重点是防止多线程情况下商家处理完成数量减1操作<code>venderMap.get(p.getVender()).decrementAndGet()</code>的并发问题</li>
+</ul>
+<p>线程初始化和销毁主要通过类的初始化和销毁回调方法来执行，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> ExecutorService venderPool;</span><br><span class="line"><span class="keyword">private</span> ExecutorService productPool;</span><br><span class="line"><span class="keyword">private</span> ExecutorService subPool;</span><br><span class="line"><span class="meta">@PostConstruct</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span></span>&#123;</span><br><span class="line">	System.out.println(<span class="string">"init------------------------"</span>);</span><br><span class="line">	venderPool = Executors.newFixedThreadPool(<span class="number">3</span>, <span class="keyword">new</span> ThreadFactoryBuilder().setNameFormat(<span class="string">"venderPool-%d"</span>).build());</span><br><span class="line">	productPool = Executors.newFixedThreadPool(<span class="number">8</span>, <span class="keyword">new</span> ThreadFactoryBuilder().setNameFormat(<span class="string">"productPool-%d"</span>).build());</span><br><span class="line">	subPool = Executors.newFixedThreadPool(<span class="number">1</span>, <span class="keyword">new</span> ThreadFactoryBuilder().setNameFormat(<span class="string">"subPool-%d"</span>).build());</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@PreDestroy</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">clean</span><span class="params">()</span></span>&#123;</span><br><span class="line">	System.out.println(<span class="string">"clean------------------------"</span>);</span><br><span class="line">	productPool.shutdown();</span><br><span class="line">	venderPool.shutdown();</span><br><span class="line">	subPool.shutdown();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="223-异常处理">2.2.3 异常处理</span></h3>
+<p>获取商品、价格等这种外部操作，必然需要考虑获取失败的情况，异常的处理就是Rxjava的异常处理</p>
+<blockquote>
+<p>这个例子中，重点是异常处理中，需要释放<code>CountDownLatch</code>,不然当前线程会一直等待</p>
+</blockquote>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/blog/20180613/disruptor-introduction.html" data-toggle="tooltip" data-placement="top" title="Disruptor框架简介">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/blog/20180524/rxjava-concurrency.html" data-toggle="tooltip" data-placement="top" title="RxJava并发">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-&#x65B9;&#x6848;&#x63CF;&#x8FF0;">1 &#x65B9;&#x6848;&#x63CF;&#x8FF0;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text"><span id="11-&#x671F;&#x671B;&#x6548;&#x679C;">1.1 &#x671F;&#x671B;&#x6548;&#x679C;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text"><span id="12-&#x65B9;&#x6848;&#x8C03;&#x7814;">1.2 &#x65B9;&#x6848;&#x8C03;&#x7814;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-&#x5B9E;&#x73B0;&#x65B9;&#x6848;">2 &#x5B9E;&#x73B0;&#x65B9;&#x6848;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text"><span id="21-&#x5B9E;&#x73B0;&#x5E76;&#x53D1;">2.1 &#x5B9E;&#x73B0;&#x5E76;&#x53D1;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text"><span id="22-&#x5B8C;&#x5584;&#x65B9;&#x6848;">2.2 &#x5B8C;&#x5584;&#x65B9;&#x6848;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.1.</span> <span class="toc-nav-text"><span id="221-&#x5224;&#x65AD;&#x5904;&#x7406;&#x5B8C;&#x6210;">2.2.1 &#x5224;&#x65AD;&#x5904;&#x7406;&#x5B8C;&#x6210;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.2.</span> <span class="toc-nav-text"><span id="222-&#x5F02;&#x6B65;&#x7EBF;&#x7A0B;&#x6C60;">2.2.2 &#x5F02;&#x6B65;&#x7EBF;&#x7A0B;&#x6C60;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.3.</span> <span class="toc-nav-text"><span id="223-&#x5F02;&#x5E38;&#x5904;&#x7406;">2.2.3 &#x5F02;&#x5E38;&#x5904;&#x7406;</span></span></a></li></ol></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Rxjava" title="Rxjava">Rxjava</a>
+                        
+                          <a class="tag" href="/tags/#Concurrency" title="Concurrency">Concurrency</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://blog.csdn.net/liuxigiant" target="_blank">CSDN Blog LiuXi</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/liuxigiant">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; LiuXi 2018 
+                    <br>
+                    Theme by <a href="http://www.huweihuang.com">huweihuang</a> 
+                    | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huweihuang&repo=hexo-theme-huweihuang&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://www.liuxi.name/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-79292205-1';
+    var _gaDomain = 'liuxi.name';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="https://www.liuxi.name/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

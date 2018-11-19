@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Spring Cache Abstraction简介 - LiuXi | Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://www.liuxi.name/blog/20180116/spring-cache-abstraction.html">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/article_header/article_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Spring Cache" title="Spring Cache">Spring Cache</a>
+                            
+                        </div>
+                        <h1>Spring Cache Abstraction简介</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by LiuXi on
+                            2018-01-16
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">LiuXi</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p><code>Spring Cache Abstraction</code>是对通过注解的方式对缓存逻辑的抽象与封装，而不涉及底层缓存存储的读写（仅提供几种默认的底层缓存存储的读写集成）。</p>
+<p><strong>场景</strong>：<br>
+一个典型的场景是获取数据库数据的需求，在读取数据库之前，先读取缓存，缓存有数据，则直接返回；没有数据则读取数据库数据后，回写缓存。  <code>Spring Cache Abstraction</code>提供的<code>@Cacheable</code>即可完成上述逻辑，只需要在一个读取数据库数据的方法上添加<code>@Cacheable</code>注解即可</p>
+<p>那么怎么理解上面说的不涉及底层缓存存储的读写呢？<br>
+<code>Spring Cache Abstraction</code>提供缓存逻辑的抽象封装，但是不管你底层是<code>Redis</code>还是java的<code>HashMap</code>,用户可以根据自己的需求，根据<code>Spring Cache Abstraction</code>规范，实现相应的接口，并完成配置，即可集成任意的缓存存储。<br>
+同时，<code>Spring Cache Abstraction</code>也提供了默认的开箱即用的第三方缓存存储的实现，例如：Ehcache</p>
+<p>了解<code>Spring Cache Abstraction</code> ，重点需要了解 <strong>缓存注解</strong> 和 <strong>底层缓存存储配置</strong></p>
+<blockquote>
+<p>本文翻译自<a href="https://docs.spring.io/spring/docs/4.3.13.BUILD-SNAPSHOT/spring-framework-reference/htmlsingle/#cache" target="_blank" rel="noopener">官网文档 <code>Cache Abstraction</code></a>章节(并不是完全直译)，目录组织结构整体也和官网一致</p>
+</blockquote>
+<h1><span id="1-简介">1 简介</span></h1>
+<p><code>Spring</code>从 3.1 版开始支持缓存的操作，在 4.1 版后， 又对<code>Cache Abstraction</code>有极大的改善（包括支持JCache注解、提供更多的自定义支持、类级别配置注解<code>@CacheConfig</code>、异常处理等）。</p>
+<blockquote>
+<p><code>Cache</code> <strong>VS</strong> <code>Buffer</code></p>
+<p><code>Buffer</code>即缓冲区，通常用于一个较快的存储介质和一个较慢的存储介质之间进行数据交换。缓冲区是为了平衡双方的数据读写效率，临时存储数据。双方都可以从缓冲区中读写一次交换的所有数据，而不是按数据块的方式交换，这是缓存区的作用。</p>
+<p><code>Cache</code>即缓存，也是用于存储数据，而缓存是通过提高多次读取数据的速度来提高数据读取的效率。</p>
+</blockquote>
+<h2><span id="11-cache-abstraction理解">1.1 <code>Cache Abstraction</code>理解</span></h2>
+<p><strong><code>Cache Abstraction</code>到底是什么呢？</strong></p>
+<p>和Spring的其他服务一样，<code>Cache Abstraction</code>是对缓存的操作的一个抽象，而不涉及对底层缓存存储操作的实现。</p>
+<blockquote>
+<p><code>Cache Abstraction</code>提供了几种默认的缓存存储操作的实现（JDK的ConcurrentMap、Ehcache、 Guava Cache等），当然我们也可以自己集成我们所需的缓存存储，定制个人化缓存存储的实现</p>
+</blockquote>
+<p>我们可以将<code>Cache Abstraction</code>理解为一套通用的缓存集成解决方案，而<code>Cache Abstraction</code>在集成了第三方底层缓存存储后，以注解的方式提供对缓存的操作，从而将开发人员从缓存逻辑代码中解放出来，而只需要配置第三方存储即可。</p>
+<p>这就是开篇说的两个方面： <strong>缓存注解</strong> 和 <strong>底层缓存存储配置</strong></p>
+<p>下面说下<code>Cache Abstraction</code>支持的缓存操作</p>
+<h2><span id="12-cache-abstraction缓存操作">1.2 <code>Cache Abstraction</code>缓存操作</span></h2>
+<p><code>Cache Abstraction</code>提供以下几种能力：</p>
+<ul>
+<li>
+<p>缓存的击穿回写 get-if-not-found-then- proceed-and-put-eventually<br>
+在JAVA方法上使用<code>Cache Abstraction</code>能够将方法的执行结果缓存下来，下次再执行方法的时候，即可直接返回结果，而无需执行方法<br>
+**注意：**这里的方法，对于相同的入参，必须返回相同的结果，不然缓存下来的数据也没什么用</p>
+</li>
+<li>
+<p>缓存的更新和清除</p>
+</li>
+</ul>
+<blockquote>
+<p>这些缓存操作对应的具体的注解，下面会介绍</p>
+</blockquote>
+<h2><span id="13-cache-abstraction的多线程-多进程场景">1.3 <code>Cache Abstraction</code>的多线程、多进程场景</span></h2>
+<p>上面说到，<code>Cache Abstraction</code>是对缓存逻辑的抽象，且并没有对多线程、多进程场景做特殊处理。</p>
+<p>对于多进程的分布式缓存场景下，缓存数据更新后，多个缓存节点的数据同步问题，<code>Cache Abstraction</code>并没有处理，需要由分布式缓存自己处理。</p>
+<p>对于多线程场景下，击穿回写或者缓存更新，在多线程并发的时候，都有可能获取到脏数据，<code>Cache Abstraction</code>也没有对这种场景做处理。</p>
+<h1><span id="2-缓存注解">2 缓存注解</span></h1>
+<p>下面来了解下缓存注解，<code>Cache Abstraction</code>提供五种注解：</p>
+<ul>
+<li><code>@Cacheable</code> : 触发数据缓存</li>
+<li><code>@CacheEvict</code> : 触发缓存数据清除</li>
+<li><code>@CachePut</code>: 触犯缓存数据更新，而并不会影响方法的执行</li>
+<li><code>@Caching</code> : 对多种缓存操作组合使用的支持</li>
+<li><code>@CacheConfig</code> : 类级别的基础配置（相当于方法级别的缓存注解的公共配置）</li>
+</ul>
+<h2><span id="21-cacheable注解">2.1 <code>@Cacheable</code>注解</span></h2>
+<p><code>@Cacheable</code>注解用在方法上，实现的功能就是典型的击穿回写<code>get-if-not-found-then- proceed-and-put-eventually</code></p>
+<ul>
+<li>验证缓存是否存在数据，存在则直接返回，<strong>不执行方法</strong></li>
+<li>不存在缓存数据，则执行方法，然后回写缓存</li>
+</ul>
+<p>每个缓存，需要提供一个缓存的名字，如下方法<code>findBook</code>就和名字是<code>books</code>的缓存关联起来了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Cacheable</span>(<span class="string">"books"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Book <span class="title">findBook</span><span class="params">(ISBN isbn)</span> </span>&#123;...&#125;</span><br></pre></td></tr></table></figure>
+<p>一个方法也能关联多个缓存名字，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Cacheable</span>(&#123;<span class="string">"books"</span>, <span class="string">"isbns"</span>&#125;)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Book <span class="title">findBook</span><span class="params">(ISBN isbn)</span> </span>&#123;...&#125;</span><br></pre></td></tr></table></figure>
+<p>当多个名称对应的缓存中，只要在方法执行前，校验缓存数据是否存在的时候，有一个名字对应的缓存被击中，则方法不执行，直接返回，而其他名称对应的缓存值不同，则会被更新</p>
+<blockquote>
+<p>可能上面的内容有人会疑惑，同一个方法上多个缓存名字，为什么击中缓存不是全部击中呢？</p>
+<p>这里有个需要了解下，在<code>Cache Abstraction</code>，方法可以关联特定名字的缓存，而这个缓存，是包含key和value的，所以击中缓存，是相同的key才会击中，而上面例子中，没有指定key，其实是有默认的策略生成key</p>
+</blockquote>
+<h3><span id="211-默认缓存key生成策略">2.1.1 默认缓存key生成策略</span></h3>
+<p><code>Cache Abstraction</code>中缓存的存储结构是 <code>key-value</code> 结构的，在方法被调用时候，需要根据一定的策略，生成缓存对应的 <code>key</code></p>
+<p>默认的缓存<code>key</code>生成处理类是<code>org.springframework.cache.interceptor.SimpleKeyGenerator</code>，策略如下（具体可查看源码）：</p>
+<ul>
+<li>若没有入参，则返回<code>SimpleKey.EMPTY</code></li>
+<li>若只有一个入参，则返回当前入参</li>
+<li>若有多个入参，则返回一个包含所有入参的<code>SimpleKey</code>实例</li>
+</ul>
+<p>这种默认策略满足大部分场景，只要方法的入参实现了<code>hashCode</code>和<code>equals</code>方法（若没有，则需要修改key生成策略）。</p>
+<blockquote>
+<p>在Spring 4.0版本之后，默认的key生成处理类才修改为<code>SimpleKeyGenerator</code>。</p>
+<p>以前版本的默认处理类是<code>DefaultKeyGenerator</code>，在多入参的场景，只考虑了入参的<code>hashCode</code>方法，而没有考虑<code>equals</code>方法，这会引起缓存key碰撞问题（查看问题背景 <a href="https://jira.spring.io/browse/SPR-10237" target="_blank" rel="noopener">SPR-10237</a>）。<br>
+如果想使用老版本的key生成策略，则可配置为<code>DefaultKeyGenerator</code>（此类已被弃用）,或者自定义一个基于hash的缓存key生成处理类。</p>
+</blockquote>
+<h3><span id="212-自定义缓存key生成策略">2.1.2 自定义缓存key生成策略</span></h3>
+<p>大多数情况下，使用默认的缓存key生成策略能满足数据的缓存需求。</p>
+<p>然而，随着程序的扩展，也有一些特定的需求，需要定制缓存key的生成策略。比如：多入参的方法，只需要使用其中的某个参数生成缓存key。</p>
+<p><code>Cache Abstraction</code>在默认的缓存key生成策略的基础上，也提供了以下两种自定义缓存key的生成策略：</p>
+<ul>
+<li>使用SpEL表达式指定缓存key</li>
+<li>自定义缓存key生成处理类<code>KeyGenerator</code></li>
+</ul>
+<h4><span id="2121-spel表达式指定缓存key">2.1.2.1 SpEL表达式指定缓存key</span></h4>
+<p><strong>使用方式</strong>：在注解的<code>key</code>属性上配置SpEL表达式</p>
+<p>通过SpEL表达式指定缓存key，可以获取参数值、参数对象的属性值，甚至支持方法调用，示例如下：</p>
+<blockquote>
+<p>SpEL表达式用法详见Spring官方文档<a href="https://docs.spring.io/spring/docs/4.3.13.BUILD-SNAPSHOT/spring-framework-reference/htmlsingle/#expressions" target="_blank" rel="noopener">Chapter 10, Spring Expression Language (SpEL)</a></p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Cacheable</span>(cacheNames=<span class="string">"books"</span>, key=<span class="string">"#isbn"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Book <span class="title">findBook</span><span class="params">(ISBN isbn, <span class="keyword">boolean</span> checkWarehouse, <span class="keyword">boolean</span> includeUsed)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">@<span class="title">Cacheable</span><span class="params">(cacheNames=<span class="string">"books"</span>, key=<span class="string">"#isbn.rawNumber"</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Book <span class="title">findBook</span><span class="params">(ISBN isbn, <span class="keyword">boolean</span> checkWarehouse, <span class="keyword">boolean</span> includeUsed)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">@<span class="title">Cacheable</span><span class="params">(cacheNames=<span class="string">"books"</span>, key=<span class="string">"T(someType).hash(#isbn)"</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Book <span class="title">findBook</span><span class="params">(ISBN isbn, <span class="keyword">boolean</span> checkWarehouse, <span class="keyword">boolean</span> includeUsed)</span></span></span><br><span class="line"><span class="function">```  </span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">#### 2.1.2.2 自定义缓存key生成处理类`KeyGenerator`</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">**使用方式**：在注解的`keyGenerator`属性上配置**自定义Bean的名称**（即Spring Bean的name）</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">自定义缓存key生成处理类`KeyGenerator`的方式很简单，只需要实现`org.springframework.cache.interceptor.KeyGenerator`接口即可  </span></span><br><span class="line"><span class="function">下面示例中，`myKeyGenerator`就是自定义的`KeyGenerator`:  </span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">```java</span></span><br><span class="line"><span class="function">@<span class="title">Cacheable</span><span class="params">(cacheNames=<span class="string">"books"</span>, keyGenerator=<span class="string">"myKeyGenerator"</span>)</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Book <span class="title">findBook</span><span class="params">(ISBN isbn, <span class="keyword">boolean</span> checkWarehouse, <span class="keyword">boolean</span> includeUsed)</span></span></span><br></pre></td></tr></table></figure>
+<h4><span id="2123-互斥性">2.1.2.3 互斥性</span></h4>
+<p>以上两种自定义缓存key策略是互斥的，即注解的<code>key</code>属性和<code>keyGenerator</code>属性不可同时配置</p>
+<h4><span id="2124-源码">2.1.2.4 源码</span></h4>
+<p>下面我们从源码角度来看下，这两种自定义缓存key生成策略的实现方式。</p>
+<p>在<code>Cache Abstraction</code>代理拦截器（原理下篇会详细说）调用时候，会生成方法对应的缓存key，调用方法是<code>org.springframework.cache.interceptor.CacheAspectSupport.CacheOperationContext#generateKey</code>,源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> CacheOperationExpressionEvaluator evaluator = <span class="keyword">new</span> CacheOperationExpressionEvaluator();</span><br><span class="line"><span class="function"><span class="keyword">protected</span> Object <span class="title">generateKey</span><span class="params">(@Nullable Object result)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (StringUtils.hasText(<span class="keyword">this</span>.metadata.operation.getKey())) &#123;</span><br><span class="line">		EvaluationContext evaluationContext = createEvaluationContext(result);</span><br><span class="line">		<span class="keyword">return</span> evaluator.key(<span class="keyword">this</span>.metadata.operation.getKey(), <span class="keyword">this</span>.methodCacheKey, evaluationContext);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">this</span>.metadata.keyGenerator.generate(<span class="keyword">this</span>.target, <span class="keyword">this</span>.metadata.method, <span class="keyword">this</span>.args);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从上面源码中可以很明显的看出：</p>
+<ul>
+<li><code>if</code>判断直接中配置了<code>key</code>属性，则通过<code>evaluator</code>获取<code>key</code>配置的表达式的值。<br>
+<code>evaluator</code>即为默认的<code>CacheOperationExpressionEvaluator</code>,负责SpEL表达式的处理。</li>
+<li>若没有配置<code>key</code>属性，则根据<code>keyGenerator</code>来生成key</li>
+</ul>
+<p>那么，从前面内容可看出，<code>keyGenerator</code>分为默认的<code>SimpleKeyGenerator</code>和自定义的<code>KeyGenerator</code>，且自定义的<code>KeyGenerator</code>是在注解上<code>keyGenerator</code>属性配置的自定义Bean的名称，从上面源码看出，<code>this.metadata.keyGenerator</code>显然是一个特定的实例了。</p>
+<p>下面看看<code>KeyGenerator</code>实例是如何获取的，处理方法参见源码<code>org.springframework.cache.interceptor.CacheAspectSupport#getCacheOperationMetadata</code>（下面只贴出了获取<code>KeyGenerator</code>实例的源码，其余的省略）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (StringUtils.hasText(operation.getKeyGenerator())) &#123;</span><br><span class="line">	operationKeyGenerator = getBean(operation.getKeyGenerator(), KeyGenerator.class);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> &#123;</span><br><span class="line">	operationKeyGenerator = getKeyGenerator();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从源码可以很明显的看出，注解的<code>keyGenerator</code>属性值需要配置自定义的Bean的名称，而没有配置这个属性，则通过<code>getKeyGenerator()</code>获取的就是默认的<code>SimpleKeyGenerator</code></p>
+<h3><span id="213-cache解析">2.1.3 Cache解析</span></h3>
+<p><code>Cache Abstraction</code>中包含两个核心概念 <code>org.springframework.cache.Cache</code> 和 <code>org.springframework.cache.CacheManager</code></p>
+<ul>
+<li><code>Cache</code>： 前面有提过，一个方法上声明缓存注解，指定名称后，就关联一个<code>Cache</code>。而<code>Cache Abstraction</code>声明<code>Cache</code>接口，针对缓存的读写操作。而在集成底层的缓存存储之后，实现<code>Cache</code>接口来完成缓存的读写操作。</li>
+<li><code>CacheManager</code> : 针对<code>Cache</code>的管理，包括初始化、解析获取等。</li>
+</ul>
+<p><strong>提示：</strong></p>
+<ul>
+<li><code>Cache Abstraction</code>的源码是在<code>spring-context</code>下</li>
+<li>前面有提到的，默认集成了一些第三方的底层缓存存储（如：Ehcache）是在<code>spring-contxt-support</code>包下，这个后面也会再说</li>
+</ul>
+<p>回到正题，<code>Cache</code>解析由<code>CacheResolver</code>完成，将方法上声明的注解解析成方法关联的<code>Cache</code></p>
+<h4><span id="2131-默认的cacheresolver">2.1.3.1 默认的<code>CacheResolver</code></span></h4>
+<p>默认的<code>Cache</code>解析实现类是<code>org.springframework.cache.interceptor.SimpleCacheResolver</code></p>
+<h4><span id="2132-自定义cacheresolver">2.1.3.2 自定义<code>CacheResolver</code></span></h4>
+<p>自定义Cache解析器需要实现<code>CacheResolver</code>接口，使用方式和前面自定义<code>KeyGenerator</code>类似，即在注解属性<code>cacheResolver</code>配置自定义Bean名称</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Cacheable</span>(cacheResolver=<span class="string">"runtimeCacheResolver"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Book <span class="title">findBook</span><span class="params">(ISBN isbn)</span> </span>&#123;...&#125;</span><br></pre></td></tr></table></figure>
+<h4><span id="2133-源码">2.1.3.3 源码</span></h4>
+<p>和前面的自定义<code>KeyGenerator</code>实现原理类似，在<code>Cache Abstraction</code>代理拦截器调用时候，需要将注解元数据解析封装成对应的<code>Cache</code>，封装缓存代理上线文，并在后续执行流程中，根据注解的逻辑，使用<code>Cache</code>执行缓存操作。</p>
+<p>先看下，在封装缓存调用上线文时候，确认<code>Cache</code>解析器的源码方法<code>org.springframework.cache.interceptor.CacheAspectSupport#getCacheOperationMetadata</code>(下面只贴出核心部分代码，其余省略)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">CacheResolver operationCacheResolver;</span><br><span class="line"><span class="keyword">if</span> (StringUtils.hasText(operation.getCacheResolver())) &#123;</span><br><span class="line">	operationCacheResolver = getBean(operation.getCacheResolver(), CacheResolver.class);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (StringUtils.hasText(operation.getCacheManager())) &#123;</span><br><span class="line">	CacheManager cacheManager = getBean(operation.getCacheManager(), CacheManager.class);</span><br><span class="line">	operationCacheResolver = <span class="keyword">new</span> SimpleCacheResolver(cacheManager);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> &#123;</span><br><span class="line">	operationCacheResolver = getCacheResolver();</span><br><span class="line">	Assert.state(operationCacheResolver != <span class="keyword">null</span>, <span class="string">"No CacheResolver/CacheManager set"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从上述源码可看出，首先是根据注解属性<code>cacheResolver</code>配置的自定义Bean的名称取Spring容器中获取实例；若没配置，则使用默认的<code>SimpleCacheResolver</code></p>
+<p>下面再来看下，在封装缓存调用上线文时候，使用上面获取的<code>CacheResolver</code>实例来解析<code>Cache</code></p>
+<p>源码见<code>org.springframework.cache.interceptor.CacheAspectSupport.CacheOperationContext#CacheOperationContext</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">CacheOperationContext</span><span class="params">(CacheOperationMetadata metadata, Object[] args, Object target)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">this</span>.metadata = metadata;</span><br><span class="line">	<span class="keyword">this</span>.args = extractArgs(metadata.method, args);</span><br><span class="line">	<span class="keyword">this</span>.target = target;</span><br><span class="line">	<span class="keyword">this</span>.caches = CacheAspectSupport.<span class="keyword">this</span>.getCaches(<span class="keyword">this</span>, metadata.cacheResolver);</span><br><span class="line">	<span class="keyword">this</span>.cacheNames = createCacheNames(<span class="keyword">this</span>.caches);</span><br><span class="line">	<span class="keyword">this</span>.methodCacheKey = <span class="keyword">new</span> AnnotatedElementKey(metadata.method, metadata.targetClass);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">protected</span> Collection&lt;? extends Cache&gt; getCaches(</span><br><span class="line">			CacheOperationInvocationContext&lt;CacheOperation&gt; context, CacheResolver cacheResolver) &#123;</span><br><span class="line">	Collection&lt;? extends Cache&gt; caches = cacheResolver.resolveCaches(context);</span><br><span class="line">	<span class="keyword">if</span> (caches.isEmpty()) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"No cache could be resolved for '"</span> +</span><br><span class="line">				context.getOperation() + <span class="string">"' using resolver '"</span> + cacheResolver +</span><br><span class="line">				<span class="string">"'. At least one cache should be provided per cache operation."</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> caches;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从上述源码可看出，根据<code>CacheResolver</code>实例解析<code>Cache</code>并封装带上下文对象中（注意<code>CacheOperationContext</code>是内部类）</p>
+<h3><span id="213-缓存条件">2.1.3 缓存条件</span></h3>
+<p><code>Cache Abstraction</code>提供了两个属性配置，用于条件校验，是否需要缓存数据</p>
+<ul>
+<li>
+<p><code>condition</code>属性：配置SpEL表达式，当条件为true时，缓存数据；当条件为false时，不缓存数据。每次方法调用都会判断该属性值。</p>
+</li>
+<li>
+<p><code>unless</code>属性：配置SpEL表达式，表示匹配该表达式，则数据不缓存。每次方法调用之后，会判断该属性值。</p>
+</li>
+</ul>
+<p>示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Cacheable</span>(cacheNames=<span class="string">"book"</span>, condition=<span class="string">"#name.length() &lt; 32"</span>, unless=<span class="string">"#result.hardback"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Book <span class="title">findBook</span><span class="params">(String name)</span></span></span><br></pre></td></tr></table></figure>
+<h3><span id="214-spel表达式上下文">2.1.4 SpEL表达式上下文</span></h3>
+<p>前面有说到，注解的配置属性<code>key</code> 和 <code>conditional</code> 都支持SpEL表达式，<code>Cache Abstraction</code>为每一个SpEL表达式提供了特定的表达式上下文，使得SpEL表达式中能够访问当前表达式上线文中的元数据（例如：SpEL能通过元数据获取参数名称）。</p>
+<p>如下表展示了表达式上线文的元数据：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">元数据变量名</th>
+<th style="text-align:center">元数据对象</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">使用示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">methodName</td>
+<td style="text-align:center">root object</td>
+<td style="text-align:center">被调用的方法名称</td>
+<td style="text-align:center">#root.methodName</td>
+</tr>
+<tr>
+<td style="text-align:center">method</td>
+<td style="text-align:center">root object</td>
+<td style="text-align:center">被调用的方法</td>
+<td style="text-align:center">#<a href="http://root.method.name" target="_blank" rel="noopener">root.method.name</a></td>
+</tr>
+<tr>
+<td style="text-align:center">target</td>
+<td style="text-align:center">root object</td>
+<td style="text-align:center">被调用的目标对象</td>
+<td style="text-align:center">#root.target</td>
+</tr>
+<tr>
+<td style="text-align:center">targetClass</td>
+<td style="text-align:center">root object</td>
+<td style="text-align:center">被调用的目标对象的class</td>
+<td style="text-align:center">#root.targetClass</td>
+</tr>
+<tr>
+<td style="text-align:center">args</td>
+<td style="text-align:center">root object</td>
+<td style="text-align:center">被调用的目标对象的参数列表数组</td>
+<td style="text-align:center">#root.args[0]</td>
+</tr>
+<tr>
+<td style="text-align:center">caches</td>
+<td style="text-align:center">root object</td>
+<td style="text-align:center">当前被执行方法关联的缓存Cache</td>
+<td style="text-align:center">#root.caches[0].name</td>
+</tr>
+<tr>
+<td style="text-align:center"><em>argument name</em></td>
+<td style="text-align:center">表达式上下文</td>
+<td style="text-align:center">被调用方法的参数名称</td>
+<td style="text-align:center">#iban 或者 #a0</td>
+</tr>
+<tr>
+<td style="text-align:center">result</td>
+<td style="text-align:center">表达式上下文</td>
+<td style="text-align:center">方法的返回值</td>
+<td style="text-align:center">#result</td>
+</tr>
+</tbody>
+</table>
+<p><strong>注意：</strong></p>
+<ul>
+<li>
+<p><em>argument name</em> ： 当不能明确知道参数名称，参数名也可根据规则获取</p>
+<p>如示例中，<code>iban</code>是明确的参数名；<code>#a0</code> <code>#p0</code> <code>#p&lt;0&gt;</code> 也可用于指定参数名 （0都是参数下标）</p>
+</li>
+<li>
+<p>result ： 只能在三种场景下使用</p>
+<ol>
+<li><code>unless</code>表达式配置</li>
+<li><code>@CachePut</code>注解的<code>key</code>属性配置</li>
+<li><code>@CacheEvict</code>注解表达式，且<code>beforeInvocation</code>属性为<code>false</code></li>
+</ol>
+</li>
+</ul>
+<h2><span id="22-cacheput注解">2.2 <code>@CachePut</code>注解</span></h2>
+<p><code>@CachePut</code>注解用在方法上，实现的功能就是更新缓存（不影响方法执行），即方法执行完之后，将结果放入缓存</p>
+<blockquote>
+<p><code>@CachePut</code>注解的配置通上面<code>@Cacheable</code>注解</p>
+</blockquote>
+<p>示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@CachePut</span>(cacheNames=<span class="string">"book"</span>, key=<span class="string">"#isbn"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Book <span class="title">updateBook</span><span class="params">(ISBN isbn, BookDescriptor descriptor)</span></span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>@CachePut</code>注解和<code>@Cacheable</code>注解注解不建议同时使用，因为二者代表不同的场景，前者需要执行方法，并缓存结果。而后者，当缓存数据存在，是不需要执行方法的。</p>
+</blockquote>
+<h2><span id="23-cacheevict注解">2.3 <code>@CacheEvict</code>注解</span></h2>
+<p><code>@CacheEvict</code>注解用在方法上，实现的功能就是删除缓存数据</p>
+<p><strong>特殊属性：</strong></p>
+<ul>
+<li>
+<p><code>allEntries</code><br>
+当配置为true时候，删除cache关联的所有缓存数据，key属性会被忽略；<br>
+配置为false时候，根据key删除缓存数据</p>
+</li>
+<li>
+<p><code>beforeInvocation</code><br>
+当配置为true的时候，在方法执行之前操作缓存；<br>
+当配置为false的时候，在方法成功执行之后操作缓存（当方法未执行或者抛出异常，则不会操作缓存）</p>
+</li>
+</ul>
+<p>示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@CacheEvict</span>(cacheNames=<span class="string">"books"</span>, allEntries=<span class="keyword">true</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">loadBooks</span><span class="params">(InputStream batch)</span></span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>@CacheEvict</code>注解可用在无返回值<code>void</code>的方法上，此时该方法用于触发缓存操作。<br>
+<code>@Cacheable</code>和<code>@CachePut</code>注解则需要返回值，因为缓存的数据就是方法执行的返回值</p>
+</blockquote>
+<h2><span id="24-caching注解">2.4 <code>@Caching</code>注解</span></h2>
+<p><code>@Caching</code>注解用在方法上，当一个方法上需要声明<strong>同一类型</strong>的<strong>多个</strong>注解，则需要使用<code>@Caching</code>注解将多个注解组合起来</p>
+<p><code>@Caching</code>注解可用于组合的注解有： <code>@Cacheable</code> <code>@CachePut</code> <code>@CacheEvict</code></p>
+<p>如下例，根据不同的条件删除缓存，则可以用<code>@Caching</code>注解组合多个<code>@CacheEvict</code>注解：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Caching</span>(evict = &#123; <span class="meta">@CacheEvict</span>(<span class="string">"primary"</span>), <span class="meta">@CacheEvict</span>(cacheNames=<span class="string">"secondary"</span>, key=<span class="string">"#p0"</span>) &#125;)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Book <span class="title">importBooks</span><span class="params">(String deposit, Date date)</span></span></span><br></pre></td></tr></table></figure>
+<h2><span id="25-cacheconfig注解">2.5 <code>@CacheConfig</code>注解</span></h2>
+<p>对于同一个类中的多个方法，如果都有使用缓存注解的需求，那么，每个注解上的多个个性化配置显然比较麻烦。</p>
+<p><code>@CacheConfig</code>注解正是为了解决上述问题，提供了类级别的公共配置，且不会触发缓存操作</p>
+<p>如下例，<code>@CacheConfig</code>注解在类上配置了缓存名称，类中的方法就能公用缓存名称这个配置：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@CacheConfig</span>(<span class="string">"books"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BookRepositoryImpl</span> <span class="keyword">implements</span> <span class="title">BookRepository</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Cacheable</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Book <span class="title">findBook</span><span class="params">(ISBN isbn)</span> </span>&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>若方法上配置属性与类上配置属性相同，则方法上的配置会覆盖类上属性的配置</p>
+</blockquote>
+<h2><span id="26-启用缓存注解">2.6 启用缓存注解</span></h2>
+<p>仅仅在方法上使用缓存注解，并不能使注解生效，还需要配置<strong>启用缓存注解</strong>。</p>
+<p><strong>启用缓存注解</strong>有以下两种方式：</p>
+<ul>
+<li>代码注解配置方式</li>
+</ul>
+<p>在配置类上声明<code>@EnableCaching</code>，示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableCaching</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppConfig</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>xml配置方式</li>
+</ul>
+<p>在xml中声明<code>cache:annotation-driven</code>，示例如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">cache:annotation-driven</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<p>了解上述配置方式后，就会发现与事务注解<code>@Transactional</code>的启用方式类似</p>
+<p>其实实现原理也是一样的，都是通过启用注解配置，自动扫描缓存注解，使用AOP的方式生成代理类，实现缓存操作（具体的实现原理下篇再说）。</p>
+<p>同样的，和事务注解<code>@Transactional</code>一样，缓存注解的启用，也提供了很多针对AOP的配置参数。</p>
+<p>另外的一些配置则和缓存特性相关，详见如下说明：</p>
+<ul>
+<li>
+<p><strong>cache-manager</strong><br>
+XML属性名：cache-manager<br>
+注解属性名： N/A（请查看CachingConfigurer的javadoc）<br>
+默认值：cacheManager<br>
+描述：缓存注解中使用的cache manager的Bean名称</p>
+</li>
+<li>
+<p><strong>cache-resolver</strong><br>
+XML属性名：cache-resolver<br>
+注解属性名： N/A（请查看CachingConfigurer的javadoc）<br>
+默认值：使用上面的cache-manager配置的CacheManager创建SimpleCacheResolver实例<br>
+描述：缓存解析器的bean名称，此属性不是必须配置</p>
+</li>
+<li>
+<p><strong>key-generator</strong><br>
+XML属性名：key-generator<br>
+注解属性名： N/A（请查看CachingConfigurer的javadoc）<br>
+默认值：SimpleKeyGenerator<br>
+描述：自定义KeyGenerator的Bean名称</p>
+</li>
+<li>
+<p><strong>error-handler</strong><br>
+XML属性名：error-handler<br>
+注解属性名： N/A（请查看CachingConfigurer的javadoc）<br>
+默认值：SimpleCacheErrorHandler<br>
+描述：自定义缓存异常处理类的Bean名称。默认情况下，缓存操作抛出的异常会被抛给调用方</p>
+</li>
+<li>
+<p><strong>mode</strong><br>
+XML属性名：mode<br>
+注解属性名： mode<br>
+默认值：proxy<br>
+描述：默认值是proxy，使用Spring AOP代理。可配置为aspectj，通过修改类字节码，实现编译器或者载入期增强</p>
+</li>
+<li>
+<p><strong>proxy-target-class</strong><br>
+XML属性名：proxy-target-class<br>
+注解属性名： proxyTargetClass<br>
+默认值：false<br>
+描述：当上面的mode属性配置为proxy是才生效。配置为true的时候，使用基于类的Spring AOP代理，即CGLIB。配置为false，则使用基于接口的Spring AOP代理方式，即JDK动态代理。</p>
+</li>
+<li>
+<p><strong>order</strong><br>
+XML属性名：order<br>
+注解属性名： order<br>
+默认值：Ordered.LOWEST_PRECEDENCE<br>
+描述：上面说到过，缓存注解的实现原理是通过代理。一个类上的多层代理的执行顺序则通过order属性指定。</p>
+</li>
+</ul>
+<p>了解完配置属性后，下面归纳下两类问题： <strong>缓存属性优先级问题</strong> 和 <strong>AOP问题</strong></p>
+<ul>
+<li>
+<p><strong>缓存属性优先级问题</strong></p>
+<ol>
+<li>
+<p>配置优先级<br>
+从上面了解可知，缓存的配置存在于三个地方：启用注解的配置属性、类级别的配置属性、方法级别的配置属性。从前到后，优先级越来越高，即后面的会覆盖前面的配置</p>
+</li>
+<li>
+<p>启用注解作用范围<br>
+对于常规的SpringMVC + Spring 的项目开发模式，存在父子容器问题，启用注解的配置，一定要与缓存注解所在类在同一个Spring Bean容器中。<br>
+详见官方文档<a href="https://docs.spring.io/spring/docs/4.3.13.BUILD-SNAPSHOT/spring-framework-reference/htmlsingle/#mvc-servlet" target="_blank" rel="noopener">Section 22.2, “The DispatcherServlet”</a></p>
+</li>
+</ol>
+</li>
+<li>
+<p><strong>AOP问题</strong><br>
+AOP问题其实是Spring基于注解，通过AOP增强实现的一些特性所共有的问题，包括本文的缓存注解，以及事务注解<code>@Transactional</code></p>
+<ol>
+<li>
+<p>外部调用<br>
+当modoe属性为proxy，代表使用Spring AOP代理增强，那么缓存注解方法的调用，必须是外部类调用才能生效，实现缓存操作。类内部的方法调用是不生效的，因为内部调用不走AOP代理。要是内部调用也生效，则需要配置modoe属性为aspectj，通过修改类字节码，实现编译器或者载入期增强。</p>
+</li>
+<li>
+<p>方法可见性<br>
+当modoe属性为proxy，代表使用Spring AOP代理增强，那么缓存注解方法必须是public的才能生效，实现缓存操作。若方法是protected、private或者包可见的，则不生效，也不会抛出异常。要想解决这个问题也可以通过配置modoe属性为aspectj，通过修改类字节码，实现编译器或者载入期增强。</p>
+</li>
+<li>
+<p>注解方法范围<br>
+推荐在具体的类的方法上使用注解，不要配置到接口的方法上。因为当modoe属性为proxy，代表使用Spring AOP代理增强，而Spring AOP分为基于类的和基于接口的（查看上面proxy-target-class属性配置），注解使用在接口上，基于类的AOP则不能正常从接口上将注解继承到类上。通用也可以通过配置modoe属性为aspectj，通过修改类字节码，实现编译器或者载入期增强。</p>
+</li>
+<li>
+<p>多层AOP代理执行顺序问题<br>
+一个类上可使用多层注解，执行顺序，则可以通上面的order属性执行<br>
+详见官方文档<a href="https://docs.spring.io/spring/docs/4.3.13.BUILD-SNAPSHOT/spring-framework-reference/htmlsingle/#aop-ataspectj-advice-ordering" target="_blank" rel="noopener">Advice ordering</a></p>
+</li>
+</ol>
+</li>
+</ul>
+<h2><span id="27-自定义注解">2.7 自定义注解</span></h2>
+<p><code>caching abstraction</code>支持自定义注解，触发缓存操作。自定义注解定义支持使用<code>@Cacheable</code> <code>@CachePut</code> <code>@CacheEvict</code> <code>@CacheConfig</code> 作为元注解（可在其他注解上声明的注解）。</p>
+<p>如下例，自定义注解<code>SlowService</code>使用<code>Cacheable</code>作为元注解：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Target</span>(&#123;ElementType.METHOD&#125;)</span><br><span class="line"><span class="meta">@Cacheable</span>(cacheNames=<span class="string">"books"</span>, key=<span class="string">"#isbn"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> SlowService &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么，以下两种注解方式是等价的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Cacheable</span>(cacheNames=<span class="string">"books"</span>, key=<span class="string">"#isbn"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Book <span class="title">findBook</span><span class="params">(ISBN isbn, <span class="keyword">boolean</span> checkWarehouse, <span class="keyword">boolean</span> includeUsed)</span></span></span><br><span class="line"><span class="function">@SlowService</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Book <span class="title">findBook</span><span class="params">(ISBN isbn, <span class="keyword">boolean</span> checkWarehouse, <span class="keyword">boolean</span> includeUsed)</span></span></span><br></pre></td></tr></table></figure>
+<p><strong>启用了缓存注解</strong>，就能识别示例中的自定义注解，并实现缓存操作（经测有效）</p>
+<blockquote>
+<p>在我们理解中，自定义注解一般需要我们自己编写处理类来解析和处理注解。但上面的自定义注解能生效，是因为自定义注解的定义里面使用了缓存注解作为元注解，<code>caching abstraction</code>能处理这部分自定义注解。</p>
+</blockquote>
+<h1><span id="3-jcache注解">3 JCache注解</span></h1>
+<p>从Spring 4.1版本之后，<code>Cache Abstraction</code>开始支持 JCache 标准注解</p>
+<blockquote>
+<p>详见官网<a href="https://docs.spring.io/spring/docs/4.3.13.BUILD-SNAPSHOT/spring-framework-reference/htmlsingle/#cache-jsr-107" target="_blank" rel="noopener">JCache (JSR-107) annotations</a>，本文暂略</p>
+</blockquote>
+<h1><span id="4-基于xml的缓存声明">4 基于XML的缓存声明</span></h1>
+<p>前面主要介绍了<code>Cache Abstraction</code>中支持的注解，这些注解一般在源代码的方法上声明。</p>
+<p>同样，<code>Cache Abstraction</code>也支持XML声明的方式，从而无需侵入源代码，示例如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"bookService"</span> <span class="attr">class</span>=<span class="string">"x.y.service.DefaultBookService"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">cache:advice</span> <span class="attr">id</span>=<span class="string">"cacheAdvice"</span> <span class="attr">cache-manager</span>=<span class="string">"cacheManager"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">cache:caching</span> <span class="attr">cache</span>=<span class="string">"books"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">cache:cacheable</span> <span class="attr">method</span>=<span class="string">"findBook"</span> <span class="attr">key</span>=<span class="string">"#isbn"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">cache:cache-evict</span> <span class="attr">method</span>=<span class="string">"loadBooks"</span> <span class="attr">all-entries</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">cache:caching</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">cache:advice</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- apply the cacheable behavior to all BookService interfaces --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">aop:config</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">aop:advisor</span> <span class="attr">advice-ref</span>=<span class="string">"cacheAdvice"</span> <span class="attr">pointcut</span>=<span class="string">"execution(* x.y.BookService.*(..))"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">aop:config</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- cache manager definition omitted --&gt;</span></span><br></pre></td></tr></table></figure>
+<h1><span id="5-底层缓存存储配置">5 底层缓存存储配置</span></h1>
+<p>如开篇所述，<code>Cache Abstraction</code>主要包含 <strong>缓存注解</strong> 和 <strong>底层缓存存储配置</strong> 两部分。</p>
+<p>对于  <strong>底层缓存存储配置</strong> , 前面有提到过，主要是对第三方底层缓存存储的集成，这种集成方式分两方面：定制第三方的对<code>Cache Abstraction</code> <strong>实现</strong> 以及集成 <strong>配置</strong> 。</p>
+<p><code>Cache Abstraction</code>提供了几种常见的第三方的缓存集成的实现（分为对<code>CacheManager</code> 和 <code>Cache</code> 的实现），即我们在使用这些第三方缓存作为<code>Cache Abstraction</code>底层缓存存储的时候，只需要进行集成配置即可。</p>
+<blockquote>
+<p>以下几种方案，个人没有做验证，仅仅了解罗列一下，感兴趣的可以参照官网文档和源码深入了解。<br>
+本人主要为了研究集成我司分布式缓存，后面文章会说到。</p>
+</blockquote>
+<h2><span id="51-jdk-concurrentmap">5.1 JDK ConcurrentMap</span></h2>
+<h3><span id="511-实现">5.1.1 实现</span></h3>
+<p><code>Cache Abstraction</code>提供了默认实现，在<code>spring-context</code> 模块的 <code>org.springframework.cache.concurrent</code> 包下</p>
+<p>这种方式使用 JDK <code>ConcurrentHashMap</code> 作为底层缓存存储。</p>
+<ul>
+<li>CacheManager 实现： <code>org.springframework.cache.support.SimpleCacheManager</code></li>
+<li>Cache 实现 ： <code>org.springframework.cache.concurrent.ConcurrentMapCache</code></li>
+</ul>
+<h3><span id="512-配置">5.1.2 配置</span></h3>
+<p>示例如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean id=<span class="string">"cacheManager"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"org.springframework.cache.support.SimpleCacheManager"</span>&gt;</span><br><span class="line">    &lt;property name=<span class="string">"caches"</span>&gt;</span><br><span class="line">        &lt;set&gt;</span><br><span class="line">            &lt;bean <span class="class"><span class="keyword">class</span></span>=<span class="string">"org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"</span> p:name=<span class="string">"default"</span>/&gt;</span><br><span class="line">            &lt;bean <span class="class"><span class="keyword">class</span></span>=<span class="string">"org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"</span> p:name=<span class="string">"books"</span>/&gt;</span><br><span class="line">        &lt;/set&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure>
+<h2><span id="52-ehcache">5.2 Ehcache</span></h2>
+<h3><span id="521-实现">5.2.1 实现</span></h3>
+<p><code>Cache Abstraction</code>提供了默认实现，在<code>spring-context-support</code> 模块的 <code>org.springframework.cache.ehcache</code> 包下</p>
+<p>这种方式使用 <code>Ehcache</code> 作为底层缓存存储。</p>
+<ul>
+<li>CacheManager 实现： <code>org.springframework.cache.ehcache.EhCacheCacheManager</code></li>
+<li>Cache 实现 ： <code>org.springframework.cache.ehcache.EhCacheCache</code></li>
+</ul>
+<h3><span id="522-配置">5.2.2 配置</span></h3>
+<p>示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean id=<span class="string">"cacheManager"</span></span><br><span class="line">      <span class="class"><span class="keyword">class</span></span>=<span class="string">"org.springframework.cache.ehcache.EhCacheCacheManager"</span> p:cache-manager-ref=<span class="string">"ehcache"</span>/&gt;</span><br><span class="line">&lt;bean id=<span class="string">"ehcache"</span></span><br><span class="line">      <span class="class"><span class="keyword">class</span></span>=<span class="string">"org.springframework.cache.ehcache.EhCacheManagerFactoryBean"</span> p:config-location=<span class="string">"ehcache.xml"</span>/&gt;</span><br></pre></td></tr></table></figure>
+<h2><span id="53-caffeine-cache">5.3 Caffeine Cache</span></h2>
+<h3><span id="531-实现">5.3.1 实现</span></h3>
+<p><code>Cache Abstraction</code>提供了默认实现，在<code>spring-context-support</code> 模块的 <code>org.springframework.cache.caffeine</code> 包下</p>
+<p>这种方式使用 <code>Caffeine Cache</code> 作为底层缓存存储。</p>
+<ul>
+<li>CacheManager 实现： <code>org.springframework.cache.caffeine.CaffeineCacheManager</code></li>
+<li>Cache 实现 ： <code>org.springframework.cache.caffeine.CaffeineCache</code></li>
+</ul>
+<h3><span id="532-配置">5.3.2 配置</span></h3>
+<p>示例如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean id=<span class="string">"cacheManager"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"org.springframework.cache.caffeine.CaffeineCacheManager"</span>&gt;</span><br><span class="line">    &lt;property name=<span class="string">"caches"</span>&gt;</span><br><span class="line">        &lt;set&gt;</span><br><span class="line">            &lt;value&gt;default&lt;/value&gt;</span><br><span class="line">            &lt;value&gt;books&lt;/value&gt;</span><br><span class="line">        &lt;/set&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure>
+<h2><span id="54-guava-cache">5.4 Guava Cache</span></h2>
+<h3><span id="541-实现">5.4.1 实现</span></h3>
+<p><code>Cache Abstraction</code>提供了默认实现，在<code>spring-context-support</code> 模块的 <code>org.springframework.cache.guava</code> 包下</p>
+<p>这种方式使用 <code>Guava Cache</code> 作为底层缓存存储。</p>
+<ul>
+<li>CacheManager 实现： <code>org.springframework.cache.guava.GuavaCacheManager</code></li>
+<li>Cache 实现 ： <code>org.springframework.cache.guava.GuavaCache</code></li>
+</ul>
+<h3><span id="542-配置">5.4.2 配置</span></h3>
+<p>示例如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean id=<span class="string">"cacheManager"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"org.springframework.cache.guava.GuavaCacheManager"</span>&gt;</span><br><span class="line">    &lt;property name=<span class="string">"caches"</span>&gt;</span><br><span class="line">        &lt;set&gt;</span><br><span class="line">            &lt;value&gt;default&lt;/value&gt;</span><br><span class="line">            &lt;value&gt;books&lt;/value&gt;</span><br><span class="line">        &lt;/set&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure>
+<h2><span id="55-guava-cache">5.5 Guava Cache</span></h2>
+<p>使用方式参照Spring官方文档<a href="https://docs.spring.io/spring-gemfire/docs/current/reference/html/" target="_blank" rel="noopener">Spring Data GemFire Reference Guide</a></p>
+<h2><span id="56-jsr-107-cache">5.6 JSR-107 Cache</span></h2>
+<h3><span id="561-实现">5.6.1 实现</span></h3>
+<p><code>Cache Abstraction</code>提供了默认实现，在<code>spring-context-support</code> 模块的 <code>org.springframework.cache.jcache</code> 包下</p>
+<p>这种方式使用 <code>JCache</code> 作为底层缓存存储。</p>
+<ul>
+<li>CacheManager 实现： <code>oorg.springframework.cache.jcache.JCacheCacheManager</code></li>
+<li>Cache 实现 ： <code>org.springframework.cache.jcache.JCacheCache</code></li>
+</ul>
+<h3><span id="562-配置">5.6.2 配置</span></h3>
+<p>示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean id=<span class="string">"cacheManager"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"org.springframework.cache.jcache.JCacheCacheManager"</span> p:cache-manager-ref=<span class="string">"jCacheManager"</span>/&gt;</span><br></pre></td></tr></table></figure>
+<h2><span id="57-无底层缓存存储配置方案">5.7 无底层缓存存储配置方案</span></h2>
+<p>当需要验证方法的执行或者切换缓存环境等没有底层缓存存储支持的场景下，通常我们需要去掉缓存的声明。否则，运行时会抛异常。</p>
+<p>同时，<code>Cache Abstraction</code>提供了一种更优雅的方案，当底层缓存存储不可用时候，忽略缓存声明，每次调用都直接执行方法。</p>
+<p>配置示例如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean id=<span class="string">"cacheManager"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"org.springframework.cache.support.CompositeCacheManager"</span>&gt;</span><br><span class="line">    &lt;property name=<span class="string">"cacheManagers"</span>&gt;</span><br><span class="line">        &lt;list&gt;</span><br><span class="line">            &lt;ref bean=<span class="string">"jdkCache"</span>/&gt;</span><br><span class="line">            &lt;ref bean=<span class="string">"gemfireCache"</span>/&gt;</span><br><span class="line">        &lt;/list&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property name=<span class="string">"fallbackToNoOpCache"</span> value=<span class="string">"true"</span>/&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure>
+<p>如上，<code>CompositeCacheManager</code>组合多个<code>CacheManager</code>。<br>
+而<code>fallbackToNoOpCache</code>参数配置为<code>true</code>，则当通过配置的<code>CacheManager</code>获取<code>Cache</code>的时候，则会直接执行方法。</p>
+<h1><span id="6-底层缓存存储集成">6 底层缓存存储集成</span></h1>
+<blockquote>
+<p><strong>底层缓存存储集成</strong> 与上面的 <strong>底层缓存配置</strong>  有何异同点呢？</p>
+<p>前面有提到 <code>Cache Abstraction</code> 是对缓存逻辑的抽象与封装，而不涉及对各个第三方底层缓存存储的实现。</p>
+<p>然而Spring为了达到开箱即用的目的，提供了几种默认的第三方缓存存储实现，<strong>底层缓存配置</strong>即只需将这些默认的实现进行配置，即可使用。</p>
+<p><strong>底层缓存存储集成</strong>指那些尚未有默认实现的第三方底层缓存存储，为了集成这些缓存，需要先按照<code>Cache Abstraction</code>框架设计实现缓存管理与操作，然后进行配置。</p>
+</blockquote>
+<p><strong>底层缓存存储集成</strong>主要包含 <strong>自定义缓存管理和操作</strong> 和 <strong>自定义实现的配置</strong></p>
+<ul>
+<li>
+<p>自定义缓存管理和操作</p>
+<p>既然是缓存管理和操作，其实就是要实现前面提到的<code>CacheManager</code> 和 <code>Cache</code></p>
+<p>这里没有一个既有的实现标准，我们可以参照Spring提供的默认集成方案，这里不细说，可自行查看源码，后面也有篇文章是关于缓存集成的</p>
+<p>对于常用的缓存<code>Redis</code>，<code>Spring-context-support</code>没有提供集成实现方案，但是<code>spring-data-redis</code>已经支持<code>Cache Abstraction</code>，还支持超时时间设置，感兴趣的可以看下源码，使用起来也很简单</p>
+</li>
+<li>
+<p>自定义实现的配置</p>
+<p>可参照前面一节，请注意，前面一节其实是XML配置方式，如果是使用注解方式，XML配置会更加简单，参见前面的<strong>启用缓存注解</strong>章节。</p>
+</li>
+</ul>
+<h1><span id="7-关于缓存的超时策略等特性">7 关于缓存的超时策略等特性</span></h1>
+<p><code>Cache Abstraction</code> 作为对缓存逻辑的抽象与封装，并不涉及底层的缓存存储。</p>
+<p>对于缓存超时策略等问题，其实是需要底层缓存的支持的，所以，<code>Cache Abstraction</code> 并没有在抽象方案中提供这种个性化特性的支持。<br>
+我们在集成第三方缓存时候，可以考虑下自己的使用场景，合理的定制对各种特性的支持。</p>
+<h1><span id="8-总结">8 总结</span></h1>
+<p><code>Cache Abstraction</code>总结主要有一下几点：</p>
+<ul>
+<li>能有效减少缓存逻辑的模板方法（如：击穿回写、更新清除等）</li>
+<li>提供的注解使用以及注解驱动配置比较简单</li>
+<li>即使是某些大厂使用的分布式缓存并没有默认的实现方案，集成起来也不是特别麻烦，而且有很多默认集成方案源码可参考</li>
+<li>最后注意下，<code>Cache Abstraction</code>并不能满足所有的缓存使用场景，完美主义者想所有的缓存操作注解化，可能也很费劲</li>
+<li>当然，如果你觉得<code>Cache Abstraction</code>只能解决你的一部分问题，或者觉得这玩意没啥用，你有更优的方案解决问题，多了解一种Spring基于AOP和注解的特性也是好的，套路是一样的，大多数人是会用事务注解的吧 -_-</li>
+</ul>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/blog/20180206/spring-cache-source-code.html" data-toggle="tooltip" data-placement="top" title="Spring Cache Abstraction实现原理">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/blog/20171208/io-thread-model-outline.html" data-toggle="tooltip" data-placement="top" title="JAVA I/O模型及线程模型系列">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-&#x7B80;&#x4ECB;">1 &#x7B80;&#x4ECB;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text"><span id="11-cache-abstraction&#x7406;&#x89E3;">1.1 <code>Cache Abstraction</code>&#x7406;&#x89E3;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text"><span id="12-cache-abstraction&#x7F13;&#x5B58;&#x64CD;&#x4F5C;">1.2 <code>Cache Abstraction</code>&#x7F13;&#x5B58;&#x64CD;&#x4F5C;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text"><span id="13-cache-abstraction&#x7684;&#x591A;&#x7EBF;&#x7A0B;-&#x591A;&#x8FDB;&#x7A0B;&#x573A;&#x666F;">1.3 <code>Cache Abstraction</code>&#x7684;&#x591A;&#x7EBF;&#x7A0B;&#x3001;&#x591A;&#x8FDB;&#x7A0B;&#x573A;&#x666F;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-&#x7F13;&#x5B58;&#x6CE8;&#x89E3;">2 &#x7F13;&#x5B58;&#x6CE8;&#x89E3;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text"><span id="21-cacheable&#x6CE8;&#x89E3;">2.1 <code>@Cacheable</code>&#x6CE8;&#x89E3;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.1.</span> <span class="toc-nav-text"><span id="211-&#x9ED8;&#x8BA4;&#x7F13;&#x5B58;key&#x751F;&#x6210;&#x7B56;&#x7565;">2.1.1 &#x9ED8;&#x8BA4;&#x7F13;&#x5B58;key&#x751F;&#x6210;&#x7B56;&#x7565;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.2.</span> <span class="toc-nav-text"><span id="212-&#x81EA;&#x5B9A;&#x4E49;&#x7F13;&#x5B58;key&#x751F;&#x6210;&#x7B56;&#x7565;">2.1.2 &#x81EA;&#x5B9A;&#x4E49;&#x7F13;&#x5B58;key&#x751F;&#x6210;&#x7B56;&#x7565;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.2.1.</span> <span class="toc-nav-text"><span id="2121-spel&#x8868;&#x8FBE;&#x5F0F;&#x6307;&#x5B9A;&#x7F13;&#x5B58;key">2.1.2.1 SpEL&#x8868;&#x8FBE;&#x5F0F;&#x6307;&#x5B9A;&#x7F13;&#x5B58;key</span></span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.2.2.</span> <span class="toc-nav-text"><span id="2123-&#x4E92;&#x65A5;&#x6027;">2.1.2.3 &#x4E92;&#x65A5;&#x6027;</span></span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.2.3.</span> <span class="toc-nav-text"><span id="2124-&#x6E90;&#x7801;">2.1.2.4 &#x6E90;&#x7801;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.3.</span> <span class="toc-nav-text"><span id="213-cache&#x89E3;&#x6790;">2.1.3 Cache&#x89E3;&#x6790;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.3.1.</span> <span class="toc-nav-text"><span id="2131-&#x9ED8;&#x8BA4;&#x7684;cacheresolver">2.1.3.1 &#x9ED8;&#x8BA4;&#x7684;<code>CacheResolver</code></span></span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.3.2.</span> <span class="toc-nav-text"><span id="2132-&#x81EA;&#x5B9A;&#x4E49;cacheresolver">2.1.3.2 &#x81EA;&#x5B9A;&#x4E49;<code>CacheResolver</code></span></span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.3.3.</span> <span class="toc-nav-text"><span id="2133-&#x6E90;&#x7801;">2.1.3.3 &#x6E90;&#x7801;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.4.</span> <span class="toc-nav-text"><span id="213-&#x7F13;&#x5B58;&#x6761;&#x4EF6;">2.1.3 &#x7F13;&#x5B58;&#x6761;&#x4EF6;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.5.</span> <span class="toc-nav-text"><span id="214-spel&#x8868;&#x8FBE;&#x5F0F;&#x4E0A;&#x4E0B;&#x6587;">2.1.4 SpEL&#x8868;&#x8FBE;&#x5F0F;&#x4E0A;&#x4E0B;&#x6587;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text"><span id="22-cacheput&#x6CE8;&#x89E3;">2.2 <code>@CachePut</code>&#x6CE8;&#x89E3;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text"><span id="23-cacheevict&#x6CE8;&#x89E3;">2.3 <code>@CacheEvict</code>&#x6CE8;&#x89E3;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.4.</span> <span class="toc-nav-text"><span id="24-caching&#x6CE8;&#x89E3;">2.4 <code>@Caching</code>&#x6CE8;&#x89E3;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.5.</span> <span class="toc-nav-text"><span id="25-cacheconfig&#x6CE8;&#x89E3;">2.5 <code>@CacheConfig</code>&#x6CE8;&#x89E3;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.6.</span> <span class="toc-nav-text"><span id="26-&#x542F;&#x7528;&#x7F13;&#x5B58;&#x6CE8;&#x89E3;">2.6 &#x542F;&#x7528;&#x7F13;&#x5B58;&#x6CE8;&#x89E3;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.7.</span> <span class="toc-nav-text"><span id="27-&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;">2.7 &#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.</span> <span class="toc-nav-text"><span id="3-jcache&#x6CE8;&#x89E3;">3 JCache&#x6CE8;&#x89E3;</span></span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.</span> <span class="toc-nav-text"><span id="4-&#x57FA;&#x4E8E;xml&#x7684;&#x7F13;&#x5B58;&#x58F0;&#x660E;">4 &#x57FA;&#x4E8E;XML&#x7684;&#x7F13;&#x5B58;&#x58F0;&#x660E;</span></span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.</span> <span class="toc-nav-text"><span id="5-&#x5E95;&#x5C42;&#x7F13;&#x5B58;&#x5B58;&#x50A8;&#x914D;&#x7F6E;">5 &#x5E95;&#x5C42;&#x7F13;&#x5B58;&#x5B58;&#x50A8;&#x914D;&#x7F6E;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text"><span id="51-jdk-concurrentmap">5.1 JDK ConcurrentMap</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.1.1.</span> <span class="toc-nav-text"><span id="511-&#x5B9E;&#x73B0;">5.1.1 &#x5B9E;&#x73B0;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.1.2.</span> <span class="toc-nav-text"><span id="512-&#x914D;&#x7F6E;">5.1.2 &#x914D;&#x7F6E;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.2.</span> <span class="toc-nav-text"><span id="52-ehcache">5.2 Ehcache</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.2.1.</span> <span class="toc-nav-text"><span id="521-&#x5B9E;&#x73B0;">5.2.1 &#x5B9E;&#x73B0;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.2.2.</span> <span class="toc-nav-text"><span id="522-&#x914D;&#x7F6E;">5.2.2 &#x914D;&#x7F6E;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.3.</span> <span class="toc-nav-text"><span id="53-caffeine-cache">5.3 Caffeine Cache</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.3.1.</span> <span class="toc-nav-text"><span id="531-&#x5B9E;&#x73B0;">5.3.1 &#x5B9E;&#x73B0;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.3.2.</span> <span class="toc-nav-text"><span id="532-&#x914D;&#x7F6E;">5.3.2 &#x914D;&#x7F6E;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.4.</span> <span class="toc-nav-text"><span id="54-guava-cache">5.4 Guava Cache</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.4.1.</span> <span class="toc-nav-text"><span id="541-&#x5B9E;&#x73B0;">5.4.1 &#x5B9E;&#x73B0;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.4.2.</span> <span class="toc-nav-text"><span id="542-&#x914D;&#x7F6E;">5.4.2 &#x914D;&#x7F6E;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.5.</span> <span class="toc-nav-text"><span id="55-guava-cache">5.5 Guava Cache</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.6.</span> <span class="toc-nav-text"><span id="56-jsr-107-cache">5.6 JSR-107 Cache</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.6.1.</span> <span class="toc-nav-text"><span id="561-&#x5B9E;&#x73B0;">5.6.1 &#x5B9E;&#x73B0;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.6.2.</span> <span class="toc-nav-text"><span id="562-&#x914D;&#x7F6E;">5.6.2 &#x914D;&#x7F6E;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.7.</span> <span class="toc-nav-text"><span id="57-&#x65E0;&#x5E95;&#x5C42;&#x7F13;&#x5B58;&#x5B58;&#x50A8;&#x914D;&#x7F6E;&#x65B9;&#x6848;">5.7 &#x65E0;&#x5E95;&#x5C42;&#x7F13;&#x5B58;&#x5B58;&#x50A8;&#x914D;&#x7F6E;&#x65B9;&#x6848;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">6.</span> <span class="toc-nav-text"><span id="6-&#x5E95;&#x5C42;&#x7F13;&#x5B58;&#x5B58;&#x50A8;&#x96C6;&#x6210;">6 &#x5E95;&#x5C42;&#x7F13;&#x5B58;&#x5B58;&#x50A8;&#x96C6;&#x6210;</span></span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">7.</span> <span class="toc-nav-text"><span id="7-&#x5173;&#x4E8E;&#x7F13;&#x5B58;&#x7684;&#x8D85;&#x65F6;&#x7B56;&#x7565;&#x7B49;&#x7279;&#x6027;">7 &#x5173;&#x4E8E;&#x7F13;&#x5B58;&#x7684;&#x8D85;&#x65F6;&#x7B56;&#x7565;&#x7B49;&#x7279;&#x6027;</span></span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">8.</span> <span class="toc-nav-text"><span id="8-&#x603B;&#x7ED3;">8 &#x603B;&#x7ED3;</span></span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Spring Cache" title="Spring Cache">Spring Cache</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://blog.csdn.net/liuxigiant" target="_blank">CSDN Blog LiuXi</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/liuxigiant">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; LiuXi 2018 
+                    <br>
+                    Theme by <a href="http://www.huweihuang.com">huweihuang</a> 
+                    | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huweihuang&repo=hexo-theme-huweihuang&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://www.liuxi.name/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-79292205-1';
+    var _gaDomain = 'liuxi.name';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="https://www.liuxi.name/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

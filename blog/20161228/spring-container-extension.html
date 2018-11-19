@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Spring生命周期回调与容器扩展 - LiuXi | Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://www.liuxi.name/blog/20161228/spring-container-extension.html">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/article_header/article_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Spring Beans" title="Spring Beans">Spring Beans</a>
+                            
+                        </div>
+                        <h1>Spring生命周期回调与容器扩展</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by LiuXi on
+                            2016-12-28
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">LiuXi</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>本篇主要总结下Spring容器在初始化实例前后，提供的一些回调方法和可扩展点。利用这些方法和扩展点，可以实现在Spring初始化实例前后做一些特殊逻辑处理。</p>
+<p>下面主要介绍：</p>
+<ul>
+<li>类级别的生命周期初始化回调方法<code>init-method</code>配置、<code>InitializingBean</code>接口和<code>PostConstruct</code>注解</li>
+<li>容器级别的扩展<code>BeanPostProcessor</code>接口和<code>BeanFactoryPostProcessor</code>接口</li>
+</ul>
+<h1><span id="1-类级别生命周期回调">1. 类级别生命周期回调</span></h1>
+<h2><span id="11-init-method">1.1 init-method</span></h2>
+<blockquote>
+<p><strong>参照：<a href="http://www.springframework.org/schema/beans/spring-beans.xsd" target="_blank" rel="noopener">Spring bean xsd init-method</a></strong></p>
+</blockquote>
+<p><code>init-method</code>是在Spring配置文件中声明bean的时候的一个配置项。<code>init-method</code>配置项的值为类中的一个<strong>无参方法</strong>，但可抛出异常。该方法会在Spring容器<strong>实例化对象并设置完属性值之后</strong>被调用。</p>
+<blockquote>
+<p><code>init-method</code>能实现的功能与<code>InitializingBean</code>接口、<code>PostConstruct</code>注解一致</p>
+</blockquote>
+<p>Spring配置文件及测试类如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span> = <span class="string">"initMethodBeanService"</span> <span class="attr">class</span>=<span class="string">"name.liuxi.spring.ext.InitMethodBeanService"</span> <span class="attr">init-method</span>=<span class="string">"init"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"f2"</span> <span class="attr">value</span>=<span class="string">"2"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>测试类如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InitMethodBeanService</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Integer f1;</span><br><span class="line">    <span class="keyword">private</span> Integer f2;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        f1 = <span class="number">1</span>;</span><br><span class="line">        System.out.println(<span class="string">"InitMethodBeanService static block execute..."</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">InitMethodBeanService</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"InitMethodBeanService construct method execute..."</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"InitMethodBeanService init method execute..."</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">getF2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> f2;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setF2</span><span class="params">(Integer f2)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.f2 = f2;</span><br><span class="line">        System.out.println(<span class="string">"InitMethodBeanService setF2 method execute..."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行结果打印如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">InitMethodBeanService static block execute...</span><br><span class="line">InitMethodBeanService construct method execute...</span><br><span class="line">InitMethodBeanService setF2 method execute...</span><br><span class="line">InitMethodBeanService init method execute...</span><br><span class="line">test method execute...</span><br></pre></td></tr></table></figure>
+<h2><span id="12-initializingbean接口">1.2 InitializingBean接口</span></h2>
+<blockquote>
+<p><strong>参照：<a href="http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/htmlsingle/#beans-factory-lifecycle-initializingbean" target="_blank" rel="noopener">Spring官方文档beans-factory-lifecycle-initializingbean</a></strong></p>
+</blockquote>
+<p><code>InitializingBean</code>接口中声明了一个方法<code>afterPropertiesSet</code>，该方法会在Spring容器<strong>实例化对象并设置完属性值之后</strong>被调用。和上面的<code>init-method</code>实现的功能一致，因此Spring不推荐使用<code>InitializingBean</code>接口。</p>
+<p>例子比较简单，不列出来了</p>
+<h2><span id="13-postconstruct注解">1.3 PostConstruct注解</span></h2>
+<blockquote>
+<p><strong>翻译：<a href="http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/htmlsingle/#beans-postconstruct-and-predestroy-annotations" target="_blank" rel="noopener">Spring官方文档beans-postconstruct-and-predestroy-annotations</a></strong></p>
+</blockquote>
+<p><code>@PostConstruct</code>注解是和<code>init-method</code>、<code>InitializingBean接口</code>实现效果一致的生命周期回调方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PostConstruct</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postConstruct</span><span class="params">()</span></span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"PostConstructService postConstruct method execute..."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<blockquote>
+<p><strong>总结下上面三个生命周期回调方法<code>init-method</code>、<code>InitializingBean接口</code>、<code>@PostConstruct注解</code></strong></p>
+</blockquote>
+<ul>
+<li>都是针对单个类的实例化后处理</li>
+<li>执行时间都是在类实例化完成，且成员变量完成注入之后调用的</li>
+<li>对于<code>init-method</code>，还可以在Spring配置文件的<code>beans</code>元素下配置默认初始化方法，配置项为<code>default-init-method</code></li>
+<li>若以上三种方式配置的初始化方法都不一样，则执行顺序为：<code>@PostConstruct注解方法</code> --&gt; <code>InitializingBean的afterPropertiesSet</code> --&gt; <code>init-method方法</code> ；若三种方式配置的方法一样，则方法只执行一次 （参照：<a href="http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/htmlsingle/#beans-factory-lifecycle-combined-effects" target="_blank" rel="noopener">Spring官方文档beans-factory-lifecycle-combined-effect</a>）</li>
+<li>有初始化回调方法，对应的也有销毁的回调方法。<code>@PostConstruct注解方法</code> --&gt; <code>InitializingBean的afterPropertiesSet</code> --&gt; <code>init-method方法</code> 分别对应 <code>@PreDestroy注解方法</code> --&gt; <code>DisposableBean的destroy</code> --&gt; <code>destroy-method方法</code></li>
+</ul>
+<h1><span id="2-容器级别扩展">2. 容器级别扩展</span></h1>
+<blockquote>
+<p><strong>翻译：</strong><a href="http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/htmlsingle/#beans-factory-extension" target="_blank" rel="noopener">Spring官方文档3.8 Container Extension Points</a></p>
+</blockquote>
+<p>通常情况下，开发人员无需自定义实现一个<code>ApplicationContext</code>的子类去扩展Spring IOC容器，Spring IOC容器通过对外暴露的一些接口，可实现对Spring IOC容器的扩展。</p>
+<h2><span id="21-beanpostprocessor接口">2.1 BeanPostProcessor接口</span></h2>
+<h3><span id="211-bean实例初始化后处理器及后处理器链">2.1.1 bean实例初始化后处理器及后处理器链</span></h3>
+<p><code>BeanPostProcessor</code>接口定义了两个<strong>容器级别</strong>的回调方法<code>postProcessBeforeInitialization</code>和<code>postProcessAfterInitialization</code>，用于在初始化实例后的一些逻辑处理，会针对容器中的所有实例进行处理。实现了<code>BeanPostProcessor</code>接口的类，称之为<strong>bean实例初始化后处理器</strong> 。</p>
+<p>若在Spring IOC容器中集成了多个实例初始化后处理器，这些后处理器构成的集合称之为<strong>bean实例初始化后处理器链</strong>。</p>
+<ol>
+<li><code>postProcessBeforeInitialization</code>方法在类实例化且成员变量注入完成之后执行，初始化方法（例如<code>InitializingBean</code>的<code>afterPropertiesSet</code>方法）<strong>之前</strong>执行</li>
+<li><code>postProcessAfterInitialization</code>方法在类实例化且成员变量注入完成之后执行，初始化方法（例如<code>InitializingBean</code>的<code>afterPropertiesSet</code>方法）<strong>之后</strong>执行</li>
+</ol>
+<blockquote>
+<ul>
+<li><strong>实例初始化后处理器</strong>多用于对实例的一些代理操作。Spring中一些使用到AOP的特性也是通过后处理器的方式实现的。</li>
+<li><strong>实例初始化后处理器链</strong> 是多个后处理器，就会有执行顺序的问题，可以通过实现<code>Ordered</code>接口，指定后处理的执行顺序，<code>Ordered</code>接口声明了<code>getOrder</code>方法，方法返回值越小，后处理的优先级越高，越早执行。</li>
+<li>在通过实现<code>BeanPostProcessor</code>接口自定义实例初始化后处理器的时候，建议也实现<code>Ordered</code>接口，指定优先级。</li>
+<li>这些后处理器的作用域是当前的Spring IOC容器，即后处理器被声明的Spring IOC容器。对于有层次结构的Spring IOC容器，<strong>实例初始化后处理器链</strong>不会作用于其他容器所初始化的实例上，即使两个容器在同一层次结构上。</li>
+<li>实例初始化后处理器的实现类只需要和普通的被Spring管理的bean一样声明，Spring IOC容器就会自动检测到，并添加到实例初始化后处理器链中。</li>
+<li>相对于自动检测，我们也可以调用<code>ConfigurableBeanFactory</code>的<code>addBeanPostProcessor</code>方法，以编程的方式将一个实例初始化后处理器添加到实例初始化后处理器链中。这在需要判定添加条件的场景下比较实用。这种编程式的方式会忽略到实现的<code>Ordered</code>接口所指定的顺序，而会作用于所有的被自动检测的实例初始化后处理器之前。</li>
+</ul>
+</blockquote>
+<h3><span id="212-bean实例初始化后处理器与aop">2.1.2 bean实例初始化后处理器与AOP</span></h3>
+<p><code>BeanPostProcessor</code>是一个特殊的接口，实现这个接口的类会被作为Spring管理的bean的实例的后处理器。因此，在Spring应用上下文启动的一个特殊阶段，会直接初始化所有实现了<code>BeanPostProcessor</code>接口的实例，以及该实例所引用的类也会被实例化。然后作为后处理器应用于其他普通实例。</p>
+<p>由于AOP的自动代理是以实例化后处理器的方式实现的，所以无论是<strong>bean实例初始化后处理器链</strong>实例还是其引用的实例，都不能被自动代理。因而，不要在这些实例上进行切面织入。（对于这些实例，会产生这样的日志消息：“类foo不能被所有的实例化后处理器链处理，即不能被自动代理”）。</p>
+<p>**注意：**当实例化后处理器以autowiring或<code>@Resource</code>的方式引用其他bean，Spring容器在以类型匹配依赖注入的时候，可能会注入非指定的bean（例如：实例化后处理器实现类以<code>Resource</code>方式依赖bean，若set方法和被依赖的bean的名称一致或者被依赖bean未声明名称，则依赖注入会以类型匹配的方式注入，此时可能会注入非指定的bean）。这也会导致自动代理或其他方式的实例化后处理器处理失败。</p>
+<h3><span id="213-bean实例初始化后处理器示例">2.1.3 bean实例初始化后处理器示例</span></h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeanPostProcessorService</span> <span class="keyword">implements</span> <span class="title">BeanPostProcessor</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">postProcessAfterInitialization</span><span class="params">(Object o, String s)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"BeanPostProcessorService postProcessAfterInitialization method execute... "</span>);</span><br><span class="line">        <span class="keyword">return</span> o;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">postProcessBeforeInitialization</span><span class="params">(Object o, String s)</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"BeanPostProcessorService postProcessBeforeInitialization method execute... "</span>);</span><br><span class="line">        <span class="keyword">return</span> o;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">## 2.2 BeanFactoryPostProcessor接口  </span><br><span class="line"></span><br><span class="line">### 2.2.1 bean factory后处理器  </span><br><span class="line"></span><br><span class="line">通过实现`BeanFactoryPostProcessor`接口，可以读取容器所管理的bean的配置元数据，在bean完成实例化之前进行更改，这些bean称之为**bean factory后处理器**。  </span><br><span class="line"></span><br><span class="line">&gt;BeanFactoryPostProcessors与BeanPostProcessor接口的异同点：  </span><br><span class="line">&gt;**相同点：**  </span><br><span class="line">&gt;</span><br><span class="line">&gt; - 都是容器级别的后处理器  </span><br><span class="line">&gt; - 都可配置多个后处理器，并通过实现`Ordered`接口，指定执行顺序  </span><br><span class="line">&gt; - 都是针对接口声明的容器中所管理的bean进行处理，在有层级结构的容器中，不能处理其他容器中的bean，即使两个容器是同一层次  </span><br><span class="line">&gt; - 都是只需要在容器中和普通bean一样声明，容器会自动检测到，并注册为后处理器  </span><br><span class="line">&gt; - 会忽略延迟初始化属性配置</span><br><span class="line">&gt;</span><br><span class="line">&gt;**不同点：**  </span><br><span class="line">&gt;</span><br><span class="line">&gt; - `BeanFactoryPostProcessors`接口在bean**实例化前**处理bean的**配置元数据**，`BeanPostProcessor`接口在bean**实例化后**处理bean的**实例**  </span><br><span class="line">&gt; - `BeanFactoryPostProcessors`接口也能通过`BeanFactory.getBean()`方法获取bean的实例，这样会引起bean的实例化。由于`BeanFactoryPostProcessors`后处理器是在所有bean实例化之前执行，通过`BeanFactory.getBean()`方法会导致提前实例化bean，从而打破容器标准的生命周期，这样可能会引起一些负面的影响（例如：提前实例化的bean会忽略bean实例化后处理器的处理）。  </span><br><span class="line"></span><br><span class="line">### 2.2.2 Spring内置及自定义bean factory后处理器</span><br><span class="line">Spring内置了一些bean factory后处理器（例如：`PropertyPlaceholderConfigurer`和`PropertyOverrideConfigurer`）。同时也支持实现`BeanFactoryPostProcessor`接口，自定义bean factory后处理器。下面说说Spring内置的两个后处理器和自定义后处理器。  </span><br><span class="line"></span><br><span class="line">**PropertyPlaceholderConfigurer**  </span><br><span class="line"></span><br><span class="line">Spring为了避免主要的XML定义文件的修改而引起的风险，提供了配置分离，可以将一些可能变更的变量配置到属性配置文件中，并在XML定义文件中以占位符的方式引用。这样，修改配置只需要修改属性配置文件即可。**PropertyPlaceholderConfigurer**用于检测占位符，并替换占位符为配置属性值。示例如下：  </span><br><span class="line"></span><br><span class="line">`PropertyPlaceholderConfigurer`通过`jdbc.properties`属性配置文件，在**运行时**，将`dataSource`这个bean中数据库相关信息的属性占位符替换成对应的配置值。  </span><br><span class="line">XML配置如下：  </span><br><span class="line"></span><br><span class="line">```java</span><br><span class="line">&lt;bean <span class="class"><span class="keyword">class</span></span>=<span class="string">"org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"</span>&gt;</span><br><span class="line">	&lt;property name=<span class="string">"locations"</span> value=<span class="string">"classpath:com/foo/jdbc.properties"</span>/&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line"></span><br><span class="line">&lt;bean id=<span class="string">"dataSource"</span> destroy-method=<span class="string">"close"</span></span><br><span class="line">		<span class="class"><span class="keyword">class</span></span>=<span class="string">"org.apache.commons.dbcp.BasicDataSource"</span>&gt;</span><br><span class="line">	&lt;property name=<span class="string">"driverClassName"</span> value=<span class="string">"$&#123;jdbc.driverClassName&#125;"</span>/&gt;</span><br><span class="line">	&lt;property name=<span class="string">"url"</span> value=<span class="string">"$&#123;jdbc.url&#125;"</span>/&gt;</span><br><span class="line">	&lt;property name=<span class="string">"username"</span> value=<span class="string">"$&#123;jdbc.username&#125;"</span>/&gt;</span><br><span class="line">	&lt;property name=<span class="string">"password"</span> value=<span class="string">"$&#123;jdbc.password&#125;"</span>/&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure>
+<p>属性配置文件<code>jdbc.properties</code>如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">jdbc.driverClassName=org.hsqldb.jdbcDriver</span><br><span class="line">jdbc.url=jdbc:hsqldb:hsql://production:9002</span><br><span class="line">jdbc.username=sa</span><br><span class="line">jdbc.password=root</span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">`PropertyPlaceholderConfigurer`不仅支持属性配置文件的读取，也支持读取系统属性。通过`systemPropertiesMode`属性值可配置读取优先级。各种取值说明如下：  </span><br><span class="line"></span><br><span class="line">- 0 ： 不读取系统属性  </span><br><span class="line">- 1 ： 若引用的属性配置文件中未检索到对应占位符的配置，则读取系统属性。默认为1  </span><br><span class="line">- 2 ： 先读取系统属性，再读取引用的属性配置文件。这种配置可能导致系统属性覆盖配置文件。  </span><br><span class="line"></span><br><span class="line">**PropertyOverrideConfigurer**  </span><br><span class="line"></span><br><span class="line">`PropertyOverrideConfigurer`类可以通过引用属性配置文件，直接给容器中的bean赋值。当一个bean的属性被多个`PropertyOverrideConfigurer`类实例赋值时，最后一个的值会覆盖前面的。  </span><br><span class="line"></span><br><span class="line">还是以上面给上面的`dataSource`的bean赋值为例：  </span><br><span class="line"></span><br><span class="line">`PropertyOverrideConfigurer`类对属性配置文件的引用使用一个新的方式，如下：</span><br></pre></td></tr></table></figure>
+<p>&lt;context:property-override location=“classpath:override.properties”/&gt;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">`override.properties`属性配置文件的属性的命名规则和上面不同（上面例子中需要保证属性名和占位符一致），命名规则是`beanName.property`</span><br></pre></td></tr></table></figure>
+<p>dataSource.driverClassName=com.mysql.jdbc.Driver<br>
+dataSource.url=jdbc:mysql:mydb<br>
+dataSource.username=sa<br>
+dataSource.password=root</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&gt; 支持复合属性的赋值，但是要保证引用被赋值属性的对象非空  </span><br><span class="line">&gt; 例如：foo.fred.bob.sammy=123  </span><br><span class="line"></span><br><span class="line">**自定义bean factory后处理器**  </span><br><span class="line"></span><br><span class="line">自定义bean factory后处理器就是实现BeanFactoryPostProcessor接口，完成对Spring容器管理的bean的配置元数据进行修改。例如：修改类属性注入的值，示例如下：  </span><br><span class="line"></span><br><span class="line">定义一个用户类`UserBean`  </span><br><span class="line"></span><br><span class="line">```java</span><br><span class="line">public class UserBean &#123;</span><br><span class="line">    private String userName;</span><br><span class="line"></span><br><span class="line">    public String getUserName() &#123;</span><br><span class="line">        return userName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setUserName(String userName) &#123;</span><br><span class="line">        this.userName = userName;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Spring XML配置文件配置用户类，并给用户名属性<code>userName</code>注入值<code>haha</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean class=&quot;name.liuxi.spring.ext.BeanFactoryPostProcessorService&quot;/&gt;</span><br><span class="line">&lt;bean id=&quot;user&quot; class=&quot;name.liuxi.spring.ext.UserBean&quot;&gt;</span><br><span class="line">      &lt;property name=&quot;userName&quot; value=&quot;haha&quot;/&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">下面是自定义的bean factory后处理器，修改属性`userName`的值为`heihei`  </span><br><span class="line"></span><br><span class="line">```java</span><br><span class="line">public class BeanFactoryPostProcessorService implements BeanFactoryPostProcessor &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException &#123;</span><br><span class="line">        System.out.println(&quot;BeanFactoryPostProcessorService postProcessBeanFactory method execut...&quot;);</span><br><span class="line">        BeanDefinition bd = beanFactory.getBeanDefinition(&quot;user&quot;);</span><br><span class="line">        MutablePropertyValues pv =  bd.getPropertyValues();</span><br><span class="line">        if(pv.contains(&quot;userName&quot;))</span><br><span class="line">        &#123;</span><br><span class="line">            pv.addPropertyValue(&quot;userName&quot;, &quot;heihei&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/blog/20170718/mybatis-spring-usage.html" data-toggle="tooltip" data-placement="top" title="MyBatis-Spring简介与用法">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/blog/20161228/spring-annotations.html" data-toggle="tooltip" data-placement="top" title="自定义注解在Spring中的应用">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-&#x7C7B;&#x7EA7;&#x522B;&#x751F;&#x547D;&#x5468;&#x671F;&#x56DE;&#x8C03;">1. &#x7C7B;&#x7EA7;&#x522B;&#x751F;&#x547D;&#x5468;&#x671F;&#x56DE;&#x8C03;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text"><span id="11-init-method">1.1 init-method</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text"><span id="12-initializingbean&#x63A5;&#x53E3;">1.2 InitializingBean&#x63A5;&#x53E3;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text"><span id="13-postconstruct&#x6CE8;&#x89E3;">1.3 PostConstruct&#x6CE8;&#x89E3;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-&#x5BB9;&#x5668;&#x7EA7;&#x522B;&#x6269;&#x5C55;">2. &#x5BB9;&#x5668;&#x7EA7;&#x522B;&#x6269;&#x5C55;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text"><span id="21-beanpostprocessor&#x63A5;&#x53E3;">2.1 BeanPostProcessor&#x63A5;&#x53E3;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.1.</span> <span class="toc-nav-text"><span id="211-bean&#x5B9E;&#x4F8B;&#x521D;&#x59CB;&#x5316;&#x540E;&#x5904;&#x7406;&#x5668;&#x53CA;&#x540E;&#x5904;&#x7406;&#x5668;&#x94FE;">2.1.1 bean&#x5B9E;&#x4F8B;&#x521D;&#x59CB;&#x5316;&#x540E;&#x5904;&#x7406;&#x5668;&#x53CA;&#x540E;&#x5904;&#x7406;&#x5668;&#x94FE;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.2.</span> <span class="toc-nav-text"><span id="212-bean&#x5B9E;&#x4F8B;&#x521D;&#x59CB;&#x5316;&#x540E;&#x5904;&#x7406;&#x5668;&#x4E0E;aop">2.1.2 bean&#x5B9E;&#x4F8B;&#x521D;&#x59CB;&#x5316;&#x540E;&#x5904;&#x7406;&#x5668;&#x4E0E;AOP</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.3.</span> <span class="toc-nav-text"><span id="213-bean&#x5B9E;&#x4F8B;&#x521D;&#x59CB;&#x5316;&#x540E;&#x5904;&#x7406;&#x5668;&#x793A;&#x4F8B;">2.1.3 bean&#x5B9E;&#x4F8B;&#x521D;&#x59CB;&#x5316;&#x540E;&#x5904;&#x7406;&#x5668;&#x793A;&#x4F8B;</span></span></a></li></ol></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Spring Beans" title="Spring Beans">Spring Beans</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://blog.csdn.net/liuxigiant" target="_blank">CSDN Blog LiuXi</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/liuxigiant">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; LiuXi 2018 
+                    <br>
+                    Theme by <a href="http://www.huweihuang.com">huweihuang</a> 
+                    | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huweihuang&repo=hexo-theme-huweihuang&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://www.liuxi.name/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-79292205-1';
+    var _gaDomain = 'liuxi.name';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="https://www.liuxi.name/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

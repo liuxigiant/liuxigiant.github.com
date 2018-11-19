@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Java I/O简介 - LiuXi | Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://www.liuxi.name/blog/20171023/java-io-summary.html">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/article_header/article_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Java IO" title="Java IO">Java IO</a>
+                            
+                        </div>
+                        <h1>Java I/O简介</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by LiuXi on
+                            2017-10-23
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">LiuXi</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>Java I/O 是 Java SE 中比较重要的一部分内容，但对于阻塞非阻塞、同步异步的各种组合说法，有时会造成误解与困扰。</p>
+<blockquote>
+<p>比如：同步I/O与阻塞I/O是一个含义么？同步阻塞I/O、同步非阻塞I/O又是什么含义呢？Java都支持哪些呢？</p>
+</blockquote>
+<h1><span id="1-io调用">1 I/O调用</span></h1>
+<h2><span id="11-背景">1.1 背景</span></h2>
+<p>既然是要梳理Java I/O，讨论的背景就主要是Java 支持的I/O类型，例如：文件读写、网络I/O等，本篇已java网络编程中的socket为背景阐述。</p>
+<h2><span id="12-参与者">1.2 参与者</span></h2>
+<p>在Java I/O应用场景中，涉及三个参与者：</p>
+<ul>
+<li>用户进程：运行时JVM进程（本文中的用户进程只是作为应用程序的角色来说的，并不是作为操作系统进程这个角色来说，不要误解用户进程与下面提及的线程，用户进程作为一个参与角色，并没有进程包含线程的含义）</li>
+<li>内核：操作系统内核</li>
+<li>硬件</li>
+</ul>
+<h2><span id="13-两个步骤">1.3 两个步骤</span></h2>
+<p>以I/O读操作为例，用户进程想要完成读操作，需要通过<strong>系统调用</strong>，由操作系统内核读取硬件上的数据到内核空间，然后这部分读取的数据由内核空间复制到用户空间，至此，用户进程就可以使用读取的数据。</p>
+<p>从上可以看出，一次读操作有<strong>两个步骤</strong>（后面五种I/O模型就是针对这两个步骤的各种实现方式）：</p>
+<ol>
+<li>内核准备数据</li>
+<li>数据从内核空间复制到用户空间</li>
+</ol>
+<p>下面看下内核空间和用户空间的区别：</p>
+<ul>
+<li>内核空间：操作系统所在区域，属于特权区域，如能直接访问硬件</li>
+<li>用户空间：用户进程所在的区域，属于非特权区域，执行I/O操作时，通过执行<strong>系统调用</strong>将控制权交由内核</li>
+</ul>
+<blockquote>
+<p>ps: 操作系统内核可以理解成一个中间层，用户进程是应用层，硬件是底层。中间层对应用层提供对底层访问的能力。</p>
+</blockquote>
+<h1><span id="2-五种io模型">2 五种IO模型</span></h1>
+<p>暂且搁置文初提出的同步异步、阻塞非阻塞这些概念，来看下《Unix网络编程》中介绍的五种I/O模型处理I/O read操作的处理方式</p>
+<blockquote>
+<p>五种I/O模型主要是在上述1.2小节中所述的I/O操作的两个步骤（准备数据和复制数据）的处理方式上有所不同</p>
+</blockquote>
+<h2><span id="21-阻塞io">2.1 阻塞I/O</span></h2>
+<p><img src="/images/blockingIO.png" alt=""></p>
+<p>用户进程需要进行I/O操作时，发起<strong>系统调用recvfrom</strong></p>
+<ul>
+<li>准备数据：内核准备数据（例如：对于磁盘I/O，内核会进行磁盘操作），将数据加载到内核空间中</li>
+<li>复制数据：数据准备好之后，数据从内核空间复制到用户空间，此时对与用户线程来说，I/O操作完成</li>
+</ul>
+<p>结合上图和两个步骤可以看出，用户进程在两个步骤中都会处于等待状态，一直被阻塞，所以称之为<strong>阻塞I/O</strong></p>
+<h2><span id="22-非阻塞io">2.2 非阻塞I/O</span></h2>
+<p><img src="/images/nonblockingIO.png" alt=""></p>
+<p>用户进程需要进行I/O操作时，发起<strong>系统调用recvfrom</strong></p>
+<ul>
+<li>准备数据：内核准备数据，将数据加载到内核空间中。若数据尚未准备好，内核会对<strong>系统调用recvfrom</strong>返回一个错误</li>
+<li>复制数据：用户进程发起的<strong>系统调用recvfrom</strong>，在内核数据准备好之后，数据从内核空间复制到用户空间，I/O操作完成</li>
+</ul>
+<p>结合上图和两个步骤可以看出，用户进程在步骤一上并不会被阻塞（但是用户进程需要一致轮询数据是否准备好），只有在步骤二时用户进程才会处于等待状态，所以称之为<strong>非阻塞I/O</strong></p>
+<h2><span id="23-io多路复用">2.3 I/O多路复用</span></h2>
+<p><img src="/images/multiplexingIO.png" alt=""></p>
+<p>用户进程需要进行I/O操作时，发起<strong>系统调用select</strong></p>
+<ul>
+<li>准备数据：用户进程发起<strong>系统调用select</strong>之后，内核会监听与当前select相关的socket（一般是多个），直到有socket的数据准备好才返回</li>
+<li>复制数据：用户进程发起的<strong>系统调用recvfrom</strong>，数据从内核空间复制到用户空间，I/O操作完成</li>
+</ul>
+<p>结合上图和两个步骤可以看出，用户进程在步骤一上发起<strong>系统调用select</strong>，在有数据准备好之前会一直处于等待状态，步骤二也会处于等待状态。</p>
+<p>这种I/O模型虽然在两个步骤都会阻塞，但是相对于前两种来说，他能同时处理多个socket，所以称之为<strong>I/O多路复用</strong></p>
+<blockquote>
+<p>ps：对于用户进程来说，处理多个socket，一般的处理方式可以使用一个单独的线程来完成步骤一操作，轮询内核在有socket准备好数据之后，通知其他线程进行步骤二操作，这样对于大量的socket的I/O操作管理来说，处理效率比较高。这样一种以<strong>事件驱动</strong>来处理I/O事件的多线程模型，其实就是<strong>Reactor线程模型</strong></p>
+</blockquote>
+<h2><span id="24-信号驱动io">2.4 信号驱动I/O</span></h2>
+<p>并不常用，暂略</p>
+<h2><span id="25-异步io">2.5 异步I/O</span></h2>
+<p><img src="/images/asynchronousIO.png" alt=""></p>
+<p>用户进程需要进行I/O操作，发起<strong>系统调用aio_read</strong>，同时制定I/O操作完成后的回调处理函数</p>
+<ul>
+<li>准备数据：内核准备数据，将数据加载到内核空间中</li>
+<li>复制数据：内核在数据准备好后，将数据从内核空间复制到用户空间，完成之后触发回调函数</li>
+</ul>
+<p>结合上图和两个步骤可以看出，用户进程在提交了I/O操作之后，其余的事情交由内核处理（包括I/O操作完成后，回调函数的触发也不需要用户进程参与），所以称之为<strong>异步I/O</strong></p>
+<h2><span id="26-总结">2.6 总结</span></h2>
+<p>从上面五种I/O模型可看出，I/O模型的实现方式依赖于操作系统对于I/O操作<strong>系统调用</strong>命令的支持方式。五种I/O模型可以理解为一种逐渐迭代、进化的模型。</p>
+<ul>
+<li>阻塞I/O：对于用户进程和操作系统来说都比较简单，用户不用考虑多线程和异步相关的问题，初期应用场景可能也比较简单，处理的socket也比较少</li>
+<li>非阻塞I/O：阻塞I/O对于用户进程来说不是特别友好，用户进程希望在内核准备数据期间不要一直阻塞等待结果，此时非阻塞I/O就是在内核尚未准备好数据时候，立即回复用户进程数据未准备好，用户进程就可以先处理其他任务，过会再来询问，直到内核准备好数据再来处理数据</li>
+<li>I/O多路复用：相对于非阻塞I/O的单线程轮询处理单个socket，I/O多路复用支持同时监视多个socket，当有socket准备好数据后，用户线程即可处理数据。这样在使用合适的线程模型的话(<strong>Reactor或PReactor线程模型</strong>)，对于用户进程来说，I/O操作可以是异步化的（这里的异步化其实是伪异步化，因为内核此时还是同步的）</li>
+<li>异步I/O：内核支持的真正的异步化I/O操作</li>
+</ul>
+<h1><span id="3-java-io实现">3 JAVA I/O实现</span></h1>
+<p>上面五种I/O模型主要是操作系统层面的支持，下面了解下JAVA对阻塞I/O、I/O多路复用和异步I/O的实现</p>
+<h2><span id="31-java-bio">3.1 JAVA BIO</span></h2>
+<p>JAVA BIO（Blocking I/O）：基于流Stream的标准I/O（java.io包下），是对<strong>阻塞I/O</strong>的实现</p>
+<h2><span id="32-java-nio">3.2 JAVA NIO</span></h2>
+<p>JAVA NIO（New I/O）：基于块（Buffer）、选择器（Selector）和通道（Channel）的I/O（java.nio包下），是对<strong>I/O多路复用</strong>的实现</p>
+<blockquote>
+<p>JDK1.4提供了对NIO的支持</p>
+</blockquote>
+<h2><span id="33-java-aio">3.3 JAVA AIO</span></h2>
+<p>JAVA AIO（Asynchronous I/O）：也称之为 <strong>NIO2</strong>（java.nio包下），是对<strong>异步I/O</strong>的实现</p>
+<blockquote>
+<p>JDK7提供了对AIO的支持</p>
+</blockquote>
+<h1><span id="4-阻塞-非阻塞-同步-异步">4 阻塞 非阻塞 同步 异步</span></h1>
+<p>最后来说明下同步、异步、阻塞、非阻塞的含义</p>
+<h2><span id="41-释义">4.1 释义</span></h2>
+<h3><span id="411-阻塞-vs-非阻塞">4.1.1 阻塞 <em>vs</em> 非阻塞</span></h3>
+<ul>
+<li>阻塞：用户进程在发起I/O操作到I/O操作完成期间，一直处于等待状态，不能处理其他任务</li>
+</ul>
+<blockquote>
+<p>第2小节中的五种I/O模型中的<strong>阻塞I/O</strong>属于阻塞I/O</p>
+</blockquote>
+<ul>
+<li>非阻塞I/O：用户进程在发起I/O操作后，内核数据未准备好的情况下，可以处理其他任务</li>
+</ul>
+<blockquote>
+<p>第2小节中的五种I/O模型中的<strong>非阻塞I/O</strong>、<strong>I/O多路复用</strong>、<strong>异步I/O</strong>都属于非阻塞I/O</p>
+</blockquote>
+<p><strong>Q&amp;A:</strong></p>
+<p>Q: 如何理解<strong>I/O多路复用</strong>是非阻塞I/O呢？select不是会阻塞吗？<br>
+A：select操作是会阻塞线程，但是select一般交由单独的线程执行，并不会阻塞调用I/O操作的线程。<br>
+且I/O操作的第一步准备数据和第二步复制数据也并不是作为一个整体阻塞线程的，所以不是阻塞I/O</p>
+<h3><span id="412-同步-vs-异步">4.1.2 同步 <em>vs</em> 异步</span></h3>
+<ul>
+<li>同步I/O：I/O操作未完成会造成用户进程处于等待状态，即用户进程被阻塞；I/O操作完成，用户进程才能处理其他任务</li>
+</ul>
+<blockquote>
+<p>第2小节中的五种I/O模型中的<strong>阻塞I/O</strong>、<strong>非阻塞I/O</strong>、<strong>I/O多路复用</strong>、<strong>信号驱动I/O</strong>都属于同步I/O</p>
+</blockquote>
+<ul>
+<li>异步I/O：I/O操作是否完成都不会阻塞用户进程；I/O操作完成后，会触发回调函数</li>
+</ul>
+<blockquote>
+<p>第2小节中的五种I/O模型中的<strong>异步I/O</strong>属于异步I/O</p>
+</blockquote>
+<p><strong>Q&amp;A:</strong></p>
+<p>Q: 如何理解<strong>非阻塞I/O</strong>、<strong>I/O多路复用</strong>是同步的呢？非阻塞I/O不应该是异步的吗？<br>
+A：首先，非阻塞和异步不是一个含义。<br>
+<strong>非阻塞I/O</strong>虽然在步骤1准备数据时候，不会阻塞线程，但是步骤2还是会阻塞线程的。而且线程也需要一直执行步骤1进行轮询，所以是同步的<br>
+<strong>I/O多路复用</strong>与<strong>非阻塞I/O</strong>类似，只不过步骤1替换成了阻塞的，所以也是同步的</p>
+<h3><span id="413-总结">4.1.3 总结</span></h3>
+<ul>
+<li>只有<strong>异步I/O</strong>是真正异步的（<strong>I/O多路复用</strong>只能通过线程模型做到伪异步），其余都是同步的</li>
+<li>只有<strong>阻塞I/O</strong>是阻塞的，其余都是非阻塞的</li>
+<li>同步和异步强调用户进程的状态，用户进程需要依赖、等待内核完成整个I/O操作才能处理数据，则为同步；而异步I/O，用户进程无需关心内核何时完成，且完成后，数据处理回调函数无需用户进程触发</li>
+<li>阻塞和非阻塞强调内核的状态，内核I/O操作完成前一直不回复用户进程，则为阻塞；而非阻塞，内核在准备数据期间，可以支持用户进程处于非阻塞状态，甚至异步I/O的复制数据也由内核主动完成</li>
+<li>阻塞、非阻塞、I/O多路复用、异步I/O，这四种I/O模型可以看成是操作系统为了优化用户进程的I/O操作的逐步演进的过程</li>
+</ul>
+<h2><span id="42-示例">4.2 示例</span></h2>
+<p>最后给出一个例子，对比下各种I/O模型</p>
+<p><strong>场景：</strong><br>
+用户需要办理一张新银行卡，去银行大厅取号排队吗，待被叫号后，去柜台办理业务，银行职员在银行系统中录入信息，并给用户一张新的银行卡</p>
+<p><strong>参与者：</strong></p>
+<ul>
+<li>用户（与I/O模型中的用户进程对应）</li>
+<li>银行职员（与I/O模型中的内核对应）</li>
+<li>银行系统（与I/O模型中的硬件对应）</li>
+</ul>
+<blockquote>
+<p>可以对比看下：银行职员属于银行内部人员，可以看做是特权人员，有权限访问银行系统，而用户很显然没有这种特权</p>
+</blockquote>
+<p><strong>两个步骤：</strong></p>
+<ul>
+<li>取号排队：用户去银行大厅取号，排队等候（与I/O模型中的准备数据对应）</li>
+<li>办理业务：被叫号后，用户到柜台前办理新卡业务（与I/O模型中的准备数据对应）</li>
+</ul>
+<p><strong>I/O模型：</strong></p>
+<ul>
+<li><strong>阻塞模型</strong>：用户去银行大厅取号排队，被叫号后办理业务，可看出，用户在拿到新银行卡前不能离开银行，需要一直在银行等候</li>
+<li><strong>非阻塞模型</strong>：银行系统升级，支持用户拨打专属客服电话（一个用户配一个专属客服），取号和询问叫号进度，用户可去办理自己的事情，然后隔一段时间问一下客服，当叫号时间临近，用户在去银行柜台办理业务，可看出，用户只需要在办理业务时去银行柜台等候办理即可，取号排队期间可以先去外面办理自己的事情，但是这种方式一个用户配一个专属客服，这对银行来说成本很大，也不利于服务更多用户</li>
+<li><strong>I/O多路复用模型</strong>：移动互联网时代，银行系统再次升级，开发一个网上取号和进度查询系统，用户可以直接在网上取号并查询叫号进度，与上一种模型不同的是，这个系统能服务所有的用户，但是办理业务时候，用户还是需要去银行柜台</li>
+<li><strong>异步模型</strong>：移动互联网+O2O时代，银行系统终极升级，开发了一个网上业务办理系统，用户上网录入办理业务信息并填入快递配送地址，银行职员办理好业务后，直接将新卡快递给用户</li>
+</ul>
+<blockquote>
+<p>再来结合例子看看诡异的同步阻塞、同步非阻塞、异步阻塞、异步非阻塞<br>
+<strong>阻塞模型</strong>可看做是<strong>同步阻塞</strong><br>
+<strong>非阻塞模型</strong>和<strong>I/O多路复用模型</strong>可看作是<strong>同步非阻塞</strong><br>
+<strong>异步模型</strong>可看做是<strong>异步非阻塞</strong><br>
+至此，异步阻塞是啥？对于异步模型，如果用户上网提交业务办理信息后，仍然跑去银行大厅一直等候，直至拿到新卡，这可称之为<strong>异步阻塞</strong>（诡异吧~~）</p>
+</blockquote>
+<p><strong>所以：综上所述，I/O模型重点理解阻塞I/O模型、非阻塞I/O模型、I/O多路复用模型和异步I/O模型</strong><br>
+<em>而无需过多纠结于同步阻塞、同步非阻塞、异步阻塞、异步非阻塞</em></p>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/blog/20171106/java-oio-nio-aio.html" data-toggle="tooltip" data-placement="top" title="Java OIO NIO AIO简介">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/blog/20170818/spring-schema.html" data-toggle="tooltip" data-placement="top" title="Spring Schema 扩展">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-io&#x8C03;&#x7528;">1 I/O&#x8C03;&#x7528;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text"><span id="11-&#x80CC;&#x666F;">1.1 &#x80CC;&#x666F;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text"><span id="12-&#x53C2;&#x4E0E;&#x8005;">1.2 &#x53C2;&#x4E0E;&#x8005;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text"><span id="13-&#x4E24;&#x4E2A;&#x6B65;&#x9AA4;">1.3 &#x4E24;&#x4E2A;&#x6B65;&#x9AA4;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-&#x4E94;&#x79CD;io&#x6A21;&#x578B;">2 &#x4E94;&#x79CD;IO&#x6A21;&#x578B;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text"><span id="21-&#x963B;&#x585E;io">2.1 &#x963B;&#x585E;I/O</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text"><span id="22-&#x975E;&#x963B;&#x585E;io">2.2 &#x975E;&#x963B;&#x585E;I/O</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text"><span id="23-io&#x591A;&#x8DEF;&#x590D;&#x7528;">2.3 I/O&#x591A;&#x8DEF;&#x590D;&#x7528;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.4.</span> <span class="toc-nav-text"><span id="24-&#x4FE1;&#x53F7;&#x9A71;&#x52A8;io">2.4 &#x4FE1;&#x53F7;&#x9A71;&#x52A8;I/O</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.5.</span> <span class="toc-nav-text"><span id="25-&#x5F02;&#x6B65;io">2.5 &#x5F02;&#x6B65;I/O</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.6.</span> <span class="toc-nav-text"><span id="26-&#x603B;&#x7ED3;">2.6 &#x603B;&#x7ED3;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.</span> <span class="toc-nav-text"><span id="3-java-io&#x5B9E;&#x73B0;">3 JAVA I/O&#x5B9E;&#x73B0;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text"><span id="31-java-bio">3.1 JAVA BIO</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text"><span id="32-java-nio">3.2 JAVA NIO</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.3.</span> <span class="toc-nav-text"><span id="33-java-aio">3.3 JAVA AIO</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.</span> <span class="toc-nav-text"><span id="4-&#x963B;&#x585E;-&#x975E;&#x963B;&#x585E;-&#x540C;&#x6B65;-&#x5F02;&#x6B65;">4 &#x963B;&#x585E; &#x975E;&#x963B;&#x585E; &#x540C;&#x6B65; &#x5F02;&#x6B65;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text"><span id="41-&#x91CA;&#x4E49;">4.1 &#x91CA;&#x4E49;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.1.1.</span> <span class="toc-nav-text"><span id="411-&#x963B;&#x585E;-vs-&#x975E;&#x963B;&#x585E;">4.1.1 &#x963B;&#x585E; <em>vs</em> &#x975E;&#x963B;&#x585E;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.1.2.</span> <span class="toc-nav-text"><span id="412-&#x540C;&#x6B65;-vs-&#x5F02;&#x6B65;">4.1.2 &#x540C;&#x6B65; <em>vs</em> &#x5F02;&#x6B65;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.1.3.</span> <span class="toc-nav-text"><span id="413-&#x603B;&#x7ED3;">4.1.3 &#x603B;&#x7ED3;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text"><span id="42-&#x793A;&#x4F8B;">4.2 &#x793A;&#x4F8B;</span></span></a></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Java IO" title="Java IO">Java IO</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://blog.csdn.net/liuxigiant" target="_blank">CSDN Blog LiuXi</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/liuxigiant">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; LiuXi 2018 
+                    <br>
+                    Theme by <a href="http://www.huweihuang.com">huweihuang</a> 
+                    | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huweihuang&repo=hexo-theme-huweihuang&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://www.liuxi.name/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-79292205-1';
+    var _gaDomain = 'liuxi.name';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="https://www.liuxi.name/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
