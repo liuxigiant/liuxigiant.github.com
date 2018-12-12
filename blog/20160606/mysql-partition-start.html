@@ -140,14 +140,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -211,12 +211,12 @@
                 post-container">
 
                 <p><strong>参考自官网：<a href="https://dev.mysql.com/doc/refman/5.5/en/partitioning.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.5/en/partitioning.html</a></strong></p>
-<h2><span id="bug-fix">BUG FIX</span></h2>
+<h2 id="bug-fix">BUG FIX</h2>
 <p>对分区表的了解源自一个bug，向历史表迁移数据时候报错，如下：<br>
 SQL state [HY000]; error code [1526]; Table has no partition for value 736452;<br>
 问题很简单，就是历史分区表没有新分区了，数据迁移不过去</p>
 <p>下面开始MySQL分区的学习之旅~~~</p>
-<h2><span id="mysql分区系统参数">MySQL分区系统参数</span></h2>
+<h2 id="mysql分区系统参数">MySQL分区系统参数</h2>
 <p>在安装的MySQL服务端，可以通过以下方式查看，是否支持自定义分区特性：</p>
 <ul>
 <li>mysql server 5.5版本可以通过 <code>SHOW VARIABLES</code> 命令查看</li>
@@ -233,14 +233,14 @@ have_partitioning变量在MySQL 5.6.1 版本已经被移除</p>
 <p>也可以查询<code>INFORMATION_SCHEMA.PLUGINS</code>表，会返回类似的结果：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SELECT </span><br><span class="line">    -&gt;     PLUGIN_NAME as Name, </span><br><span class="line">    -&gt;     PLUGIN_VERSION as Version, </span><br><span class="line">    -&gt;     PLUGIN_STATUS as Status </span><br><span class="line">    -&gt; FROM INFORMATION_SCHEMA.PLUGINS </span><br><span class="line">    -&gt; WHERE PLUGIN_TYPE=&apos;STORAGE ENGINE&apos;;</span><br><span class="line">+--------------------+---------+--------+</span><br><span class="line">| Name               | Version | Status |</span><br><span class="line">+--------------------+---------+--------+</span><br><span class="line">| binlog             | 1.0     | ACTIVE |</span><br><span class="line">| CSV                | 1.0     | ACTIVE |</span><br><span class="line">| MEMORY             | 1.0     | ACTIVE |</span><br><span class="line">| MRG_MYISAM         | 1.0     | ACTIVE |</span><br><span class="line">| MyISAM             | 1.0     | ACTIVE |</span><br><span class="line">| PERFORMANCE_SCHEMA | 0.1     | ACTIVE |</span><br><span class="line">| BLACKHOLE          | 1.0     | ACTIVE |</span><br><span class="line">| ARCHIVE            | 3.0     | ACTIVE |</span><br><span class="line">| InnoDB             | 5.6     | ACTIVE |</span><br><span class="line">| partition          | 1.0     | ACTIVE |</span><br><span class="line">+--------------------+---------+--------+</span><br><span class="line">10 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
 <p>若<code>partition</code>的<code>Status</code>列不是<code>ACTIVE</code>，则不支持分区。</p>
-<h2><span id="分区特性支持">分区特性支持</span></h2>
+<h2 id="分区特性支持">分区特性支持</h2>
 <ul>
 <li>ORACLE提供的MySQL 5.5社区版是包含分区的支持的；</li>
 <li>若从源码手动编译MySQL 5.5版本，需要配置<code>-DWITH_PARTITION_STORAGE_ENGINE</code>参数才能支持分区；</li>
 <li>若MySQL版本支持分区，则无需配置其他参数；</li>
 <li>若想关闭对分区的支持，在启动MySQL Server的时候，需要指定<code>--skip-partition</code>参数，这会是系统变量<code>have_partitioning</code>为<code>DISABLED</code>。当关闭了对分区的支持后，可以看见一些存在的分区表，也能删除分区表（不建议删除），但除此之外，分区表里的数据是不能操作和访问的。</li>
 </ul>
-<h2><span id="获取分区信息">获取分区信息</span></h2>
+<h2 id="获取分区信息">获取分区信息</h2>
 <p><strong>参考自官网：<a href="https://dev.mysql.com/doc/refman/5.5/en/partitioning-info.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.5/en/partitioning-info.html</a></strong></p>
 <ul>
 <li>
@@ -318,7 +318,7 @@ have_partitioning变量在MySQL 5.6.1 版本已经被移除</p>
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="bug-fix">BUG FIX</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="mysql&#x5206;&#x533A;&#x7CFB;&#x7EDF;&#x53C2;&#x6570;">MySQL&#x5206;&#x533A;&#x7CFB;&#x7EDF;&#x53C2;&#x6570;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.</span> <span class="toc-nav-text"><span id="&#x5206;&#x533A;&#x7279;&#x6027;&#x652F;&#x6301;">&#x5206;&#x533A;&#x7279;&#x6027;&#x652F;&#x6301;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.</span> <span class="toc-nav-text"><span id="&#x83B7;&#x53D6;&#x5206;&#x533A;&#x4FE1;&#x606F;">&#x83B7;&#x53D6;&#x5206;&#x533A;&#x4FE1;&#x606F;</span></span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#bug-fix"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">BUG FIX</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#mysql分区系统参数"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">MySQL&#x5206;&#x533A;&#x7CFB;&#x7EDF;&#x53C2;&#x6570;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#分区特性支持"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">&#x5206;&#x533A;&#x7279;&#x6027;&#x652F;&#x6301;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#获取分区信息"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">&#x83B7;&#x53D6;&#x5206;&#x533A;&#x4FE1;&#x606F;</span></a></li></ol>
         
         </div>
       </aside>

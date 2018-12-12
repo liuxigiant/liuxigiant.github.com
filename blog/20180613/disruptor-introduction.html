@@ -142,14 +142,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -222,8 +222,8 @@
 <li><strong>线程间事件传递</strong>：即基于JVM的（并不是分布式）生成者/消费者模型</li>
 <li><strong>无锁化</strong>：多生产者/多消费者对临界资源的共享不以锁的方式实现</li>
 </ul>
-<h1><span id="1-核心概念">1 核心概念</span></h1>
-<h2><span id="11-生产者消费者模型">1.1 生产者/消费者模型</span></h2>
+<h1 id="1-核心概念">1 核心概念</h1>
+<h2 id="11-生产者消费者模型">1.1 生产者/消费者模型</h2>
 <p><img src="/images/cust/disruptor/concept.png" alt=""></p>
 <p>在了解Disruptor之前，可先看看官方给出的图例</p>
 <p>我们从<strong>生产者/消费者模型</strong>来看上图，即只需要关注<code>Producer</code> <code>*Consumer</code> <code>RingBuffer</code>，其余的都是Disruptor的实现细节</p>
@@ -232,7 +232,7 @@
 <li><code>*Consumer</code>：事件消费者</li>
 <li><code>RingBuffer</code>：事件存储结构（基于内存）</li>
 </ul>
-<h2><span id="12-核心概念">1.2 核心概念</span></h2>
+<h2 id="12-核心概念">1.2 核心概念</h2>
 <p>通过<strong>生产者/消费者模型</strong>对Disruptor有个大致的了解后，下面介绍下图例中Disruptor涉及的一些核心概念：</p>
 <ul>
 <li>
@@ -267,9 +267,9 @@
 <p><strong>Wait Strategy</strong> : 等待策略，指定消费者在无事件可消费的情况下的等待策略</p>
 </li>
 </ul>
-<h1><span id="2-ringbuffer">2 RingBuffer</span></h1>
+<h1 id="2-ringbuffer">2 RingBuffer</h1>
 <p>在简单了解了Disruptor框架的核心概念之后，下面来了解下Disruptor框架的核心<code>RingBuffer</code></p>
-<h2><span id="21-特点">2.1 特点</span></h2>
+<h2 id="21-特点">2.1 特点</h2>
 <p><code>RingBuffer</code>有以下一些特点：</p>
 <ul>
 <li>
@@ -294,7 +294,7 @@
 在Disruptor的2.x之后的版本中，生产者访问RingBuffer的Sequencer被整合到RingBuffer类中了，即RingBuffer拥有序列cursor。<br>
 且多个生产者是共享一个序列cursor的（而多消费者有自己的序列），这也是多生产这并发控制的核心</li>
 </ul>
-<h2><span id="22-读">2.2 读</span></h2>
+<h2 id="22-读">2.2 读</h2>
 <p>消费者（事件处理器EventProcessor）是一个从RingBuffer里读取数据的线程，消费者维护了自己当前处理的事件的序列，然后通过 sequenceBarrier 获取RingBuffer当前可处理的数据的序列。</p>
 <p>若RingBuffer中可处理数据的序列大于当前消费者维护的序列，则获取事件处理；否则，根据指定的消费者等待策略<code>WaitStrategy</code>等待生产者写入事件。</p>
 <blockquote>
@@ -315,14 +315,14 @@
 <p>生产者通过<code>Sequencer</code>申请节点，且<code>Sequencer</code>维护了所有消费者的序列。<br>
 若申请序列要覆盖未消费的数据，则生产者自旋。结束自旋后继续申请。<br>
 申请校验成功后，则使用<code>CAS</code>设置<code>RingBuffer</code>序列，成功则退出；否则继续进行申请校验。</p>
-<h3><span id="232-提交">2.3.2 提交</span></h3>
+<h3 id="232-提交">2.3.2 提交</h3>
 <p>生产者完成了事件数据的处理后，提交事件，其实就是提交事件对应的序列，由<code>Sequencer</code>负责提交</p>
 <p>可参照<code>MultiProducerSequencer#publish</code>源码，主要完成以下两个动作</p>
 <ul>
 <li>设置当前序列可用</li>
 <li>唤醒等待的消费者</li>
 </ul>
-<h3><span id="231-多生产者写入">2.3.1 多生产者写入</span></h3>
+<h3 id="231-多生产者写入">2.3.1 多生产者写入</h3>
 <p>现在来回顾下，多生产者情况下，并发写入RingBuffer情况，其实就是考虑多生产者情况下的并发申请和并发提交的问题</p>
 <p><strong>并发申请</strong></p>
 <p>这是Disruptor框架中涉及到的一个并发问题，即并发申请下一节点</p>
@@ -336,7 +336,7 @@
 但是Disruptor 3.4.2发现提交时候并没有这个限制，而是提交时候设置各自的序列为可用。<br>
 Disruptor 3.4.2是处理后面的序列先提交的问题，是通过消费者获取最大可用序列来控制的，即1不提交，2不能被消费</p>
 </blockquote>
-<h2><span id="24-特点">2.4 特点</span></h2>
+<h2 id="24-特点">2.4 特点</h2>
 <ul>
 <li>
 <p>多生产者的写入，由一个<code>Sequencer</code>控制并发问题</p>
@@ -348,7 +348,7 @@ Disruptor 3.4.2是处理后面的序列先提交的问题，是通过消费者�
 <p>支持多生产者和多消费者，且无需加锁</p>
 </li>
 </ul>
-<h1><span id="3-消费者等待策略">3 消费者等待策略</span></h1>
+<h1 id="3-消费者等待策略">3 消费者等待策略</h1>
 <p>在<code>RingBuffer</code>中无可处理的事件时候，消费者有多种等待策略(busy wait策略，可能回造成CPU使用率过高)</p>
 <ul>
 <li>
@@ -404,7 +404,7 @@ CPU占用率高<br>
 要求低延迟、高吞吐、高性能（事件处理器线程小于物理CPU核数）</p>
 </li>
 </ul>
-<h1><span id="4-参考">4 参考</span></h1>
+<h1 id="4-参考">4 参考</h1>
 <p>本文部分内容翻译自官网：</p>
 <p><a href="https://github.com/LMAX-Exchange/disruptor/wiki/Introduction" target="_blank" rel="noopener">Introduction</a><br>
 <a href="https://github.com/LMAX-Exchange/disruptor/wiki/Getting-Started" target="_blank" rel="noopener">Getting-Started</a></p>
@@ -465,7 +465,7 @@ CPU占用率高<br>
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-&#x6838;&#x5FC3;&#x6982;&#x5FF5;">1 &#x6838;&#x5FC3;&#x6982;&#x5FF5;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text"><span id="11-&#x751F;&#x4EA7;&#x8005;&#x6D88;&#x8D39;&#x8005;&#x6A21;&#x578B;">1.1 &#x751F;&#x4EA7;&#x8005;/&#x6D88;&#x8D39;&#x8005;&#x6A21;&#x578B;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text"><span id="12-&#x6838;&#x5FC3;&#x6982;&#x5FF5;">1.2 &#x6838;&#x5FC3;&#x6982;&#x5FF5;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-ringbuffer">2 RingBuffer</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text"><span id="21-&#x7279;&#x70B9;">2.1 &#x7279;&#x70B9;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text"><span id="22-&#x8BFB;">2.2 &#x8BFB;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.1.</span> <span class="toc-nav-text"><span id="232-&#x63D0;&#x4EA4;">2.3.2 &#x63D0;&#x4EA4;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.2.</span> <span class="toc-nav-text"><span id="231-&#x591A;&#x751F;&#x4EA7;&#x8005;&#x5199;&#x5165;">2.3.1 &#x591A;&#x751F;&#x4EA7;&#x8005;&#x5199;&#x5165;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text"><span id="24-&#x7279;&#x70B9;">2.4 &#x7279;&#x70B9;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.</span> <span class="toc-nav-text"><span id="3-&#x6D88;&#x8D39;&#x8005;&#x7B49;&#x5F85;&#x7B56;&#x7565;">3 &#x6D88;&#x8D39;&#x8005;&#x7B49;&#x5F85;&#x7B56;&#x7565;</span></span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.</span> <span class="toc-nav-text"><span id="4-&#x53C2;&#x8003;">4 &#x53C2;&#x8003;</span></span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#1-核心概念"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">1 &#x6838;&#x5FC3;&#x6982;&#x5FF5;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#11-生产者消费者模型"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">1.1 &#x751F;&#x4EA7;&#x8005;/&#x6D88;&#x8D39;&#x8005;&#x6A21;&#x578B;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#12-核心概念"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">1.2 &#x6838;&#x5FC3;&#x6982;&#x5FF5;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#2-ringbuffer"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">2 RingBuffer</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#21-特点"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">2.1 &#x7279;&#x70B9;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#22-读"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">2.2 &#x8BFB;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#232-提交"><span class="toc-nav-number">2.2.1.</span> <span class="toc-nav-text">2.3.2 &#x63D0;&#x4EA4;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#231-多生产者写入"><span class="toc-nav-number">2.2.2.</span> <span class="toc-nav-text">2.3.1 &#x591A;&#x751F;&#x4EA7;&#x8005;&#x5199;&#x5165;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#24-特点"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">2.4 &#x7279;&#x70B9;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#3-消费者等待策略"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">3 &#x6D88;&#x8D39;&#x8005;&#x7B49;&#x5F85;&#x7B56;&#x7565;</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#4-参考"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">4 &#x53C2;&#x8003;</span></a></li></ol>
         
         </div>
       </aside>

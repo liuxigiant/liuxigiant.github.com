@@ -142,14 +142,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -216,8 +216,8 @@
 &quot;a library for composing asynchronous and event-based programs using observable sequences for the Java VM&quot;<br>
 一个在 Java VM 上使用可观测的序列来组成异步的、基于事件的程序的库</p>
 <p>本篇主要探讨RxJava实现异步并发，对于RxJava的基础只做简要的概述</p>
-<h1><span id="1-rxjava简介">1 Rxjava简介</span></h1>
-<h2><span id="11-基本概念">1.1 基本概念</span></h2>
+<h1 id="1-rxjava简介">1 Rxjava简介</h1>
+<h2 id="11-基本概念">1.1 基本概念</h2>
 <p>Rxjava是一个响应式编程的框架，包含 <code>Observeable</code> 和 <code>Observer</code> 两个核心概念。</p>
 <ul>
 <li><code>Observeable</code> ： 被观察者</li>
@@ -232,19 +232,19 @@
 <blockquote>
 <p><code>onNext</code>方法并不是<code>Observeable</code>，而是在创建<code>Observeable</code>对象时候，创建的数据发射对象<code>ObservableEmitter</code>的方法</p>
 </blockquote>
-<h2><span id="12-线程切换-异步执行">1.2 线程切换、异步执行</span></h2>
+<h2 id="12-线程切换-异步执行">1.2 线程切换、异步执行</h2>
 <p><strong>默认情况下</strong>，被观察者<code>Observeable</code>发送数据和观察者<code>Observer</code>处理数据是在<strong>同一个线程</strong>执行的。</p>
 <p>同时Rxjava也支持异步发送数据和处理数据，但是<strong>异步执行并不意味着并发执行</strong>。</p>
 <ul>
 <li><code>Observeable.subscribeOn</code>： 切换被观察者<code>Observeable</code>发送数据的执行线程</li>
 <li><code>Observeable.observerOn</code>：切换观察者<code>Observer</code>处理数据的执行线程</li>
 </ul>
-<h1><span id="2-rxjava并发">2 Rxjava并发</span></h1>
+<h1 id="2-rxjava并发">2 Rxjava并发</h1>
 <p>虽然线程切换能实现异步执行，但是很多场景下，我们希望的是<strong>异步并发</strong>执行。</p>
 <p>显然，异步并发执行涉及到两部分：被观察者<code>Observeable</code>发送数据和观察者<code>Observer</code>处理数据两部分。</p>
 <p>首先我们了解下Rxjava的设计理念： <code>onNext</code>(即数据发送)需要被按照特定的顺序<strong>依次执行</strong>，即使在多线程执行的情况下,<code>onNext</code>也不能同时被调用。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">A common question about RxJava is how to achieve parallelization, or emitting multiple items concurrently from an Observable.</span><br><span class="line">Of course, this definition breaks the Observable Contract which states that onNext() must be called sequentially and never concurrently by more than one thread at a time.</span><br></pre></td></tr></table></figure>
-<h2><span id="21-被观察者observeable异步并发">2.1 被观察者<code>Observeable</code>异步并发</span></h2>
+<h2 id="21-被观察者observeable异步并发">2.1 被观察者<code>Observeable</code>异步并发</h2>
 <p>首先分析下被观察者<code>Observeable</code>异步并发执行，其实是指我们能够实现多线程并发的准备数据，而并不是要多线程并发执行<code>onNext</code>方法。</p>
 <p>那么现在问题就转换成，如何实现被观察者<code>Observeable</code>异步并发执行准备数据逻辑，方案如下：</p>
 <p>在源<code>Observeable</code>上执行<code>flatMap</code>，然后在<code>flatMap</code>中创建多个<code>Observeable</code>，多个<code>Observeable</code>通过<code>subscribeOn</code>切换线程，并发执行。</p>
@@ -256,7 +256,7 @@
 <p>这里隐含了一个问题：单个线程<code>Observeable</code>发送数据（执行<code>onNext</code>）是按照<strong>特性的顺序</strong>的，但是多线程<code>Observeable</code>发送数据的<strong>顺序是不能保证</strong>的。</p>
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Now you may also be asking &quot;Well... why is the Subscriber receiving emissions from multiple threads then? That sounds an awful lot like concurrent onNext() calls are happening and that breaks the contract.&quot;</span><br><span class="line">Actually, there are no concurrent onNext() calls happening. The flatMap() has to merge emissions from multiple Observables happening on multiple threads, but it cannot allow concurrent onNext() calls to happen down the chain including the Subscriber. It will not block and synchronize either because that would undermine the benefits of RxJava. Instead of blocking, it will re-use the thread currently emitting something out of the flatMap(). If other threads want to emit items while another thread is emitting out the flatMap(),   the other threads will leave their emissions for the occupying thread to take ownership of.</span><br></pre></td></tr></table></figure>
-<h2><span id="22-观察者observer异步并发">2.2 观察者<code>Observer</code>异步并发</span></h2>
+<h2 id="22-观察者observer异步并发">2.2 观察者<code>Observer</code>异步并发</h2>
 <p>前面有提到<code>onNext</code>即使是在多线程并发执的情况下，也是依次执行的，也就是不会有并发的情况。</p>
 <p>所以，<code>Observer</code>并不会并发收到数据来处理，<code>Observer</code>的并发执行其实是没有意义的，虽然也能实现异步执行的效果，但是和异步并发的效果其实是不一致的。</p>
 <blockquote>
@@ -319,7 +319,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-rxjava&#x7B80;&#x4ECB;">1 Rxjava&#x7B80;&#x4ECB;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text"><span id="11-&#x57FA;&#x672C;&#x6982;&#x5FF5;">1.1 &#x57FA;&#x672C;&#x6982;&#x5FF5;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text"><span id="12-&#x7EBF;&#x7A0B;&#x5207;&#x6362;-&#x5F02;&#x6B65;&#x6267;&#x884C;">1.2 &#x7EBF;&#x7A0B;&#x5207;&#x6362;&#x3001;&#x5F02;&#x6B65;&#x6267;&#x884C;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-rxjava&#x5E76;&#x53D1;">2 Rxjava&#x5E76;&#x53D1;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text"><span id="21-&#x88AB;&#x89C2;&#x5BDF;&#x8005;observeable&#x5F02;&#x6B65;&#x5E76;&#x53D1;">2.1 &#x88AB;&#x89C2;&#x5BDF;&#x8005;<code>Observeable</code>&#x5F02;&#x6B65;&#x5E76;&#x53D1;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text"><span id="22-&#x89C2;&#x5BDF;&#x8005;observer&#x5F02;&#x6B65;&#x5E76;&#x53D1;">2.2 &#x89C2;&#x5BDF;&#x8005;<code>Observer</code>&#x5F02;&#x6B65;&#x5E76;&#x53D1;</span></span></a></li></ol></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#1-rxjava简介"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">1 Rxjava&#x7B80;&#x4ECB;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#11-基本概念"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">1.1 &#x57FA;&#x672C;&#x6982;&#x5FF5;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#12-线程切换-异步执行"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">1.2 &#x7EBF;&#x7A0B;&#x5207;&#x6362;&#x3001;&#x5F02;&#x6B65;&#x6267;&#x884C;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#2-rxjava并发"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">2 Rxjava&#x5E76;&#x53D1;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#21-被观察者observeable异步并发"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">2.1 &#x88AB;&#x89C2;&#x5BDF;&#x8005;<code>Observeable</code>&#x5F02;&#x6B65;&#x5E76;&#x53D1;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#22-观察者observer异步并发"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">2.2 &#x89C2;&#x5BDF;&#x8005;<code>Observer</code>&#x5F02;&#x6B65;&#x5E76;&#x53D1;</span></a></li></ol></li></ol>
         
         </div>
       </aside>

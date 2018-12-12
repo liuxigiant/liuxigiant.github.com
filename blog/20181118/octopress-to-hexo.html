@@ -140,14 +140,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -210,34 +210,34 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="1-起因">1 起因</span></h2>
+                <h2 id="1-起因">1 起因</h2>
 <p>某次上网查找问题，找到一篇文章，发现也是一个静态的个人博客，用Hexo生成挂到了Github Pages上。</p>
 <p>后面上网搜了下Hexo相关的文章，发现Hexo搭建的博客整体样式比Octopress好看很多，受众和文档也比较多。</p>
 <p>然后开始折腾把Octopress迁移到Hexo</p>
-<h2><span id="2-迁移">2 迁移</span></h2>
-<h3><span id="21-选择主题">2.1 选择主题</span></h3>
+<h2 id="2-迁移">2 迁移</h2>
+<h3 id="21-选择主题">2.1 选择主题</h3>
 <p>迁移前，先去<a href="https://hexo.io/zh-cn/" target="_blank" rel="noopener">hexo官网</a>选一个主题，或者上网搜索选一下主题</p>
 <p>本博客现在使用的主题其实就是上面个人博客作者创建的，后来发现在hexo官网的主题中也有，链接如下：<br>
 <a href="https://github.com/huweihuang/hexo-theme-huweihuang/" target="_blank" rel="noopener">https://github.com/huweihuang/hexo-theme-huweihuang/</a></p>
-<h3><span id="22-基础命令安装">2.2 基础命令安装</span></h3>
+<h3 id="22-基础命令安装">2.2 基础命令安装</h3>
 <p>主要需要安装以下三个命令：</p>
 <ul>
 <li>npm: 前端开发应该很熟悉，用于依赖管理，搜索下node安装即可</li>
 <li>git: 用于将构建好的静态博客提交到GitHub Pages仓库的，主流版本管理工具，安装方式就不废话了</li>
 <li>hexo: 用于构建、生成、发布静态博客，安装命令 npm install -g hexo-cli</li>
 </ul>
-<h3><span id="23-初始化hexo本地博客目录">2.3 初始化Hexo本地博客目录</span></h3>
+<h3 id="23-初始化hexo本地博客目录">2.3 初始化Hexo本地博客目录</h3>
 <p>上面选择好的主题，从Github上git clone到本地之后，就可以当作本地的博客目录了</p>
 <blockquote>
 <p>若不选择主题，直接搭建Hexo本地博客目录，则需要执行hexo init初始化；</p>
 <p>而从Github上clone下来的的已有的主题不需要初始化，按照主题的使用说明，<strong>修改自己的配置</strong>即可</p>
 </blockquote>
-<h3><span id="24-迁移">2.4 迁移</span></h3>
+<h3 id="24-迁移">2.4 迁移</h3>
 <p>其实迁移很简单，就是将原来_post下面的markdown 文件复制到现在的_post目录下即可</p>
 <blockquote>
 <p>若存在相对路径的images文件，也拷贝到相应的目录下即可</p>
 </blockquote>
-<h3><span id="25-构建静态博客">2.5 构建静态博客</span></h3>
+<h3 id="25-构建静态博客">2.5 构建静态博客</h3>
 <p>其实和Octopress差不多，只不过在使用Hexo命令生成静态博客之前，需要执行npm install 命令安装依赖</p>
 <blockquote>
 <p>执行npm相关命令，可指定或配置国内镜像，例如：npm install --registry=https://registry.npm.taobao.org</p>
@@ -250,20 +250,23 @@
 <li>hexo server ：本地预览，可在浏览器查看生成的博客 localhost:4000</li>
 <li>hexo deploy ：发布到Github Pages</li>
 </ul>
-<h2><span id="3-问题">3 问题</span></h2>
+<h2 id="3-问题">3 问题</h2>
 <p>最后记录下一些问题</p>
-<h3><span id="31-新建文章的文件名">3.1 新建文章的文件名</span></h3>
+<h3 id="31-新建文章的文件名">3.1 新建文章的文件名</h3>
 <p>从Octopress迁移过来的，希望markdown源文件名和以前的风格保持一致</p>
 <p>修改根目录下的<code>_config.yml</code>文件中的<code>new_post_name</code>配置下，根据以前的习惯即可，我的配置是</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">new_post_name: :year-:month-:day-:title.md # File name of new posts</span><br></pre></td></tr></table></figure>
-<h3><span id="32-博客文章的链接">3.2 博客文章的链接</span></h3>
+<h3 id="32-博客文章的链接">3.2 博客文章的链接</h3>
 <p>从Octopress迁移过来的，希望生成的博客文章的链接和以前一致</p>
 <p>修改根目录下的<code>_config.yml</code>文件中的<code>permalink</code>配置下，根据以前的习惯即可，我的配置是</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">permalink: blog/:year:month:day/:title.html</span><br></pre></td></tr></table></figure>
-<h3><span id="33-博客文章目录toc链接跳转失效">3.3 博客文章目录TOC链接跳转失效</span></h3>
+<h3 id="33-博客文章目录toc链接跳转失效">3.3 博客文章目录TOC链接跳转失效</h3>
 <p>本人使用的<a href="https://github.com/huweihuang/hexo-theme-huweihuang/" target="_blank" rel="noopener">Hexo主题</a>中会有TOC目录链接失效，点击不跳转的问题，从生成的静态博客html源码来看，超链接是undefined，根据其<a href="https://github.com/huweihuang/hexo-theme-huweihuang/issues/1" target="_blank" rel="noopener">github issue</a>说是音乐播放器的问题，但是我禁用了播放器，重新构建后仍然不行。</p>
 <p>后来当前主题也是从另外一个主题<a href="https://github.com/YenYuHsuan/hexo-theme-beantech" target="_blank" rel="noopener">beantech</a>的基础上修改的，找到一个issues <a href="https://github.com/YenYuHsuan/hexo-theme-beantech/issues/19" target="_blank" rel="noopener">Toc feature seems not working</a>，其解决方式如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">open node_modules/hexo-toc/lib/filter.js under your project root directory and modify line 28 to 31 as follows</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>open node_modules/hexo-toc/lib/filter.js under your project root directory and modify line 28 to 31 as follows</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$title.attr(&apos;id&apos;, id);</span><br><span class="line">// $title.children(&apos;a&apos;).remove();</span><br><span class="line">// $title.html( &apos;&lt;span id=&quot;&apos; + id + &apos;&quot;&gt;&apos; + $title.html() + &apos;&lt;/span&gt;&apos; );</span><br><span class="line">// $title.removeAttr(&apos;id&apos;);</span><br></pre></td></tr></table></figure>
 <p>至此，虽然解决了TOC链接失效的问题，但是开启音乐播放器配置，TOC仍然失效，目前只好关闭这个配置了（可关注主题作者关于音乐播放器的issue）</p>
 
                 
@@ -315,7 +318,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-&#x8D77;&#x56E0;">1 &#x8D77;&#x56E0;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-&#x8FC1;&#x79FB;">2 &#x8FC1;&#x79FB;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text"><span id="21-&#x9009;&#x62E9;&#x4E3B;&#x9898;">2.1 &#x9009;&#x62E9;&#x4E3B;&#x9898;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text"><span id="22-&#x57FA;&#x7840;&#x547D;&#x4EE4;&#x5B89;&#x88C5;">2.2 &#x57FA;&#x7840;&#x547D;&#x4EE4;&#x5B89;&#x88C5;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text"><span id="23-&#x521D;&#x59CB;&#x5316;hexo&#x672C;&#x5730;&#x535A;&#x5BA2;&#x76EE;&#x5F55;">2.3 &#x521D;&#x59CB;&#x5316;Hexo&#x672C;&#x5730;&#x535A;&#x5BA2;&#x76EE;&#x5F55;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.4.</span> <span class="toc-nav-text"><span id="24-&#x8FC1;&#x79FB;">2.4 &#x8FC1;&#x79FB;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.5.</span> <span class="toc-nav-text"><span id="25-&#x6784;&#x5EFA;&#x9759;&#x6001;&#x535A;&#x5BA2;">2.5 &#x6784;&#x5EFA;&#x9759;&#x6001;&#x535A;&#x5BA2;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.</span> <span class="toc-nav-text"><span id="3-&#x95EE;&#x9898;">3 &#x95EE;&#x9898;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text"><span id="31-&#x65B0;&#x5EFA;&#x6587;&#x7AE0;&#x7684;&#x6587;&#x4EF6;&#x540D;">3.1 &#x65B0;&#x5EFA;&#x6587;&#x7AE0;&#x7684;&#x6587;&#x4EF6;&#x540D;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text"><span id="32-&#x535A;&#x5BA2;&#x6587;&#x7AE0;&#x7684;&#x94FE;&#x63A5;">3.2 &#x535A;&#x5BA2;&#x6587;&#x7AE0;&#x7684;&#x94FE;&#x63A5;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.3.</span> <span class="toc-nav-text"><span id="33-&#x535A;&#x5BA2;&#x6587;&#x7AE0;&#x76EE;&#x5F55;toc&#x94FE;&#x63A5;&#x8DF3;&#x8F6C;&#x5931;&#x6548;">3.3 &#x535A;&#x5BA2;&#x6587;&#x7AE0;&#x76EE;&#x5F55;TOC&#x94FE;&#x63A5;&#x8DF3;&#x8F6C;&#x5931;&#x6548;</span></span></a></li></ol></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-起因"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">1 &#x8D77;&#x56E0;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-迁移"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">2 &#x8FC1;&#x79FB;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#21-选择主题"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">2.1 &#x9009;&#x62E9;&#x4E3B;&#x9898;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#22-基础命令安装"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">2.2 &#x57FA;&#x7840;&#x547D;&#x4EE4;&#x5B89;&#x88C5;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#23-初始化hexo本地博客目录"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">2.3 &#x521D;&#x59CB;&#x5316;Hexo&#x672C;&#x5730;&#x535A;&#x5BA2;&#x76EE;&#x5F55;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#24-迁移"><span class="toc-nav-number">2.4.</span> <span class="toc-nav-text">2.4 &#x8FC1;&#x79FB;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#25-构建静态博客"><span class="toc-nav-number">2.5.</span> <span class="toc-nav-text">2.5 &#x6784;&#x5EFA;&#x9759;&#x6001;&#x535A;&#x5BA2;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-问题"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">3 &#x95EE;&#x9898;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#31-新建文章的文件名"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">3.1 &#x65B0;&#x5EFA;&#x6587;&#x7AE0;&#x7684;&#x6587;&#x4EF6;&#x540D;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#32-博客文章的链接"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">3.2 &#x535A;&#x5BA2;&#x6587;&#x7AE0;&#x7684;&#x94FE;&#x63A5;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#33-博客文章目录toc链接跳转失效"><span class="toc-nav-number">3.3.</span> <span class="toc-nav-text">3.3 &#x535A;&#x5BA2;&#x6587;&#x7AE0;&#x76EE;&#x5F55;TOC&#x94FE;&#x63A5;&#x8DF3;&#x8F6C;&#x5931;&#x6548;</span></a></li></ol></li></ol>
         
         </div>
       </aside>

@@ -140,14 +140,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -211,21 +211,21 @@
                 post-container">
 
                 <p><strong>参考自官网：<a href="https://dev.mysql.com/doc/refman/5.5/en/partitioning-overview.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.5/en/partitioning-overview.html</a></strong></p>
-<h2><span id="概念">概念</span></h2>
+<h2 id="概念">概念</h2>
 <ul>
 <li>**分区：**使用特定的分区规则将一个表的数据分布到操作系统的不同目录和磁盘上。实际上，单个表的各个部分数据是作为分离的表存储在不同的位置的。</li>
 <li>**分区规则：**完成分离表数据的分区方法，MySQL提供了<a href="https://dev.mysql.com/doc/refman/5.5/en/partitioning-types.html" target="_blank" rel="noopener">四种分区类型（range, list, hash, key）</a>。</li>
 <li>**水平分区：**将一张表的不同行的数据分离到不同的物理分区，MySQL目前的分区方式就是水平分区。</li>
 <li>**垂直分区：**将一张表的不同列的数据分离到不同的物理分区，MySQL 5.5不支持垂直分区。</li>
 </ul>
-<h2><span id="mysql存储引擎和分区">MySQL存储引擎和分区</span></h2>
+<h2 id="mysql存储引擎和分区">MySQL存储引擎和分区</h2>
 <p>MySQL Server中的大部分存储引擎都支持分区表的创建（<code>MERGE</code>、<code>CSV</code>、<code>FEDERATED</code>存储引擎不支持），分区引擎与存储引擎运行在隔离的系统层面，并且可以相互交互。在MySQL 5.5，同一个分区表的所有分区必须是同一种存储引擎。<br>
 例如：一个分区使用<code>MyISAM</code>存储引擎，而另一个分区使用<code>InnoDB</code>存储引擎。然而，MySQL Server也没有机制阻止不同的分区使用不同的存储引擎。</p>
 <blockquote>
 <p>注意：<br>
 分区针对一张表的所有数据和所有索引生效。不能只对数据分区而不对索引分区，反之亦然。也不能只对表的部分数据分区。</p>
 </blockquote>
-<h2><span id="分区的优势">分区的优势</span></h2>
+<h2 id="分区的优势">分区的优势</h2>
 <ul>
 <li>分区能让一张表存储更多的数据</li>
 <li>当一些数据不再有较高的价值的时候，可以通过删除数据所在的分区，方便的删除数据。同样，需要增加一个特殊数据，也可以添加新的分区来存储</li>
@@ -236,7 +236,7 @@
 <li>对于<code>SUM()</code>、<code>COUNT()</code>等统计函数，分区查询能做到并行处理。例如：<code>SELECT salesperson_id, COUNT(orders) as order_total FROM sales GROUP BY salesperson_id;</code>这个查询语句，分区查询的并行处理优化的方式是，每个分区同时执行查询，最后对各分区结果做聚合。</li>
 <li>对于多个磁盘数据查询，实现更高的查询吞吐量</li>
 </ul>
-<h2><span id="分区的限制">分区的限制</span></h2>
+<h2 id="分区的限制">分区的限制</h2>
 <p>分区表也存在一些限制：</p>
 <ul>
 <li>算数运算符和逻辑运算符<br>
@@ -250,7 +250,7 @@
 <blockquote>
 <p>以上只是简单的罗列出几点，详细情况可参考<a href="https://dev.mysql.com/doc/refman/5.5/en/partitioning-limitations.html" target="_blank" rel="noopener">官网文档</a></p>
 </blockquote>
-<h2><span id="分区表管理">分区表管理</span></h2>
+<h2 id="分区表管理">分区表管理</h2>
 <p>MySQL提供了<a href="https://dev.mysql.com/doc/refman/5.5/en/partitioning-types.html" target="_blank" rel="noopener">四种分区类型（range, list, hash, key）</a>。常用方式一般是根据时间进行分区，MySQL对<code>TO_DAYS()</code>, <code>YEAR()</code>, <code>TO_SECONDS()</code>这些处理时间的函数也进行了优化。下面给出一个简单示例：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  创建分区表</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t_test`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">BIGINT</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'id'</span>,</span><br><span class="line">  <span class="string">`create_time`</span> DATETIME <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'创建时间'</span>,</span><br><span class="line">  <span class="string">`user_name`</span> <span class="built_in">VARCHAR</span>(<span class="number">100</span>) <span class="keyword">COMMENT</span> <span class="string">'用户名'</span>,</span><br><span class="line">   PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>,<span class="string">`create_time`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">INNODB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8</span><br><span class="line">  <span class="keyword">PARTITION</span> <span class="keyword">BY</span> <span class="keyword">RANGE</span> (<span class="keyword">TO_DAYS</span>(<span class="string">`create_time`</span>))</span><br><span class="line"> (</span><br><span class="line">    <span class="keyword">PARTITION</span> p0 <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span>   (<span class="keyword">TO_DAYS</span>(<span class="string">'2016-07-01'</span>))</span><br><span class="line"> );</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> <span class="comment">/*</span></span><br><span class="line"><span class="comment">   增加分区</span></span><br><span class="line"><span class="comment"> */</span> </span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> t_test <span class="keyword">ADD</span> <span class="keyword">PARTITION</span>(<span class="keyword">PARTITION</span> p1 <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> (<span class="keyword">TO_DAYS</span>(<span class="string">'2016-07-01'</span>)));</span><br></pre></td></tr></table></figure>
 <p>上面的示例只是简单的创建分区表和给分区表增加分区，还要其他关于删除分区、重建分区等操作，可以参考官方文档：<a href="https://dev.mysql.com/doc/refman/5.5/en/partitioning-management.html" target="_blank" rel="noopener">https://dev.mysql.com/doc/refman/5.5/en/partitioning-management.html</a></p>
@@ -308,7 +308,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="&#x6982;&#x5FF5;">&#x6982;&#x5FF5;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="mysql&#x5B58;&#x50A8;&#x5F15;&#x64CE;&#x548C;&#x5206;&#x533A;">MySQL&#x5B58;&#x50A8;&#x5F15;&#x64CE;&#x548C;&#x5206;&#x533A;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.</span> <span class="toc-nav-text"><span id="&#x5206;&#x533A;&#x7684;&#x4F18;&#x52BF;">&#x5206;&#x533A;&#x7684;&#x4F18;&#x52BF;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.</span> <span class="toc-nav-text"><span id="&#x5206;&#x533A;&#x7684;&#x9650;&#x5236;">&#x5206;&#x533A;&#x7684;&#x9650;&#x5236;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.</span> <span class="toc-nav-text"><span id="&#x5206;&#x533A;&#x8868;&#x7BA1;&#x7406;">&#x5206;&#x533A;&#x8868;&#x7BA1;&#x7406;</span></span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#概念"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">&#x6982;&#x5FF5;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#mysql存储引擎和分区"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">MySQL&#x5B58;&#x50A8;&#x5F15;&#x64CE;&#x548C;&#x5206;&#x533A;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#分区的优势"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">&#x5206;&#x533A;&#x7684;&#x4F18;&#x52BF;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#分区的限制"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">&#x5206;&#x533A;&#x7684;&#x9650;&#x5236;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#分区表管理"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">&#x5206;&#x533A;&#x8868;&#x7BA1;&#x7406;</span></a></li></ol>
         
         </div>
       </aside>

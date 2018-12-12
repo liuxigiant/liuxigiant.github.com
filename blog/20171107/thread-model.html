@@ -142,14 +142,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -219,38 +219,38 @@
 <p>其实也不仅仅局限于JAVA，线程模型的思路都是可以相通的，只不过对于熟悉JAVA的人来说，结合JAVA I/O来理解线程模型，能更加了解线程模型的处理方式</p>
 </blockquote>
 <p><strong>线程模型的选择都是为了处理更高的并发量，即下面讨论的基础是更加高效的处理持续增长的并发请求。</strong></p>
-<h1><span id="1-阻塞io线程模型">1 阻塞I/O线程模型</span></h1>
+<h1 id="1-阻塞io线程模型">1 阻塞I/O线程模型</h1>
 <p>对于<strong>阻塞I/O</strong>来说，服务器接收到一个服务调用后，会分配一个线程，处理服务请求的整个流程接收请求、处理和发送响应。而对于这种简单的I/O模型来说，程序的处理流程比较简单，顺序执行即可，那么这种I/O模型需要什么样线程处理模型呢？</p>
 <p>由于每个服务调用都会创建一个线程，并发量持续增加时，线程的数量也会持续增加，此时，不管是线程创建和销毁的开销、线程上线文切换的开销还是硬件的限制，都不能满足请求的高效处理。</p>
 <p>这种情况下，可以采取<strong>线程池</strong>的方式处理请求，限制了线程数量的上线，也能复用线程减少线程销毁和创建的开销和线程上线文切换的开销。</p>
-<h1><span id="2-reactor模型">2 Reactor模型</span></h1>
+<h1 id="2-reactor模型">2 Reactor模型</h1>
 <p>Reactor – 反应堆</p>
 <p>对于NIO（I/O多路复用模型）来说，由I/O多路复用器Selector来管理大量的I/O操作，I/O多路复用器Selector负责注册和监听I/O事件，当有事件触发是，调用相应的逻辑处理流程，这种I/O模型又演化出什么样的线程模型呢？</p>
-<h2><span id="21-定义">2.1 定义</span></h2>
+<h2 id="21-定义">2.1 定义</h2>
 <p>Reactor 模型：一种<strong>事件驱动</strong>的线程模型，用于同步I/O（JAVA NIO，多路复用I/O模型），将I/O事件注册到多路复用器Selector上，I/O线程轮询事件，当有I/O事件触发，多路复用器将事件分发到相应的工作线程中进行处理。</p>
 <blockquote>
 <p>从上面可以看出，重点是I/O线程和工作线程。I/O线程负责注册和监听I/O事件。工作线程负责处理I/O事件。</p>
 </blockquote>
-<h2><span id="22-角色">2.2 角色</span></h2>
+<h2 id="22-角色">2.2 角色</h2>
 <p>在探讨不同的Reactor线程模型前，先明确下Reactor模型中涉及的几个角色:</p>
 <ul>
 <li>Reactor(Dispatcher)：将I/O事件分发给对应的工作线程处理器Handler</li>
 <li>Acceptor：处理客户端的连接请求</li>
 <li>工作线程处理器Handler：处理I/O事件</li>
 </ul>
-<h2><span id="23-分类">2.3 分类</span></h2>
+<h2 id="23-分类">2.3 分类</h2>
 <p>在Reactor模型中根据给不同的角色分配不同的线程可以将Reactor模型分为：Reactor单线程模型、Reactor多线程模型和主从Reactor多线程模型</p>
-<h3><span id="231-reactor单线程模型">2.3.1 Reactor单线程模型</span></h3>
+<h3 id="231-reactor单线程模型">2.3.1 Reactor单线程模型</h3>
 <p><img src="/images/thread_model_single.jpg" alt=""></p>
 <p><strong>Reactor单线程模型</strong>是指Reactor、Acceptor和Handler三个角色在同一个线程中，即多路复用器阻塞轮询事件，事件触发后，调用相应的handler处理。</p>
 <blockquote>
 <p><strong>Reactor单线程模型</strong>适用于handler处理耗时较少的场景和并发请求量不是特别大的场景，若handler处理耗时较长，会影响后续事件的处理，从而降低了整体的处理效率</p>
 </blockquote>
-<h3><span id="232-reactor多线程模型">2.3.2 Reactor多线程模型</span></h3>
+<h3 id="232-reactor多线程模型">2.3.2 Reactor多线程模型</h3>
 <p><img src="/images/thread_model_multi.jpg" alt=""></p>
 <p><strong>Reactor单线程模型</strong>中I/O读写和数据处理属于同步操作，在同一个线程中处理，无法处理大量的连接，为了不影响Acceptor线程处理客户端连接，可以将Acceptor线程和I/O处理线程分离开来。</p>
 <p>如上图，Acceptor分配单独的线程，完成客户端连接请求处理和事件监听，I/O事件触发后，将事件分发给Handler线程池进行处理（包含I/O读写），这就是<strong>Reactor多线程模型</strong></p>
-<h3><span id="233-主从reactor多线程模型">2.3.3 主从Reactor多线程模型</span></h3>
+<h3 id="233-主从reactor多线程模型">2.3.3 主从Reactor多线程模型</h3>
 <p><img src="/images/thread_model_main_sub.jpg" alt=""></p>
 <p><strong>主从Reactor多线程模型</strong>分为Main Reactor线程池、Sub Reactor线程池和工作线程池（不包含I/O读写）。</p>
 <ul>
@@ -264,11 +264,11 @@
 <li>Sub Reactor线程池完成I/O读写和编码解码，将这部分任务从工作线程handler中剥离出来</li>
 <li>工作线程池不负责I/O相关，只处理目标数据类型的数据，处理请求是无需关心解码，发送响应时无需关心编码</li>
 </ul>
-<h1><span id="3-preactor模型">3 PReactor模型</span></h1>
+<h1 id="3-preactor模型">3 PReactor模型</h1>
 <p><strong>PReactor模型</strong>是真正的异步模型，用于异步I/O(JAVA AIO)，执行I/O操作时，提交回调处理函数，I/O操作完成后由操作系统自动完成回调函数的调用。</p>
 <p>PReactor模型中的回调函数，可以是事件分发器，根据不同的连接的I/O操作，分发给相应的工作线程进行处理。</p>
 <p>PReactor屏蔽了操作系统支持异步I/O的细节，应用无需显示地创建异步线程，只需关心I/O操作完成后的业务逻辑。</p>
-<h1><span id="4-reactor模型与preactor模型的区别">4 Reactor模型与PReactor模型的区别</span></h1>
+<h1 id="4-reactor模型与preactor模型的区别">4 Reactor模型与PReactor模型的区别</h1>
 <ul>
 <li>
 <p>I/O模型：<strong>Reactor模型</strong>用于同步I/O(I/O多路复用)；<strong>PReactor模型</strong>用于异步I/O</p>
@@ -284,7 +284,7 @@
 <strong>PReactor模型</strong>是从异步I/o模型层面，操作系统本身实现的异步化</p>
 </li>
 </ul>
-<h1><span id="5-参考文档">5 参考文档</span></h1>
+<h1 id="5-参考文档">5 参考文档</h1>
 <p><a href="">http://www.uml.org.cn/j2ee/2014060411.asp</a><br>
 <a href="">http://blog.csdn.net/u013074465/article/details/46276967</a><br>
 <a href="">http://www.jasongj.com/java/nio_reactor/</a></p>
@@ -342,7 +342,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-&#x963B;&#x585E;io&#x7EBF;&#x7A0B;&#x6A21;&#x578B;">1 &#x963B;&#x585E;I/O&#x7EBF;&#x7A0B;&#x6A21;&#x578B;</span></span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-reactor&#x6A21;&#x578B;">2 Reactor&#x6A21;&#x578B;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text"><span id="21-&#x5B9A;&#x4E49;">2.1 &#x5B9A;&#x4E49;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text"><span id="22-&#x89D2;&#x8272;">2.2 &#x89D2;&#x8272;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text"><span id="23-&#x5206;&#x7C7B;">2.3 &#x5206;&#x7C7B;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.3.1.</span> <span class="toc-nav-text"><span id="231-reactor&#x5355;&#x7EBF;&#x7A0B;&#x6A21;&#x578B;">2.3.1 Reactor&#x5355;&#x7EBF;&#x7A0B;&#x6A21;&#x578B;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.3.2.</span> <span class="toc-nav-text"><span id="232-reactor&#x591A;&#x7EBF;&#x7A0B;&#x6A21;&#x578B;">2.3.2 Reactor&#x591A;&#x7EBF;&#x7A0B;&#x6A21;&#x578B;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.3.3.</span> <span class="toc-nav-text"><span id="233-&#x4E3B;&#x4ECE;reactor&#x591A;&#x7EBF;&#x7A0B;&#x6A21;&#x578B;">2.3.3 &#x4E3B;&#x4ECE;Reactor&#x591A;&#x7EBF;&#x7A0B;&#x6A21;&#x578B;</span></span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.</span> <span class="toc-nav-text"><span id="3-preactor&#x6A21;&#x578B;">3 PReactor&#x6A21;&#x578B;</span></span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.</span> <span class="toc-nav-text"><span id="4-reactor&#x6A21;&#x578B;&#x4E0E;preactor&#x6A21;&#x578B;&#x7684;&#x533A;&#x522B;">4 Reactor&#x6A21;&#x578B;&#x4E0E;PReactor&#x6A21;&#x578B;&#x7684;&#x533A;&#x522B;</span></span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.</span> <span class="toc-nav-text"><span id="5-&#x53C2;&#x8003;&#x6587;&#x6863;">5 &#x53C2;&#x8003;&#x6587;&#x6863;</span></span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#1-阻塞io线程模型"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">1 &#x963B;&#x585E;I/O&#x7EBF;&#x7A0B;&#x6A21;&#x578B;</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#2-reactor模型"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">2 Reactor&#x6A21;&#x578B;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#21-定义"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">2.1 &#x5B9A;&#x4E49;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#22-角色"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">2.2 &#x89D2;&#x8272;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#23-分类"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">2.3 &#x5206;&#x7C7B;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#231-reactor单线程模型"><span class="toc-nav-number">2.3.1.</span> <span class="toc-nav-text">2.3.1 Reactor&#x5355;&#x7EBF;&#x7A0B;&#x6A21;&#x578B;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#232-reactor多线程模型"><span class="toc-nav-number">2.3.2.</span> <span class="toc-nav-text">2.3.2 Reactor&#x591A;&#x7EBF;&#x7A0B;&#x6A21;&#x578B;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#233-主从reactor多线程模型"><span class="toc-nav-number">2.3.3.</span> <span class="toc-nav-text">2.3.3 &#x4E3B;&#x4ECE;Reactor&#x591A;&#x7EBF;&#x7A0B;&#x6A21;&#x578B;</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#3-preactor模型"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">3 PReactor&#x6A21;&#x578B;</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#4-reactor模型与preactor模型的区别"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">4 Reactor&#x6A21;&#x578B;&#x4E0E;PReactor&#x6A21;&#x578B;&#x7684;&#x533A;&#x522B;</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#5-参考文档"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">5 &#x53C2;&#x8003;&#x6587;&#x6863;</span></a></li></ol>
         
         </div>
       </aside>

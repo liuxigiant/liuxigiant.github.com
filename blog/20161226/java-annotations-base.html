@@ -140,14 +140,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -216,20 +216,20 @@
 <p>若注解中只包含一个元素，且元素名称是value，则在使用注解的时候可以省略元素名称，直接声明元素值</p>
 </blockquote>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Author</span>(</span><br><span class="line">   name = <span class="string">"Benjamin Franklin"</span>,</span><br><span class="line">   date = <span class="string">"3/27/2003"</span></span><br><span class="line">)</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyClass</span>() </span>&#123; ... &#125;</span><br></pre></td></tr></table></figure>
-<h1><span id="1-基础">1 基础</span></h1>
-<h2><span id="11-注解的用处">1.1 注解的用处</span></h2>
+<h1 id="1-基础">1 基础</h1>
+<h2 id="11-注解的用处">1.1 注解的用处</h2>
 <p>注解在程序从编译到运行的各个时期都能提供不同的作用，主要包含以下几个方面：</p>
 <ul>
 <li>通知编译器：编译器可以通过注解做错误检查（后面提到的checker框架）和忽略告警（SuppressWarnings注解）</li>
 <li>编译期和部署期处理：通过注解生成代码、XML文件等</li>
 <li>运行期处理：程序运行期通过注解信息，执行特定逻辑处理（自定义注解与Spring结合的处理）</li>
 </ul>
-<h2><span id="12-注解的使用方式">1.2 注解的使用方式</span></h2>
+<h2 id="12-注解的使用方式">1.2 注解的使用方式</h2>
 <p>注解可被用在类、成员变量、成员方法等程序元素的声明上（类、成员变量、方法等声明）。</p>
-<h2><span id="13-类型注解-type-annotation">1.3 类型注解 Type Annotation</span></h2>
+<h2 id="13-类型注解-type-annotation">1.3 类型注解 Type Annotation</h2>
 <p>Java SE 8之前，注解仅能被使用在程序元素的声明上。Java SE 8后，注解可以被使用在类型（这里的类型指类的使用，而非类的声明）之前，这种注解称之为<strong>类型注解</strong>。例如：实例化对象new表达式、类型转换、实现接口语句和throws语句</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">- Class instance creation expression:</span><br><span class="line">    <span class="keyword">new</span> <span class="meta">@Interned</span> MyObject();</span><br><span class="line">- Type cast:</span><br><span class="line">    myString = (<span class="meta">@NonNull</span> String) str;</span><br><span class="line">- implements clause:</span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">UnmodifiableList</span>&lt;<span class="title">T</span>&gt; <span class="keyword">implements</span></span></span><br><span class="line"><span class="class">    @<span class="title">Readonly</span> <span class="title">List</span>&lt;@<span class="title">Readonly</span> <span class="title">T</span>&gt; </span>&#123; ... &#125;</span><br><span class="line">- Thrown exception declaration:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">monitorTemperature</span><span class="params">()</span> <span class="keyword">throws</span></span></span><br><span class="line"><span class="function">    @Critical TemperatureException </span>&#123; ... &#125;</span><br></pre></td></tr></table></figure>
-<h2><span id="14-类型系统组件-pluggable-type-systems">1.4 类型系统组件  Pluggable Type Systems</span></h2>
+<h2 id="14-类型系统组件-pluggable-type-systems">1.4 类型系统组件  Pluggable Type Systems</h2>
 <p><strong>类型注解</strong>的引入是为了提高对Java程序的分析，以确保增强对代码的类型检查。Java SE 8没有提供类型检查框架，但是可以在编译器上集成类型检查插件。下面的例子使用了一个类型检查的注解，以及简要说了何为类型检查的插件。</p>
 <p>例如：在程序中，一个变量被声明，且在程序逻辑上不可能为<code>null</code>，为了避免程序运行过程中的<code>NullPointerException</code>，可以在变量前声明特定<strong>类型检查注解</strong>，并实现对注解的校验。此时对类型检查注解声明的元素的校验程序即为<strong>类型检查插件</strong>。声明方式如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NonNull</span> String str;</span><br></pre></td></tr></table></figure>
@@ -238,8 +238,8 @@
 <blockquote>
 <p>华盛顿大学开发了第三方的类型检查框架，提供了<code>NonNull</code>模块，同时包含了常规表达式模块、互斥锁模块等，更多信息，详见 <a href="http://types.cs.washington.edu/checker-framework/" target="_blank" rel="noopener">Checker Framework</a></p>
 </blockquote>
-<h1><span id="2-注解分类">2. 注解分类</span></h1>
-<h2><span id="21-java内置注解">2.1 Java内置注解</span></h2>
+<h1 id="2-注解分类">2. 注解分类</h1>
+<h2 id="21-java内置注解">2.1 Java内置注解</h2>
 <p>Java的内置注解包含：<code>@Deprecated</code>、 <code>@Override</code> 和 <code>@SuppressWarnings</code></p>
 <p><strong>@Deprecated注解</strong><br>
 <code>@Deprecated注解</code>表示被注解的元素是过时的，不应该再被使用。若程序元素被声明了<code>@Deprecated注解</code>,编译器会在使用了该程序元素的地方生成一条告警信息。当一个元素被声明为过时的，不仅仅需要加上<code>@Deprecated注解</code>,同时需要在Javadoc中使用<code>@deprecated标签</code>,如下：</p>
@@ -251,7 +251,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// use a deprecated method and tell </span></span><br><span class="line">  <span class="comment">// compiler not to generate a warning</span></span><br><span class="line">  <span class="meta">@SuppressWarnings</span>(<span class="string">"deprecation"</span>)</span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">useDeprecatedMethod</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="comment">// deprecation warning</span></span><br><span class="line">       <span class="comment">// - suppressed</span></span><br><span class="line">       objectOne.deprecatedMethod();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
 <p>每个编译器告警都归属于一种告警类型，Java包含的告警类型有<code>deprecation</code>和<code>unchecked</code>。如果要使编译器忽略多种类型的告警，可以使用如下语法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SuppressWarnings</span>(&#123;<span class="string">"unchecked"</span>, <span class="string">"deprecation"</span>&#125;)</span><br></pre></td></tr></table></figure>
-<h2><span id="22-元注解">2.2 元注解</span></h2>
+<h2 id="22-元注解">2.2 元注解</h2>
 <p>元注解是指被用于定义其他注解的注解（可理解为：元注解用于定义自定义注解）。元注解被定义在<code>java.lang.annotation</code>包下。</p>
 <p><strong>@Retention注解</strong><br>
 <code>@Retention注解</code>指定了注解信息如何被存储，有以下三种选项：</p>
@@ -341,7 +341,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-&#x57FA;&#x7840;">1 &#x57FA;&#x7840;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text"><span id="11-&#x6CE8;&#x89E3;&#x7684;&#x7528;&#x5904;">1.1 &#x6CE8;&#x89E3;&#x7684;&#x7528;&#x5904;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text"><span id="12-&#x6CE8;&#x89E3;&#x7684;&#x4F7F;&#x7528;&#x65B9;&#x5F0F;">1.2 &#x6CE8;&#x89E3;&#x7684;&#x4F7F;&#x7528;&#x65B9;&#x5F0F;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text"><span id="13-&#x7C7B;&#x578B;&#x6CE8;&#x89E3;-type-annotation">1.3 &#x7C7B;&#x578B;&#x6CE8;&#x89E3; Type Annotation</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text"><span id="14-&#x7C7B;&#x578B;&#x7CFB;&#x7EDF;&#x7EC4;&#x4EF6;-pluggable-type-systems">1.4 &#x7C7B;&#x578B;&#x7CFB;&#x7EDF;&#x7EC4;&#x4EF6;  Pluggable Type Systems</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-&#x6CE8;&#x89E3;&#x5206;&#x7C7B;">2. &#x6CE8;&#x89E3;&#x5206;&#x7C7B;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text"><span id="21-java&#x5185;&#x7F6E;&#x6CE8;&#x89E3;">2.1 Java&#x5185;&#x7F6E;&#x6CE8;&#x89E3;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text"><span id="22-&#x5143;&#x6CE8;&#x89E3;">2.2 &#x5143;&#x6CE8;&#x89E3;</span></span></a></li></ol></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#1-基础"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">1 &#x57FA;&#x7840;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#11-注解的用处"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">1.1 &#x6CE8;&#x89E3;&#x7684;&#x7528;&#x5904;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#12-注解的使用方式"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">1.2 &#x6CE8;&#x89E3;&#x7684;&#x4F7F;&#x7528;&#x65B9;&#x5F0F;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#13-类型注解-type-annotation"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">1.3 &#x7C7B;&#x578B;&#x6CE8;&#x89E3; Type Annotation</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#14-类型系统组件-pluggable-type-systems"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text">1.4 &#x7C7B;&#x578B;&#x7CFB;&#x7EDF;&#x7EC4;&#x4EF6;  Pluggable Type Systems</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#2-注解分类"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">2. &#x6CE8;&#x89E3;&#x5206;&#x7C7B;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#21-java内置注解"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">2.1 Java&#x5185;&#x7F6E;&#x6CE8;&#x89E3;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#22-元注解"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">2.2 &#x5143;&#x6CE8;&#x89E3;</span></a></li></ol></li></ol>
         
         </div>
       </aside>

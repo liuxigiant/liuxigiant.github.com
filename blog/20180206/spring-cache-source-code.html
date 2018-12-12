@@ -140,14 +140,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -217,7 +217,7 @@
 <li>代理类生成</li>
 <li>注解处理</li>
 </ul>
-<h1><span id="1-注解驱动">1 注解驱动</span></h1>
+<h1 id="1-注解驱动">1 注解驱动</h1>
 <p><code>Spring Cache Abstraction</code>支持注解的方式，但是要是注解生效，需要在 spring xml 文件中配置注解驱动 <code>&lt;cache:annotation-driven/&gt;</code>，来识别并处理缓存注解</p>
 <p>注解驱动主要完成对注解的识别和处理，即以下两方面：</p>
 <ul>
@@ -228,12 +228,12 @@
 <blockquote>
 <p>spring xml schema解析规则可参考前文 <a href="/blog/20170818/spring-schema.html">Spring Schema 扩展</a></p>
 </blockquote>
-<h2><span id="11-注册xml元素解析器">1.1 注册xml元素解析器</span></h2>
+<h2 id="11-注册xml元素解析器">1.1 注册xml元素解析器</h2>
 <p>从<code>CacheNamespaceHandler</code>类源码<code>init()</code>方法中可看出，在spring xml解析体系中注册了<code>annotation-driven</code>元素的解析处理类<code>AnnotationDrivenCacheBeanDefinitionParser</code></p>
 <blockquote>
 <p>至于Spring xml的解析原理不是本文的讨论内容</p>
 </blockquote>
-<h2><span id="12-注册自动代理生成器">1.2 注册自动代理生成器</span></h2>
+<h2 id="12-注册自动代理生成器">1.2 注册自动代理生成器</h2>
 <p><code>AnnotationDrivenCacheBeanDefinitionParser</code>解析xml元素方法调用图如下：</p>
 <p><img src="/images/cust/cache/cache-anno.png" alt=""></p>
 <p>上图中第一个bean和第二个bean是对<code>Spring cache</code>的处理，第三个bean则是对AOP的处理</p>
@@ -251,7 +251,7 @@
 </ul>
 </li>
 </ul>
-<h1><span id="2-代理类生成">2 代理类生成</span></h1>
+<h1 id="2-代理类生成">2 代理类生成</h1>
 <p>上面基于注解以及xml配置驱动注解，完成了各种缓存注解的基础类的注册，下面需要使用注册的这些类，生成缓存代理，并在方法调用时候执行响应的缓存操作</p>
 <p>代理类生成方法调用图如下：</p>
 <p><img src="/images/cust/cache/cache-proxy.png" alt=""></p>
@@ -269,13 +269,13 @@
 <blockquote>
 <p>熟悉spring 事务注解的话，可发现，事务注解代理类的生成原理和缓存注解代理类生成原理基本一致，可参见 <a href="/blog/20171111/spring-transaction-proxy.html">Spring基于注解事务代理类的生成</a></p>
 </blockquote>
-<h1><span id="3-注解处理">3 注解处理</span></h1>
+<h1 id="3-注解处理">3 注解处理</h1>
 <p>从上面可知，被缓存注解声明的目标方法，会生成当前类的代理类，并织入回调拦截器，在调用目标方法时，通过回调拦截器，完成缓存功能的织入操作</p>
 <p>缓存代理回调拦截器<code>CacheInterceptor</code>方法执行图如下：</p>
 <p><img src="/images/cust/cache/cache-interceptor.png" alt=""></p>
 <p><code>CacheInterceptor.invoke</code>是代理类目标方法被调用的回调执行入口（Spring AOP的内容，本文不详述）</p>
 <p>重点是<code>CacheAspectSupport</code>中两次<code>execute</code>方法的调用</p>
-<h2><span id="31-第一个execute">3.1 第一个<code>execute</code></span></h2>
+<h2 id="31-第一个execute">3.1 第一个<code>execute</code></h2>
 <ul>
 <li><strong>方法签名</strong></li>
 </ul>
@@ -288,7 +288,7 @@
 <blockquote>
 <p>在这过程中上篇文章中的<code>CacheManager</code>、<code>KeyGenerator</code>等配置就派上用场，可参照上篇文章 <a href="/blog/20180116/spring-cache-abstraction.html">Spring Cache Abstraction简介</a></p>
 </blockquote>
-<h2><span id="32-第二个execute">3.2 第二个<code>execute</code></span></h2>
+<h2 id="32-第二个execute">3.2 第二个<code>execute</code></h2>
 <ul>
 <li><strong>方法签名</strong></li>
 </ul>
@@ -352,7 +352,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-&#x6CE8;&#x89E3;&#x9A71;&#x52A8;">1 &#x6CE8;&#x89E3;&#x9A71;&#x52A8;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text"><span id="11-&#x6CE8;&#x518C;xml&#x5143;&#x7D20;&#x89E3;&#x6790;&#x5668;">1.1 &#x6CE8;&#x518C;xml&#x5143;&#x7D20;&#x89E3;&#x6790;&#x5668;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text"><span id="12-&#x6CE8;&#x518C;&#x81EA;&#x52A8;&#x4EE3;&#x7406;&#x751F;&#x6210;&#x5668;">1.2 &#x6CE8;&#x518C;&#x81EA;&#x52A8;&#x4EE3;&#x7406;&#x751F;&#x6210;&#x5668;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-&#x4EE3;&#x7406;&#x7C7B;&#x751F;&#x6210;">2 &#x4EE3;&#x7406;&#x7C7B;&#x751F;&#x6210;</span></span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.</span> <span class="toc-nav-text"><span id="3-&#x6CE8;&#x89E3;&#x5904;&#x7406;">3 &#x6CE8;&#x89E3;&#x5904;&#x7406;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text"><span id="31-&#x7B2C;&#x4E00;&#x4E2A;execute">3.1 &#x7B2C;&#x4E00;&#x4E2A;<code>execute</code></span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text"><span id="32-&#x7B2C;&#x4E8C;&#x4E2A;execute">3.2 &#x7B2C;&#x4E8C;&#x4E2A;<code>execute</code></span></span></a></li></ol></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#1-注解驱动"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">1 &#x6CE8;&#x89E3;&#x9A71;&#x52A8;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#11-注册xml元素解析器"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">1.1 &#x6CE8;&#x518C;xml&#x5143;&#x7D20;&#x89E3;&#x6790;&#x5668;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#12-注册自动代理生成器"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">1.2 &#x6CE8;&#x518C;&#x81EA;&#x52A8;&#x4EE3;&#x7406;&#x751F;&#x6210;&#x5668;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#2-代理类生成"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">2 &#x4EE3;&#x7406;&#x7C7B;&#x751F;&#x6210;</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#3-注解处理"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">3 &#x6CE8;&#x89E3;&#x5904;&#x7406;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#31-第一个execute"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">3.1 &#x7B2C;&#x4E00;&#x4E2A;<code>execute</code></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#32-第二个execute"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">3.2 &#x7B2C;&#x4E8C;&#x4E2A;<code>execute</code></span></a></li></ol></li></ol>
         
         </div>
       </aside>

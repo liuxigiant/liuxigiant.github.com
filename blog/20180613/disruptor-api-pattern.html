@@ -142,14 +142,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -230,8 +230,8 @@
 </ul>
 <p><strong>注：Disruptor版本3.4.2</strong></p>
 <a id="more"></a>
-<h1><span id="1-核心api">1 核心API</span></h1>
-<h2><span id="11-创建">1.1 创建</span></h2>
+<h1 id="1-核心api">1 核心API</h1>
+<h2 id="11-创建">1.1 创建</h2>
 <p><code>Disruptor</code>的创建是通过构造函数来实例化<code>Disruptor</code>对象的，构造函数如下：</p>
 <figure class="highlight java"><figcaption><span>Disruptor构造函数</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Disruptor</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">final</span> EventFactory&lt;T&gt; eventFactory,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">final</span> <span class="keyword">int</span> ringBufferSize,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">final</span> ThreadFactory threadFactory,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">final</span> ProducerType producerType,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">final</span> WaitStrategy waitStrategy)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">this</span>(</span><br><span class="line">        RingBuffer.create(producerType, eventFactory, ringBufferSize, waitStrategy),</span><br><span class="line">        <span class="keyword">new</span> BasicExecutor(threadFactory));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>上面的构造函数会初始化<code>Disruptor</code>对象包含的两个核心对象：</p>
@@ -246,7 +246,7 @@
 </li>
 <li><code>BasicExecutor</code> ： 通过线程创建工厂<code>threadFactory</code>构造线程池，用于执行消费者事件处理逻辑</li>
 </ul>
-<h2><span id="12-事件处理">1.2 事件处理</span></h2>
+<h2 id="12-事件处理">1.2 事件处理</h2>
 <p>消费者针对事件的处理，主要有以下两个核心方法：</p>
 <ul>
 <li>
@@ -279,18 +279,18 @@
 <p>可类比MQ的消费模式<br>
 方法处理逻辑可参照源码</p>
 </blockquote>
-<h2><span id="13-启动">1.3 启动</span></h2>
+<h2 id="13-启动">1.3 启动</h2>
 <p>在上述事件处理中只是将处理器封装成ConsumerRepository存储到Disruptor中，而启动方法才是真正的调度线程，执行这个逻辑处理器</p>
 <figure class="highlight java"><figcaption><span>Disruptor启动方法</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> RingBuffer&lt;T&gt; <span class="title">start</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    checkOnlyStartedOnce();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">final</span> ConsumerInfo consumerInfo : consumerRepository)</span><br><span class="line">    &#123;</span><br><span class="line">        consumerInfo.start(executor);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> ringBuffer;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>从源码可看出<code>Disruptor</code>启动，会通过线程池异步执行所有的<code>ConsumerInfo</code>，就会启动<code>EventProcessor</code>执行线程（<code>EventProcessor</code>继承自<code>Runnable</code>）</p>
 <p>我们可以通过<code>EventProcessor</code>的子类<code>BatchEventProcessor</code>和<code>WorkProcessor</code>的<code>run</code>方法可以看出</p>
 <p>异步线程启动后的处理逻辑就是循环获取<code>RingBuffer</code>的可处理序列，若可获取到序列，则处理事件；否则根据等待策略等待。</p>
-<h2><span id="14-事件发送">1.4 事件发送</span></h2>
+<h2 id="14-事件发送">1.4 事件发送</h2>
 <p>生产者发送事件主要是调用<code>publishEvent(EventTranslator)</code>实现的，该方法封装了<code>RingBuffer</code>节点申请、事件初始化和<code>RingBuffer</code>序列提交</p>
 <p><code>EventTranslator</code>支持无参<code>EventTranslator</code>、一个参数<code>EventTranslatorOneArg</code>、两个参数<code>EventTranslatorTwoArg</code>、三个参数<code>EventTranslatorThreeArg</code>的多种版本</p>
 <p><code>EventTranslator</code>只处理事件对象的加工，而事件对象的创建（创建<code>Disruptor</code>对象时候提供的事件工厂类）和获取由<code>Disruptor</code>框架封装</p>
 <p>可参照官方<a href="https://github.com/LMAX-Exchange/disruptor/wiki/Getting-Started#using-version-3-translators" target="_blank" rel="noopener">Getting Start – using-version-3-translators</a></p>
-<h2><span id="15-异常处理">1.5 异常处理</span></h2>
+<h2 id="15-异常处理">1.5 异常处理</h2>
 <p>在<code>Disruptor</code>框架中，消费者异步线程处理事件属于异常高发地段，那么Disruptor框架是如何处理和传递异常的呢？消费者事件处理异常是否回造成序列的消费失败，从而卡死RingBuffer环呢？</p>
 <p><strong>异常处理接口声明ExceptionHandler</strong></p>
 <p>下面来了解下<code>Disruptor</code>处理异常的方式。</p>
@@ -336,14 +336,14 @@
 <li><code>handleExceptionsWith</code>: 对该方法被调用之后设置的<code>EventHandler</code>有效（这种方式使用起来容易出错，已废弃）<br>
 可以参照<a href="https://github.com/LMAX-Exchange/disruptor/issues/122" target="_blank" rel="noopener">Disruptor issue</a></li>
 </ul>
-<h2><span id="16-关闭">1.6 关闭</span></h2>
+<h2 id="16-关闭">1.6 关闭</h2>
 <p><code>Disruptor</code>提供了关闭方法<code>shutdown</code>，该方法会等待所有的事件都被处理完成之后，再停止所有的事件处理器<code>EventProcessor.halt</code></p>
 <p>注意：</p>
 <ul>
 <li>该方法不会关闭消费者执行线程池也不会等待消费者执行线程完毕</li>
 <li>该方法被调用的时候，所有的事件发送需要都已经完成</li>
 </ul>
-<h1><span id="2-应用模式">2 应用模式</span></h1>
+<h1 id="2-应用模式">2 应用模式</h1>
 <p>在开篇提到，<code>Disruptor</code>框架在实际应用中有多种模式，包括以下几个方面：</p>
 <ul>
 <li>生产者端：支持单生产者和多生产者</li>
@@ -441,7 +441,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-&#x6838;&#x5FC3;api">1 &#x6838;&#x5FC3;API</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text"><span id="11-&#x521B;&#x5EFA;">1.1 &#x521B;&#x5EFA;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text"><span id="12-&#x4E8B;&#x4EF6;&#x5904;&#x7406;">1.2 &#x4E8B;&#x4EF6;&#x5904;&#x7406;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text"><span id="13-&#x542F;&#x52A8;">1.3 &#x542F;&#x52A8;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text"><span id="14-&#x4E8B;&#x4EF6;&#x53D1;&#x9001;">1.4 &#x4E8B;&#x4EF6;&#x53D1;&#x9001;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.5.</span> <span class="toc-nav-text"><span id="15-&#x5F02;&#x5E38;&#x5904;&#x7406;">1.5 &#x5F02;&#x5E38;&#x5904;&#x7406;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.6.</span> <span class="toc-nav-text"><span id="16-&#x5173;&#x95ED;">1.6 &#x5173;&#x95ED;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-&#x5E94;&#x7528;&#x6A21;&#x5F0F;">2 &#x5E94;&#x7528;&#x6A21;&#x5F0F;</span></span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#1-核心api"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">1 &#x6838;&#x5FC3;API</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#11-创建"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">1.1 &#x521B;&#x5EFA;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#12-事件处理"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">1.2 &#x4E8B;&#x4EF6;&#x5904;&#x7406;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#13-启动"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">1.3 &#x542F;&#x52A8;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#14-事件发送"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text">1.4 &#x4E8B;&#x4EF6;&#x53D1;&#x9001;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#15-异常处理"><span class="toc-nav-number">1.5.</span> <span class="toc-nav-text">1.5 &#x5F02;&#x5E38;&#x5904;&#x7406;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#16-关闭"><span class="toc-nav-number">1.6.</span> <span class="toc-nav-text">1.6 &#x5173;&#x95ED;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#2-应用模式"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">2 &#x5E94;&#x7528;&#x6A21;&#x5F0F;</span></a></li></ol>
         
         </div>
       </aside>

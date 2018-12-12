@@ -140,14 +140,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -212,20 +212,20 @@
 
                 <p>Java注解作为程序元素（类、成员变量、成员方法等）的一种元数据信息，对程序本身的执行不会产生影响。通过自定义注解，可以给程序元素添加特殊的声明。</p>
 <p>Spring作为构建企业级应用的平台，提供了丰富的功能。将Java的自定义注解与Spring结合，在特定场景下实现注解的解析、处理，可以降低应用的耦合度，提高程序的可扩展性。</p>
-<h1><span id="1-应用场景">1. 应用场景</span></h1>
+<h1 id="1-应用场景">1. 应用场景</h1>
 <p>下面总结几种应用场景，仅说明大致思路（ps：并非所有场景都在项目中实践过）</p>
-<h2><span id="11-登陆-权限拦截">1.1 登陆、权限拦截</span></h2>
+<h2 id="11-登陆-权限拦截">1.1 登陆、权限拦截</h2>
 <p>在web项目中，登陆拦截和权限拦截是一个老生常谈的功能。通过自定义登陆注解或权限注解，在自定义拦截器中解析注解，实现登陆和权限的拦截功能。</p>
 <blockquote>
 <p>这种使用方式，配置简单，灵活度高，代码耦合度低。</p>
 </blockquote>
-<h2><span id="12-定时任务管理">1.2 定时任务管理</span></h2>
+<h2 id="12-定时任务管理">1.2 定时任务管理</h2>
 <p>在系统构建过程中，会有各种定时任务的需求，而定时任务的集中管理，可以更高效维护系统的运行。</p>
 <p>通过Java注解官方文档<a href="https://docs.oracle.com/javase/tutorial/java/annotations/repeating.html" target="_blank" rel="noopener">Repeating Annotations</a>章节中的自定义的定时任务注解，可以实现业务方法的定时任务声明。结合Spring的容器后处理器<code>BeanPostProcessor</code>（ps：Spring容器后处理器下篇再说），解析自定义注解。解析后的注解信息再使用Quartz API构建运行时定时任务，即可完成定时任务的运行时创建和集中管理。</p>
 <blockquote>
 <p>这种方式能避免定义Quartz定时任务的配置，提高系统扩展性。</p>
 </blockquote>
-<h2><span id="13-多数据源路由的数据源指定">1.3 多数据源路由的数据源指定</span></h2>
+<h2 id="13-多数据源路由的数据源指定">1.3 多数据源路由的数据源指定</h2>
 <p>Spring提供的<code>AbstractRoutingDataSource</code>实现多数据源的动态路由，可应用在主从分离的架构下。通过对不同的方法指定不同的数据源，实现数据源的动态路由（例如：读方法走从库数据源，写方法走主库数据源）。而如何标识不同的方法对应的数据源类型，则可使用自定义注解实现。通过解析方法上声明的自定义注解对应的数据源类型，实现数据源的路由功能。</p>
 <blockquote>
 <p>这种方式避免了对方法的模式匹配解析（例如：select开头、update开头等），声明更加灵活。</p>
@@ -284,7 +284,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-&#x5E94;&#x7528;&#x573A;&#x666F;">1. &#x5E94;&#x7528;&#x573A;&#x666F;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text"><span id="11-&#x767B;&#x9646;-&#x6743;&#x9650;&#x62E6;&#x622A;">1.1 &#x767B;&#x9646;&#x3001;&#x6743;&#x9650;&#x62E6;&#x622A;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text"><span id="12-&#x5B9A;&#x65F6;&#x4EFB;&#x52A1;&#x7BA1;&#x7406;">1.2 &#x5B9A;&#x65F6;&#x4EFB;&#x52A1;&#x7BA1;&#x7406;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text"><span id="13-&#x591A;&#x6570;&#x636E;&#x6E90;&#x8DEF;&#x7531;&#x7684;&#x6570;&#x636E;&#x6E90;&#x6307;&#x5B9A;">1.3 &#x591A;&#x6570;&#x636E;&#x6E90;&#x8DEF;&#x7531;&#x7684;&#x6570;&#x636E;&#x6E90;&#x6307;&#x5B9A;</span></span></a></li></ol></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#1-应用场景"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">1. &#x5E94;&#x7528;&#x573A;&#x666F;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#11-登陆-权限拦截"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">1.1 &#x767B;&#x9646;&#x3001;&#x6743;&#x9650;&#x62E6;&#x622A;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#12-定时任务管理"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">1.2 &#x5B9A;&#x65F6;&#x4EFB;&#x52A1;&#x7BA1;&#x7406;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#13-多数据源路由的数据源指定"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">1.3 &#x591A;&#x6570;&#x636E;&#x6E90;&#x8DEF;&#x7531;&#x7684;&#x6570;&#x636E;&#x6E90;&#x6307;&#x5B9A;</span></a></li></ol></li></ol>
         
         </div>
       </aside>

@@ -132,14 +132,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -196,13 +196,13 @@
             <!-- 标签云 -->
             <div id='tag_cloud' class="tags">
                 
-                    <a href="#MySQL Partitioning" title="MySQL Partitioning" rel="3">MySQL Partitioning</a>
-                
                     <a href="#Personal" title="Personal" rel="2">Personal</a>
                 
-                    <a href="#JVM" title="JVM" rel="1">JVM</a>
+                    <a href="#MySQL Partitioning" title="MySQL Partitioning" rel="3">MySQL Partitioning</a>
                 
                     <a href="#MySQL" title="MySQL" rel="1">MySQL</a>
+                
+                    <a href="#JVM" title="JVM" rel="1">JVM</a>
                 
                     <a href="#Java Annotation" title="Java Annotation" rel="4">Java Annotation</a>
                 
@@ -242,6 +242,43 @@
 
             <!-- 标签列表 -->
 
+            
+            <div class="one-tag-list">
+                <span class="fa fa-tag listing-seperator" id="Personal">
+                    <span class="tag-text">Personal</span>
+                </span>
+                
+                  <!-- <li class="listing-item">
+                  <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
+                  <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
+                  </li> -->
+                 <div class="post-preview">
+                     <a href="/blog/20160301/start-blog.html">
+                        <h2 class="post-title">
+                            github上搭建个人博客 -- WIN7
+                        </h2>
+                        
+                    </a>
+                    <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
+                </div>
+                <hr>
+                
+                  <!-- <li class="listing-item">
+                  <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
+                  <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
+                  </li> -->
+                 <div class="post-preview">
+                     <a href="/blog/20181118/octopress-to-hexo.html">
+                        <h2 class="post-title">
+                            Octopress迁移到Hexo
+                        </h2>
+                        
+                    </a>
+                    <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
+                </div>
+                <hr>
+                
+            </div>
             
             <div class="one-tag-list">
                 <span class="fa fa-tag listing-seperator" id="MySQL Partitioning">
@@ -296,8 +333,8 @@
             </div>
             
             <div class="one-tag-list">
-                <span class="fa fa-tag listing-seperator" id="Personal">
-                    <span class="tag-text">Personal</span>
+                <span class="fa fa-tag listing-seperator" id="MySQL">
+                    <span class="tag-text">MySQL</span>
                 </span>
                 
                   <!-- <li class="listing-item">
@@ -305,24 +342,9 @@
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <div class="post-preview">
-                     <a href="/blog/20160301/start-blog.html">
+                     <a href="/blog/20160624/mysql-save-or-update.html">
                         <h2 class="post-title">
-                            github上搭建个人博客 -- WIN7
-                        </h2>
-                        
-                    </a>
-                    <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
-                </div>
-                <hr>
-                
-                  <!-- <li class="listing-item">
-                  <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
-                  <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
-                  </li> -->
-                 <div class="post-preview">
-                     <a href="/blog/20181118/octopress-to-hexo.html">
-                        <h2 class="post-title">
-                            Octopress迁移到Hexo
+                            MySQL保存或更新 saveOrUpdate
                         </h2>
                         
                     </a>
@@ -345,28 +367,6 @@
                      <a href="/blog/20160608/jvm-full-gc-hourly.html">
                         <h2 class="post-title">
                             JVM每小时执行一次FULL GC问题
-                        </h2>
-                        
-                    </a>
-                    <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
-                </div>
-                <hr>
-                
-            </div>
-            
-            <div class="one-tag-list">
-                <span class="fa fa-tag listing-seperator" id="MySQL">
-                    <span class="tag-text">MySQL</span>
-                </span>
-                
-                  <!-- <li class="listing-item">
-                  <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
-                  <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
-                  </li> -->
-                 <div class="post-preview">
-                     <a href="/blog/20160624/mysql-save-or-update.html">
-                        <h2 class="post-title">
-                            MySQL保存或更新 saveOrUpdate
                         </h2>
                         
                     </a>
@@ -468,9 +468,9 @@
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <div class="post-preview">
-                     <a href="/blog/20170817/mybatis-spring-scan.html">
+                     <a href="/blog/20170817/mybatis-spring-mapperscannerconfigurer.html">
                         <h2 class="post-title">
-                            MyBatis-Spring源码之基于xml的自动扫描
+                            MyBatis-Spring源码之MapperScannerConfigurer
                         </h2>
                         
                     </a>
@@ -483,9 +483,9 @@
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <div class="post-preview">
-                     <a href="/blog/20170817/mybatis-spring-mapperscannerconfigurer.html">
+                     <a href="/blog/20170817/mybatis-spring-scan.html">
                         <h2 class="post-title">
-                            MyBatis-Spring源码之MapperScannerConfigurer
+                            MyBatis-Spring源码之基于xml的自动扫描
                         </h2>
                         
                     </a>
@@ -927,9 +927,9 @@
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <div class="post-preview">
-                     <a href="/blog/20180614/disruptor-concurrency-example.html">
+                     <a href="/blog/20180613/disruptor-introduction.html">
                         <h2 class="post-title">
-                            Disruptor并发消费示例
+                            Disruptor框架简介
                         </h2>
                         
                     </a>
@@ -942,9 +942,9 @@
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <div class="post-preview">
-                     <a href="/blog/20180613/disruptor-introduction.html">
+                     <a href="/blog/20180614/disruptor-concurrency-example.html">
                         <h2 class="post-title">
-                            Disruptor框架简介
+                            Disruptor并发消费示例
                         </h2>
                         
                     </a>
@@ -979,9 +979,9 @@
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <div class="post-preview">
-                     <a href="/blog/20180614/disruptor-concurrency-example.html">
+                     <a href="/blog/20180613/disruptor-introduction.html">
                         <h2 class="post-title">
-                            Disruptor并发消费示例
+                            Disruptor框架简介
                         </h2>
                         
                     </a>
@@ -994,9 +994,9 @@
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <div class="post-preview">
-                     <a href="/blog/20180613/disruptor-introduction.html">
+                     <a href="/blog/20180614/disruptor-concurrency-example.html">
                         <h2 class="post-title">
-                            Disruptor框架简介
+                            Disruptor并发消费示例
                         </h2>
                         
                     </a>

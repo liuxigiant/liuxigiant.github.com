@@ -140,14 +140,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -211,11 +211,11 @@
                 post-container">
 
                 <p>在首篇<strong>MyBatis-Spring简介与用法</strong>中介绍的用法三，需要配置扫描工具类<code>MapperScannerConfigurer</code>,指定扫描的包路径，自动扫描接口，并生成代理类。在用法四种介绍的，通过扩展Spring schema，使用<code>mybatis:scan</code>实现自动扫描，屏蔽底层实现细节，从而使coder从需要记忆指定扫描类<code>MapperScannerConfigurer</code>中解脱出来  -_-</p>
-<h1><span id="1-扩展spring-schema">1 扩展Spring Schema</span></h1>
+<h1 id="1-扩展spring-schema">1 扩展Spring Schema</h1>
 <p>Mybatis Spring通过扩展Spring Schema的方式，定义mybatis的xml配置命名空间，配置<code>scan</code>元素，实现自动扫描，从而屏蔽底层实现细节。</p>
 <p>下面看下Spring配置文件配置方式：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:mybatis</span>=<span class="string">"http://mybatis.org/schema/mybatis-spring"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"</span></span></span><br><span class="line"><span class="tag"><span class="string">	   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	   http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">       <span class="tag">&lt;<span class="name">mybatis:scan</span> <span class="attr">base-package</span>=<span class="string">"name.liux.share.dao"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h1><span id="2-自动扫描">2 自动扫描</span></h1>
+<h1 id="2-自动扫描">2 自动扫描</h1>
 <p>如上配置可看出，扩展Spring schema，通过<code>mybatis:scan</code>实现自动扫描，而这个自定义的xml节点的处理类是<code>NamespaceHandler</code></p>
 <blockquote>
 <p>查看扩展Spring schema的处理类的方法，细节后面再讲，<code>mybatis:scan</code>节点处理类可查看mybatis-spring jar包的 <strong>META-INFO/Resource Bundle ‘Spring’/spring.handlers</strong> 文件</p>
@@ -279,7 +279,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-&#x6269;&#x5C55;spring-schema">1 &#x6269;&#x5C55;Spring Schema</span></span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-&#x81EA;&#x52A8;&#x626B;&#x63CF;">2 &#x81EA;&#x52A8;&#x626B;&#x63CF;</span></span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#1-扩展spring-schema"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">1 &#x6269;&#x5C55;Spring Schema</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#2-自动扫描"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">2 &#x81EA;&#x52A8;&#x626B;&#x63CF;</span></a></li></ol>
         
         </div>
       </aside>

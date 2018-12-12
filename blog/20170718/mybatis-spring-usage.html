@@ -140,14 +140,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -214,28 +214,28 @@
 <blockquote>
 <p>Spring对iBatis的支持只到Spring 3.x版本，Spring 4.x不包含集成iBatis的模块（从<a href="https://github.com/spring-projects/spring-framework" target="_blank" rel="noopener">Spring源码</a>的<code>spring-orm</code>模块可清晰看到当前支持集成的ORM工具）。Spring 4.x版本建议使用MyBatis(2010年iBatis更名为MyBatis)作为ORM工具。Spring与MyBatis的集成，需要引入<code>MyBatis_spring</code>包。</p>
 </blockquote>
-<h1><span id="1-mybatis-spring简介">1 MyBatis-Spring简介</span></h1>
+<h1 id="1-mybatis-spring简介">1 MyBatis-Spring简介</h1>
 <p>下面对MyBatis-Spring做简要介绍，内容摘选自MyBatis-Spring<a href="http://www.mybatis.org/spring/zh/index.html" target="_blank" rel="noopener">中文官方文档</a></p>
 <blockquote>
 <p>另：可参考<a href="http://www.mybatis.org/spring/index.html" target="_blank" rel="noopener">英文官方文档</a>，中文官方文档部分内容不是最新</p>
 </blockquote>
-<h2><span id="11-什么是mybatis-spring">1.1 什么是MyBatis-Spring</span></h2>
+<h2 id="11-什么是mybatis-spring">1.1 什么是MyBatis-Spring</h2>
 <p>MyBatis-Spring 会帮助你将 MyBatis 代码无缝地整合到 Spring 中。 使用这个类库中的类, Spring 将会加载必要的 MyBatis 工厂类和 session 类。 这个类库也提供一个简单的方式来注入 MyBatis 数据映射器和 SqlSession 到业务层的 bean 中。 而且它也会处理事务, 翻译 MyBatis 的异常到 Spring 的 DataAccessException 异常(数据访问异常,译者注)中。最终,它并 不会依赖于 MyBatis,Spring 或 MyBatis-Spring 来构建应用程序代码。</p>
-<h2><span id="12-为何创建mybatis-spring">1.2 为何创建MyBatis-Spring</span></h2>
+<h2 id="12-为何创建mybatis-spring">1.2 为何创建MyBatis-Spring</h2>
 <p>正如第二版那样,Spring 3.0 也仅支持 iBatis2。那么,我们就想将 MyBatis3 的支持添加 到 Spring3.0(参考 Spring Jira 中的问题)中。而不幸的是,Spring 3.0 的开发在 MyBatis 3.0 官方发布前就结束了。 因为 Spring 开发团队不想发布一个基于非发布版的 MyBatis 的整合支 持,那么 Spring 官方的支持就不得不继续等待了。要在 Spring 中支持 MyBatis,MyBatis 社 区认为现在应该是自己团结贡献者和有兴趣的人一起来开始将 Spring 的整合作为 MyBatis 社 区的子项目的时候了。</p>
-<h1><span id="2-mybatis-spring用法">2 MyBatis-Spring用法</span></h1>
+<h1 id="2-mybatis-spring用法">2 MyBatis-Spring用法</h1>
 <p>如上所述，在以Sprig为基础构建的JAVA企业级应用中，ORM层选用MyBatis框架，需使用<code>MyBatis-Spring</code>将Spring与MyBatis集成。下面总结了四种集成的使用方式，从这四种方式的演进历程，可以清晰的了解<code>MyBatis-Spring</code>的改进，简化配置，减少无用功。</p>
 <blockquote>
 <p>背景：在了解使用方法之前，先简要说明下Mybatis的基本用法，即根据MyBatis配置生成SqlSessionFactory，从SqlSessionFactory中获取session，最后使用session完成数据库操作。那么，MyBatis-Spring的作用就是封装这些动作，并把MyBatis集成到Spring中（可回过头看看1.1章节）。</p>
 </blockquote>
-<h2><span id="21-sqlsessionfactory生成">2.1 SqlSessionFactory生成</span></h2>
+<h2 id="21-sqlsessionfactory生成">2.1 SqlSessionFactory生成</h2>
 <p>如上背景介绍，<code>SqlSessionFactory</code>是使用MyBatis的核心入口类，<code>MyBatis-Spring</code>是通过工厂类<code>SqlSessionFactoryBean</code>来生成<code>SqlSessionFactory</code>的。</p>
 <blockquote>
 <p>熟悉Spring IOC的对以<code>FactoryBean</code>结尾的类可能会比较敏感，<code>FactoryBean</code>是Spring声明的一个工厂类接口，Spring IOC在从对象工厂中获取实例（getBean，具体实现逻辑可参考Spring IOC源码），会调用<code>getObject</code>方法</p>
 </blockquote>
 <p>如下配置文件<code>spring-config-datasource.xml</code>，配置了数据源（数据源使用druid，配置信息简化过）和<code>SqlSessionFactoryBean</code></p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"</span></span></span><br><span class="line"><span class="tag"><span class="string">              http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">       <span class="comment">&lt;!-- mybatis配置 --&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"sqlSessionFactory"</span> <span class="attr">class</span>=<span class="string">"org.mybatis.spring.SqlSessionFactoryBean"</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataSource"</span> <span class="attr">ref</span>=<span class="string">"dataSource"</span> /&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"configLocation"</span> <span class="attr">value</span>=<span class="string">"classpath:mybatis-configure.xml"</span> /&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line">       <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"dataSource"</span> <span class="attr">class</span>=<span class="string">"com.alibaba.druid.pool.DruidDataSource"</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"driverClassName"</span> <span class="attr">value</span>=<span class="string">"com.mysql.jdbc.Driver"</span>/&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"url"</span> <span class="attr">value</span>=<span class="string">"jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8"</span>/&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"username"</span> <span class="attr">value</span>=<span class="string">"root"</span>/&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"password"</span> <span class="attr">value</span>=<span class="string">"root"</span>/&gt;</span></span><br><span class="line">              <span class="comment">&lt;!--数据源名字--&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"name"</span> <span class="attr">value</span>=<span class="string">"ds_master"</span>/&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2><span id="22-用法一在dao实现类中注入sqlsessiontemplate">2.2 用法一：在Dao实现类中注入SqlSessionTemplate</span></h2>
+<h2 id="22-用法一在dao实现类中注入sqlsessiontemplate">2.2 用法一：在Dao实现类中注入SqlSessionTemplate</h2>
 <p>如下：<code>OrderDaoImpl</code>中注入了<code>sqlSessionTemplate</code></p>
 <blockquote>
 <p>注意：  <code>SqlSessionTemplate</code>的方法中的第一个参数<code>statement</code>，指定sql语句，一般都是对用的Mapper文件的<code>命名空间.sql语句id</code>。当然，也可直接用sql语句id，不加命名空间，但不建议这么做，回存在sql覆盖的问题，详细分析可查看下篇<code>mybatis-spring源码解析之创建SqlSessionFactory</code>~~</p>
@@ -283,7 +283,7 @@
 <li>为何需要使用<code>SqlSessionTemplate</code>，而不直接使用<code>sqlSessionFactory</code>？  – 因为使用<code>SqlSessionTemplate</code>能封装事物操作并使用Spring框架的事物管理器（后面讲解源码会说明）</li>
 <li>还有种异曲同工的用法，让每个<code>*DaoImpl</code>继承<code>SqlSessionDaoSupport</code>，通过继承的方式，则在<code>*DaoImpl</code>需要注入<code>sqlSessionTemplate</code>或者<code>sqlSessionFactory</code>，二者注入一个即可（若注入的是<code>sqlSessionFactory</code>，也会通过<code>sqlSessionFactory</code>创建一个<code>sqlSessionTemplate</code>，所以最终是要的还是<code>sqlSessionTemplate</code>）</li>
 </ol>
-<h2><span id="23-用法二配置mapperfactorybean指定生成dao实现">2.3 用法二：配置MapperFactoryBean，指定生成Dao实现</span></h2>
+<h2 id="23-用法二配置mapperfactorybean指定生成dao实现">2.3 用法二：配置MapperFactoryBean，指定生成Dao实现</h2>
 <p>下面以<code>UserDao</code>为例说明，这只是一个接口，声明了数据库操作，但是没有实现类，我们通过配置<code>MapperFactoryBean</code>为<code>UserDao</code>生成一个实现类，完成具体的数据库操作，从而去除了大量的<code>*DaoImpl</code>的代码。</p>
 <pre><code class="language-java">public interface UserDao {
 
@@ -317,7 +317,7 @@
 <li>从配置中可以看出来，依然需要注入<code>sqlSessionTemplate</code>或者<code>sqlSessionFactory</code>(可参照用法一总结第3点)</li>
 <li>对于多个<code>*DaoImpl</code>，需要配置多个代理工厂类<code>MapperFactoryBean</code>，会有很多配置工作</li>
 </ol>
-<h2><span id="24-用法三配置mapperscannerconfigurer指定扫描生成代理">2.4 用法三：配置MapperScannerConfigurer，指定扫描，生成代理</span></h2>
+<h2 id="24-用法三配置mapperscannerconfigurer指定扫描生成代理">2.4 用法三：配置MapperScannerConfigurer，指定扫描，生成代理</h2>
 <p>这种方式相对<strong>用法二</strong>来说，简化了配置多个<code>*DaoImpl</code>对应的代理工厂类<code>MapperFactoryBean</code>，通过配置包路径，扫描包下面的接口，自动生成接口对应的代理类</p>
 <p>接口声明如上<code>UserDao</code>，配置文件如下</p>
 <pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
@@ -344,7 +344,7 @@
 <li><code>MapperScannerConfigurer</code>扫描类通过实现Spring生命周期回调接口<code>BeanDefinitionRegistryPostProcessor</code>，在回调方法<code>postProcessBeanDefinitionRegistry</code>中扫描指定包下的接口，修改接口的Spring bean声明元数据BeanDefinition，重点是将BeanDefinition中的beanClass属性设置为MapperFactoryBean，从而实现对每个接口生成一个代理类工厂（后续通过分析源码详细说明）</li>
 <li>配置<code>MapperScannerConfigurer</code>并没有注入<code>sqlSessionTemplate</code>或者<code>sqlSessionFactory</code>，是通过将第2点中说的BeanDefinitio的autowireMode属性设置为<code>AUTOWIRE_BY_TYPE</code>，即根据类型自动注入</li>
 </ol>
-<h2><span id="25-用法四指定扫描路径自动扫描">2.5 用法四：指定扫描路径，自动扫描</span></h2>
+<h2 id="25-用法四指定扫描路径自动扫描">2.5 用法四：指定扫描路径，自动扫描</h2>
 <p>这种方式其实是<strong>用法三</strong>的一个配置简化版，通过自定义扩展Spring Schema，简化声明方式，实现原理和<strong>用法三</strong>一致</p>
 <pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
@@ -364,7 +364,7 @@
        &lt;mybatis:scan base-package=&quot;name.liux.share.dao&quot; /&gt;
 &lt;/beans&gt;
 </code></pre>
-<h2><span id="26-总结">2.6 总结</span></h2>
+<h2 id="26-总结">2.6 总结</h2>
 <ol>
 <li><strong>用法一</strong>：通过读取配置生成<code>sqlSessionFactory</code>，并封装成<code>sqlSessionTemplate</code>，实现数据库操作。其实就是对mybatis使用的一个简单封装，并完成与Spring框架的集成</li>
 <li><strong>用法二</strong>：通过JDK动态代理，由工厂类生成Dao层接口对应的代理实现类，简化Dao层代码（去*DaoImpl类）</li>
@@ -428,7 +428,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-mybatis-spring&#x7B80;&#x4ECB;">1 MyBatis-Spring&#x7B80;&#x4ECB;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text"><span id="11-&#x4EC0;&#x4E48;&#x662F;mybatis-spring">1.1 &#x4EC0;&#x4E48;&#x662F;MyBatis-Spring</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text"><span id="12-&#x4E3A;&#x4F55;&#x521B;&#x5EFA;mybatis-spring">1.2 &#x4E3A;&#x4F55;&#x521B;&#x5EFA;MyBatis-Spring</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-mybatis-spring&#x7528;&#x6CD5;">2 MyBatis-Spring&#x7528;&#x6CD5;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text"><span id="21-sqlsessionfactory&#x751F;&#x6210;">2.1 SqlSessionFactory&#x751F;&#x6210;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text"><span id="22-&#x7528;&#x6CD5;&#x4E00;&#x5728;dao&#x5B9E;&#x73B0;&#x7C7B;&#x4E2D;&#x6CE8;&#x5165;sqlsessiontemplate">2.2 &#x7528;&#x6CD5;&#x4E00;&#xFF1A;&#x5728;Dao&#x5B9E;&#x73B0;&#x7C7B;&#x4E2D;&#x6CE8;&#x5165;SqlSessionTemplate</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text"><span id="23-&#x7528;&#x6CD5;&#x4E8C;&#x914D;&#x7F6E;mapperfactorybean&#x6307;&#x5B9A;&#x751F;&#x6210;dao&#x5B9E;&#x73B0;">2.3 &#x7528;&#x6CD5;&#x4E8C;&#xFF1A;&#x914D;&#x7F6E;MapperFactoryBean&#xFF0C;&#x6307;&#x5B9A;&#x751F;&#x6210;Dao&#x5B9E;&#x73B0;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.4.</span> <span class="toc-nav-text"><span id="24-&#x7528;&#x6CD5;&#x4E09;&#x914D;&#x7F6E;mapperscannerconfigurer&#x6307;&#x5B9A;&#x626B;&#x63CF;&#x751F;&#x6210;&#x4EE3;&#x7406;">2.4 &#x7528;&#x6CD5;&#x4E09;&#xFF1A;&#x914D;&#x7F6E;MapperScannerConfigurer&#xFF0C;&#x6307;&#x5B9A;&#x626B;&#x63CF;&#xFF0C;&#x751F;&#x6210;&#x4EE3;&#x7406;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.5.</span> <span class="toc-nav-text"><span id="25-&#x7528;&#x6CD5;&#x56DB;&#x6307;&#x5B9A;&#x626B;&#x63CF;&#x8DEF;&#x5F84;&#x81EA;&#x52A8;&#x626B;&#x63CF;">2.5 &#x7528;&#x6CD5;&#x56DB;&#xFF1A;&#x6307;&#x5B9A;&#x626B;&#x63CF;&#x8DEF;&#x5F84;&#xFF0C;&#x81EA;&#x52A8;&#x626B;&#x63CF;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.6.</span> <span class="toc-nav-text"><span id="26-&#x603B;&#x7ED3;">2.6 &#x603B;&#x7ED3;</span></span></a></li></ol></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#1-mybatis-spring简介"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">1 MyBatis-Spring&#x7B80;&#x4ECB;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#11-什么是mybatis-spring"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">1.1 &#x4EC0;&#x4E48;&#x662F;MyBatis-Spring</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#12-为何创建mybatis-spring"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">1.2 &#x4E3A;&#x4F55;&#x521B;&#x5EFA;MyBatis-Spring</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#2-mybatis-spring用法"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">2 MyBatis-Spring&#x7528;&#x6CD5;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#21-sqlsessionfactory生成"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">2.1 SqlSessionFactory&#x751F;&#x6210;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#22-用法一在dao实现类中注入sqlsessiontemplate"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">2.2 &#x7528;&#x6CD5;&#x4E00;&#xFF1A;&#x5728;Dao&#x5B9E;&#x73B0;&#x7C7B;&#x4E2D;&#x6CE8;&#x5165;SqlSessionTemplate</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#23-用法二配置mapperfactorybean指定生成dao实现"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">2.3 &#x7528;&#x6CD5;&#x4E8C;&#xFF1A;&#x914D;&#x7F6E;MapperFactoryBean&#xFF0C;&#x6307;&#x5B9A;&#x751F;&#x6210;Dao&#x5B9E;&#x73B0;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#24-用法三配置mapperscannerconfigurer指定扫描生成代理"><span class="toc-nav-number">2.4.</span> <span class="toc-nav-text">2.4 &#x7528;&#x6CD5;&#x4E09;&#xFF1A;&#x914D;&#x7F6E;MapperScannerConfigurer&#xFF0C;&#x6307;&#x5B9A;&#x626B;&#x63CF;&#xFF0C;&#x751F;&#x6210;&#x4EE3;&#x7406;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#25-用法四指定扫描路径自动扫描"><span class="toc-nav-number">2.5.</span> <span class="toc-nav-text">2.5 &#x7528;&#x6CD5;&#x56DB;&#xFF1A;&#x6307;&#x5B9A;&#x626B;&#x63CF;&#x8DEF;&#x5F84;&#xFF0C;&#x81EA;&#x52A8;&#x626B;&#x63CF;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#26-总结"><span class="toc-nav-number">2.6.</span> <span class="toc-nav-text">2.6 &#x603B;&#x7ED3;</span></a></li></ol></li></ol>
         
         </div>
       </aside>

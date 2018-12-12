@@ -140,14 +140,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -214,17 +214,17 @@
 <blockquote>
 <p>比如：同步I/O与阻塞I/O是一个含义么？同步阻塞I/O、同步非阻塞I/O又是什么含义呢？Java都支持哪些呢？</p>
 </blockquote>
-<h1><span id="1-io调用">1 I/O调用</span></h1>
-<h2><span id="11-背景">1.1 背景</span></h2>
+<h1 id="1-io调用">1 I/O调用</h1>
+<h2 id="11-背景">1.1 背景</h2>
 <p>既然是要梳理Java I/O，讨论的背景就主要是Java 支持的I/O类型，例如：文件读写、网络I/O等，本篇已java网络编程中的socket为背景阐述。</p>
-<h2><span id="12-参与者">1.2 参与者</span></h2>
+<h2 id="12-参与者">1.2 参与者</h2>
 <p>在Java I/O应用场景中，涉及三个参与者：</p>
 <ul>
 <li>用户进程：运行时JVM进程（本文中的用户进程只是作为应用程序的角色来说的，并不是作为操作系统进程这个角色来说，不要误解用户进程与下面提及的线程，用户进程作为一个参与角色，并没有进程包含线程的含义）</li>
 <li>内核：操作系统内核</li>
 <li>硬件</li>
 </ul>
-<h2><span id="13-两个步骤">1.3 两个步骤</span></h2>
+<h2 id="13-两个步骤">1.3 两个步骤</h2>
 <p>以I/O读操作为例，用户进程想要完成读操作，需要通过<strong>系统调用</strong>，由操作系统内核读取硬件上的数据到内核空间，然后这部分读取的数据由内核空间复制到用户空间，至此，用户进程就可以使用读取的数据。</p>
 <p>从上可以看出，一次读操作有<strong>两个步骤</strong>（后面五种I/O模型就是针对这两个步骤的各种实现方式）：</p>
 <ol>
@@ -239,12 +239,12 @@
 <blockquote>
 <p>ps: 操作系统内核可以理解成一个中间层，用户进程是应用层，硬件是底层。中间层对应用层提供对底层访问的能力。</p>
 </blockquote>
-<h1><span id="2-五种io模型">2 五种IO模型</span></h1>
+<h1 id="2-五种io模型">2 五种IO模型</h1>
 <p>暂且搁置文初提出的同步异步、阻塞非阻塞这些概念，来看下《Unix网络编程》中介绍的五种I/O模型处理I/O read操作的处理方式</p>
 <blockquote>
 <p>五种I/O模型主要是在上述1.2小节中所述的I/O操作的两个步骤（准备数据和复制数据）的处理方式上有所不同</p>
 </blockquote>
-<h2><span id="21-阻塞io">2.1 阻塞I/O</span></h2>
+<h2 id="21-阻塞io">2.1 阻塞I/O</h2>
 <p><img src="/images/blockingIO.png" alt=""></p>
 <p>用户进程需要进行I/O操作时，发起<strong>系统调用recvfrom</strong></p>
 <ul>
@@ -252,7 +252,7 @@
 <li>复制数据：数据准备好之后，数据从内核空间复制到用户空间，此时对与用户线程来说，I/O操作完成</li>
 </ul>
 <p>结合上图和两个步骤可以看出，用户进程在两个步骤中都会处于等待状态，一直被阻塞，所以称之为<strong>阻塞I/O</strong></p>
-<h2><span id="22-非阻塞io">2.2 非阻塞I/O</span></h2>
+<h2 id="22-非阻塞io">2.2 非阻塞I/O</h2>
 <p><img src="/images/nonblockingIO.png" alt=""></p>
 <p>用户进程需要进行I/O操作时，发起<strong>系统调用recvfrom</strong></p>
 <ul>
@@ -260,7 +260,7 @@
 <li>复制数据：用户进程发起的<strong>系统调用recvfrom</strong>，在内核数据准备好之后，数据从内核空间复制到用户空间，I/O操作完成</li>
 </ul>
 <p>结合上图和两个步骤可以看出，用户进程在步骤一上并不会被阻塞（但是用户进程需要一致轮询数据是否准备好），只有在步骤二时用户进程才会处于等待状态，所以称之为<strong>非阻塞I/O</strong></p>
-<h2><span id="23-io多路复用">2.3 I/O多路复用</span></h2>
+<h2 id="23-io多路复用">2.3 I/O多路复用</h2>
 <p><img src="/images/multiplexingIO.png" alt=""></p>
 <p>用户进程需要进行I/O操作时，发起<strong>系统调用select</strong></p>
 <ul>
@@ -272,9 +272,9 @@
 <blockquote>
 <p>ps：对于用户进程来说，处理多个socket，一般的处理方式可以使用一个单独的线程来完成步骤一操作，轮询内核在有socket准备好数据之后，通知其他线程进行步骤二操作，这样对于大量的socket的I/O操作管理来说，处理效率比较高。这样一种以<strong>事件驱动</strong>来处理I/O事件的多线程模型，其实就是<strong>Reactor线程模型</strong></p>
 </blockquote>
-<h2><span id="24-信号驱动io">2.4 信号驱动I/O</span></h2>
+<h2 id="24-信号驱动io">2.4 信号驱动I/O</h2>
 <p>并不常用，暂略</p>
-<h2><span id="25-异步io">2.5 异步I/O</span></h2>
+<h2 id="25-异步io">2.5 异步I/O</h2>
 <p><img src="/images/asynchronousIO.png" alt=""></p>
 <p>用户进程需要进行I/O操作，发起<strong>系统调用aio_read</strong>，同时制定I/O操作完成后的回调处理函数</p>
 <ul>
@@ -282,7 +282,7 @@
 <li>复制数据：内核在数据准备好后，将数据从内核空间复制到用户空间，完成之后触发回调函数</li>
 </ul>
 <p>结合上图和两个步骤可以看出，用户进程在提交了I/O操作之后，其余的事情交由内核处理（包括I/O操作完成后，回调函数的触发也不需要用户进程参与），所以称之为<strong>异步I/O</strong></p>
-<h2><span id="26-总结">2.6 总结</span></h2>
+<h2 id="26-总结">2.6 总结</h2>
 <p>从上面五种I/O模型可看出，I/O模型的实现方式依赖于操作系统对于I/O操作<strong>系统调用</strong>命令的支持方式。五种I/O模型可以理解为一种逐渐迭代、进化的模型。</p>
 <ul>
 <li>阻塞I/O：对于用户进程和操作系统来说都比较简单，用户不用考虑多线程和异步相关的问题，初期应用场景可能也比较简单，处理的socket也比较少</li>
@@ -290,24 +290,24 @@
 <li>I/O多路复用：相对于非阻塞I/O的单线程轮询处理单个socket，I/O多路复用支持同时监视多个socket，当有socket准备好数据后，用户线程即可处理数据。这样在使用合适的线程模型的话(<strong>Reactor或PReactor线程模型</strong>)，对于用户进程来说，I/O操作可以是异步化的（这里的异步化其实是伪异步化，因为内核此时还是同步的）</li>
 <li>异步I/O：内核支持的真正的异步化I/O操作</li>
 </ul>
-<h1><span id="3-java-io实现">3 JAVA I/O实现</span></h1>
+<h1 id="3-java-io实现">3 JAVA I/O实现</h1>
 <p>上面五种I/O模型主要是操作系统层面的支持，下面了解下JAVA对阻塞I/O、I/O多路复用和异步I/O的实现</p>
-<h2><span id="31-java-bio">3.1 JAVA BIO</span></h2>
+<h2 id="31-java-bio">3.1 JAVA BIO</h2>
 <p>JAVA BIO（Blocking I/O）：基于流Stream的标准I/O（java.io包下），是对<strong>阻塞I/O</strong>的实现</p>
-<h2><span id="32-java-nio">3.2 JAVA NIO</span></h2>
+<h2 id="32-java-nio">3.2 JAVA NIO</h2>
 <p>JAVA NIO（New I/O）：基于块（Buffer）、选择器（Selector）和通道（Channel）的I/O（java.nio包下），是对<strong>I/O多路复用</strong>的实现</p>
 <blockquote>
 <p>JDK1.4提供了对NIO的支持</p>
 </blockquote>
-<h2><span id="33-java-aio">3.3 JAVA AIO</span></h2>
+<h2 id="33-java-aio">3.3 JAVA AIO</h2>
 <p>JAVA AIO（Asynchronous I/O）：也称之为 <strong>NIO2</strong>（java.nio包下），是对<strong>异步I/O</strong>的实现</p>
 <blockquote>
 <p>JDK7提供了对AIO的支持</p>
 </blockquote>
-<h1><span id="4-阻塞-非阻塞-同步-异步">4 阻塞 非阻塞 同步 异步</span></h1>
+<h1 id="4-阻塞-非阻塞-同步-异步">4 阻塞 非阻塞 同步 异步</h1>
 <p>最后来说明下同步、异步、阻塞、非阻塞的含义</p>
-<h2><span id="41-释义">4.1 释义</span></h2>
-<h3><span id="411-阻塞-vs-非阻塞">4.1.1 阻塞 <em>vs</em> 非阻塞</span></h3>
+<h2 id="41-释义">4.1 释义</h2>
+<h3 id="411-阻塞-vs-非阻塞">4.1.1 阻塞 <em>vs</em> 非阻塞</h3>
 <ul>
 <li>阻塞：用户进程在发起I/O操作到I/O操作完成期间，一直处于等待状态，不能处理其他任务</li>
 </ul>
@@ -324,7 +324,7 @@
 <p>Q: 如何理解<strong>I/O多路复用</strong>是非阻塞I/O呢？select不是会阻塞吗？<br>
 A：select操作是会阻塞线程，但是select一般交由单独的线程执行，并不会阻塞调用I/O操作的线程。<br>
 且I/O操作的第一步准备数据和第二步复制数据也并不是作为一个整体阻塞线程的，所以不是阻塞I/O</p>
-<h3><span id="412-同步-vs-异步">4.1.2 同步 <em>vs</em> 异步</span></h3>
+<h3 id="412-同步-vs-异步">4.1.2 同步 <em>vs</em> 异步</h3>
 <ul>
 <li>同步I/O：I/O操作未完成会造成用户进程处于等待状态，即用户进程被阻塞；I/O操作完成，用户进程才能处理其他任务</li>
 </ul>
@@ -342,7 +342,7 @@ A：select操作是会阻塞线程，但是select一般交由单独的线程执�
 A：首先，非阻塞和异步不是一个含义。<br>
 <strong>非阻塞I/O</strong>虽然在步骤1准备数据时候，不会阻塞线程，但是步骤2还是会阻塞线程的。而且线程也需要一直执行步骤1进行轮询，所以是同步的<br>
 <strong>I/O多路复用</strong>与<strong>非阻塞I/O</strong>类似，只不过步骤1替换成了阻塞的，所以也是同步的</p>
-<h3><span id="413-总结">4.1.3 总结</span></h3>
+<h3 id="413-总结">4.1.3 总结</h3>
 <ul>
 <li>只有<strong>异步I/O</strong>是真正异步的（<strong>I/O多路复用</strong>只能通过线程模型做到伪异步），其余都是同步的</li>
 <li>只有<strong>阻塞I/O</strong>是阻塞的，其余都是非阻塞的</li>
@@ -350,7 +350,7 @@ A：首先，非阻塞和异步不是一个含义。<br>
 <li>阻塞和非阻塞强调内核的状态，内核I/O操作完成前一直不回复用户进程，则为阻塞；而非阻塞，内核在准备数据期间，可以支持用户进程处于非阻塞状态，甚至异步I/O的复制数据也由内核主动完成</li>
 <li>阻塞、非阻塞、I/O多路复用、异步I/O，这四种I/O模型可以看成是操作系统为了优化用户进程的I/O操作的逐步演进的过程</li>
 </ul>
-<h2><span id="42-示例">4.2 示例</span></h2>
+<h2 id="42-示例">4.2 示例</h2>
 <p>最后给出一个例子，对比下各种I/O模型</p>
 <p><strong>场景：</strong><br>
 用户需要办理一张新银行卡，去银行大厅取号排队吗，待被叫号后，去柜台办理业务，银行职员在银行系统中录入信息，并给用户一张新的银行卡</p>
@@ -438,7 +438,7 @@ A：首先，非阻塞和异步不是一个含义。<br>
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-io&#x8C03;&#x7528;">1 I/O&#x8C03;&#x7528;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text"><span id="11-&#x80CC;&#x666F;">1.1 &#x80CC;&#x666F;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text"><span id="12-&#x53C2;&#x4E0E;&#x8005;">1.2 &#x53C2;&#x4E0E;&#x8005;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text"><span id="13-&#x4E24;&#x4E2A;&#x6B65;&#x9AA4;">1.3 &#x4E24;&#x4E2A;&#x6B65;&#x9AA4;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-&#x4E94;&#x79CD;io&#x6A21;&#x578B;">2 &#x4E94;&#x79CD;IO&#x6A21;&#x578B;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text"><span id="21-&#x963B;&#x585E;io">2.1 &#x963B;&#x585E;I/O</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text"><span id="22-&#x975E;&#x963B;&#x585E;io">2.2 &#x975E;&#x963B;&#x585E;I/O</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text"><span id="23-io&#x591A;&#x8DEF;&#x590D;&#x7528;">2.3 I/O&#x591A;&#x8DEF;&#x590D;&#x7528;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.4.</span> <span class="toc-nav-text"><span id="24-&#x4FE1;&#x53F7;&#x9A71;&#x52A8;io">2.4 &#x4FE1;&#x53F7;&#x9A71;&#x52A8;I/O</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.5.</span> <span class="toc-nav-text"><span id="25-&#x5F02;&#x6B65;io">2.5 &#x5F02;&#x6B65;I/O</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.6.</span> <span class="toc-nav-text"><span id="26-&#x603B;&#x7ED3;">2.6 &#x603B;&#x7ED3;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.</span> <span class="toc-nav-text"><span id="3-java-io&#x5B9E;&#x73B0;">3 JAVA I/O&#x5B9E;&#x73B0;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text"><span id="31-java-bio">3.1 JAVA BIO</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text"><span id="32-java-nio">3.2 JAVA NIO</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.3.</span> <span class="toc-nav-text"><span id="33-java-aio">3.3 JAVA AIO</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.</span> <span class="toc-nav-text"><span id="4-&#x963B;&#x585E;-&#x975E;&#x963B;&#x585E;-&#x540C;&#x6B65;-&#x5F02;&#x6B65;">4 &#x963B;&#x585E; &#x975E;&#x963B;&#x585E; &#x540C;&#x6B65; &#x5F02;&#x6B65;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text"><span id="41-&#x91CA;&#x4E49;">4.1 &#x91CA;&#x4E49;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.1.1.</span> <span class="toc-nav-text"><span id="411-&#x963B;&#x585E;-vs-&#x975E;&#x963B;&#x585E;">4.1.1 &#x963B;&#x585E; <em>vs</em> &#x975E;&#x963B;&#x585E;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.1.2.</span> <span class="toc-nav-text"><span id="412-&#x540C;&#x6B65;-vs-&#x5F02;&#x6B65;">4.1.2 &#x540C;&#x6B65; <em>vs</em> &#x5F02;&#x6B65;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.1.3.</span> <span class="toc-nav-text"><span id="413-&#x603B;&#x7ED3;">4.1.3 &#x603B;&#x7ED3;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text"><span id="42-&#x793A;&#x4F8B;">4.2 &#x793A;&#x4F8B;</span></span></a></li></ol></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#1-io调用"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">1 I/O&#x8C03;&#x7528;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#11-背景"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">1.1 &#x80CC;&#x666F;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#12-参与者"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">1.2 &#x53C2;&#x4E0E;&#x8005;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#13-两个步骤"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">1.3 &#x4E24;&#x4E2A;&#x6B65;&#x9AA4;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#2-五种io模型"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">2 &#x4E94;&#x79CD;IO&#x6A21;&#x578B;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#21-阻塞io"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">2.1 &#x963B;&#x585E;I/O</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#22-非阻塞io"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">2.2 &#x975E;&#x963B;&#x585E;I/O</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#23-io多路复用"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">2.3 I/O&#x591A;&#x8DEF;&#x590D;&#x7528;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#24-信号驱动io"><span class="toc-nav-number">2.4.</span> <span class="toc-nav-text">2.4 &#x4FE1;&#x53F7;&#x9A71;&#x52A8;I/O</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#25-异步io"><span class="toc-nav-number">2.5.</span> <span class="toc-nav-text">2.5 &#x5F02;&#x6B65;I/O</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#26-总结"><span class="toc-nav-number">2.6.</span> <span class="toc-nav-text">2.6 &#x603B;&#x7ED3;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#3-java-io实现"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">3 JAVA I/O&#x5B9E;&#x73B0;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#31-java-bio"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">3.1 JAVA BIO</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#32-java-nio"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">3.2 JAVA NIO</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#33-java-aio"><span class="toc-nav-number">3.3.</span> <span class="toc-nav-text">3.3 JAVA AIO</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#4-阻塞-非阻塞-同步-异步"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">4 &#x963B;&#x585E; &#x975E;&#x963B;&#x585E; &#x540C;&#x6B65; &#x5F02;&#x6B65;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#41-释义"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">4.1 &#x91CA;&#x4E49;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#411-阻塞-vs-非阻塞"><span class="toc-nav-number">4.1.1.</span> <span class="toc-nav-text">4.1.1 &#x963B;&#x585E; <em>vs</em> &#x975E;&#x963B;&#x585E;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#412-同步-vs-异步"><span class="toc-nav-number">4.1.2.</span> <span class="toc-nav-text">4.1.2 &#x540C;&#x6B65; <em>vs</em> &#x5F02;&#x6B65;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#413-总结"><span class="toc-nav-number">4.1.3.</span> <span class="toc-nav-text">4.1.3 &#x603B;&#x7ED3;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#42-示例"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">4.2 &#x793A;&#x4F8B;</span></a></li></ol></li></ol>
         
         </div>
       </aside>

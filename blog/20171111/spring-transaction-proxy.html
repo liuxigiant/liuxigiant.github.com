@@ -142,14 +142,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -221,43 +221,43 @@
 </ul>
 <p>Spring事务作为常规项目中的一个常用模块，对于事务的使用和配置方式，大家都比较清晰，而《Spring技术内幕》一书中的“Spring事务处理的实现”是从事务代理开始讲解的，从项目中常用的配置方式中，并不能直接找到代理生成的入口。</p>
 <p>现在大多项目使用基于注解的方式配置事务，要是还是使用TransactionTemplate的编程式事务，那么事务处理的脉络还是很清晰的，所以本文讨论的就是<strong>基于注解的方式配置事务代理类的生成</strong>。</p>
-<h1><span id="1-开篇">1 开篇</span></h1>
+<h1 id="1-开篇">1 开篇</h1>
 <p><strong>基于注解事务代理类的生成</strong>：研究这个问题是为了更好的研究Spring事务原理和源码，在项目使用注解事务时候，能知其然使其所以然。</p>
 <p>Spring事务实现基于AOP实现，而AOP的核心是代理和回调（或者称之为拦截器），对于Spring注解事务，manager层的业务类（项目开发过程中事务注解一般在manager层使用）的<strong>代理类的生成</strong>其实是在IOC容器初始化过程中，实例化Bean的时候就已经生成代理和织入事务处理回调。</p>
 <p>综上所述：Spring注解事务的实现其实由Spring IOC、AOP 和 事务 三大模块支撑，下面从源码角度一一道来</p>
 <blockquote>
 <p>Spring 源码版本 4.3.0</p>
 </blockquote>
-<h1><span id="2-spring-ioc容器初始化">2 Spring IOC容器初始化</span></h1>
+<h1 id="2-spring-ioc容器初始化">2 Spring IOC容器初始化</h1>
 <p>本节部分重点关注基于注解事务的代理类的生成在IOC容器初始化过程中的方法调用脉络，关于IOC容器初始化的其他核心方法会被忽略</p>
-<h2><span id="21-监听器contextloaderlistener">2.1 监听器ContextLoaderListener</span></h2>
+<h2 id="21-监听器contextloaderlistener">2.1 监听器ContextLoaderListener</h2>
 <p><img src="/images/tx_listener.png" alt=""></p>
 <p>如上方法调用时序图，分析<strong>Spring IOC容器初始化</strong>过程，可以从Spring容器初始化监听器<strong>ContextLoaderListener</strong>（web项目中使用Spring一般需要在web.xml中配置监听器）开始</p>
 <p>从<strong>ContextLoaderListener</strong>的源码（核心方法在其父类ContextLoader中）可看出，默认的IOC容器是<strong>XmlWebApplicationContext</strong>，在实例化完Bean后，调用<strong>refresh</strong>方法初始化IOC容器。</p>
 <blockquote>
 <p>看过《Spring技术内幕》一书IOC部分就知道，IOC容器的初始化流程核心就是refresh方法</p>
 </blockquote>
-<h2><span id="22-容器初始化">2.2 容器初始化</span></h2>
+<h2 id="22-容器初始化">2.2 容器初始化</h2>
 <p><img src="/images/tx_ioc.png" alt=""></p>
 <p>如上图展示了Spring IOC容器初始化过程中，基于注解事务代理类生成的方法调用时序关系，下面简单分析下各个方法</p>
-<h3><span id="221-refresh">2.2.1 refresh</span></h3>
+<h3 id="221-refresh">2.2.1 refresh</h3>
 <p>XmlWebApplicationContext#refresh</p>
 <p>在2.1小节监听器最终调用<code>XmlWebApplicationContext#refresh</code>方法，从<code>XmlWebApplicationContext</code>类的继承体系可看出，<code>refresh</code>方法是在类<code>AbstractApplicationContext</code>中实现的。</p>
 <p>该方法是IOC容器初始化的核心流程，在IOC容器 beanFactory创建完成并根据Spring配置文件加载类定义BeanDefinition（obtainFreshBeanFactory方法）后，会实例化单例Bean（非延迟初始化），即调用<code>AbstractApplicationContext#finishBeanFactoryInitialization</code>方法</p>
-<h3><span id="222-finishbeanfactoryinitialization">2.2.2 finishBeanFactoryInitialization</span></h3>
+<h3 id="222-finishbeanfactoryinitialization">2.2.2 finishBeanFactoryInitialization</h3>
 <p>AbstractApplicationContext#finishBeanFactoryInitialization</p>
 <p>finishBeanFactoryInitialization方法的核心是调用实例化单例Bean方法<code>DefaultListableBeanFactory#preInstantiateSingletons</code></p>
-<h3><span id="223-preinstantiatesingletons">2.2.3 preInstantiateSingletons</span></h3>
+<h3 id="223-preinstantiatesingletons">2.2.3 preInstantiateSingletons</h3>
 <p>DefaultListableBeanFactory#preInstantiateSingletons</p>
 <p>preInstantiateSingletons会循环获取单例Bean实例</p>
-<h3><span id="224-dogetbean">2.2.4 doGetBean</span></h3>
+<h3 id="224-dogetbean">2.2.4 doGetBean</h3>
 <p>AbstractBeanFactory#doGetBean</p>
 <p>doGetBean获取Bean时候，若当前容器中不包含该Bean，则取父容器中获取。同时会获取所有依赖的Bean。</p>
 <p>重点在创建单例Bean的<code>DefaultSingletonBeanRegistry#getSingleton</code>方法的调用（注意此处传了一个接口BeanFactory的实现，作为真正创建Bean的实现）。</p>
-<h3><span id="225-getsingleton">2.2.5 getSingleton</span></h3>
+<h3 id="225-getsingleton">2.2.5 getSingleton</h3>
 <p>DefaultSingletonBeanRegistry#getSingleton</p>
 <p>单例Bean在创建完后会添加到容器中，而创建单例Bean的方法就是前面说的到传入的BeanFactory的getObject方法</p>
-<h3><span id="226-createbeanampdocreatebean">2.2.6 createBean&amp;doCreateBean</span></h3>
+<h3 id="226-createbeanampdocreatebean">2.2.6 createBean&amp;doCreateBean</h3>
 <p>AbstractAutowireCapableBeanFactory#createBean&amp;doCreateBean</p>
 <p>创建Bean的核心方法是<code>doCreateBean</code>，包含以下几个重要的方法：</p>
 <ul>
@@ -265,21 +265,21 @@
 <li><code>populateBean</code>：属性赋值以及实例化回调（实现<code>InstantiationAwareBeanPostProcessor</code>接口）</li>
 <li><code>initializeBean</code>：初始化方法调用以及初始化回调（实现<code>BeanPostProcessor</code>接口）</li>
 </ul>
-<h3><span id="227-initializebean">2.2.7 initializeBean</span></h3>
+<h3 id="227-initializebean">2.2.7 initializeBean</h3>
 <p>AbstractAutowireCapableBeanFactory#initializeBean</p>
 <p><code>initializeBean</code>方法完成初始化方法和初始化回调处理器链（实现<code>BeanPostProcessor</code>接口）的调用，源码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Object <span class="title">initializeBean</span><span class="params">(<span class="keyword">final</span> String beanName, <span class="keyword">final</span> Object bean, RootBeanDefinition mbd)</span> </span>&#123;	</span><br><span class="line">	<span class="comment">//......      略    ......</span></span><br><span class="line">	Object wrappedBean = bean;</span><br><span class="line">	<span class="keyword">if</span> (mbd == <span class="keyword">null</span> || !mbd.isSynthetic()) &#123;</span><br><span class="line">		wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		invokeInitMethods(beanName, wrappedBean, mbd);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> BeanCreationException(</span><br><span class="line">				(mbd != <span class="keyword">null</span> ? mbd.getResourceDescription() : <span class="keyword">null</span>),</span><br><span class="line">				beanName, <span class="string">"Invocation of init method failed"</span>, ex);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (mbd == <span class="keyword">null</span> || !mbd.isSynthetic()) &#123;</span><br><span class="line">		<span class="comment">//初始化回调生成代理类</span></span><br><span class="line">		wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> wrappedBean;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">applyBeanPostProcessorsAfterInitialization</span><span class="params">(Object existingBean, String beanName)</span></span></span><br><span class="line"><span class="function">			<span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line"></span><br><span class="line">		Object result = existingBean;</span><br><span class="line">		<span class="keyword">for</span> (BeanPostProcessor beanProcessor : getBeanPostProcessors()) &#123;</span><br><span class="line">			<span class="comment">//回调处理</span></span><br><span class="line">			result = beanProcessor.postProcessAfterInitialization(result, beanName);</span><br><span class="line">			<span class="keyword">if</span> (result == <span class="keyword">null</span>) &#123;</span><br><span class="line">				<span class="keyword">return</span> result;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> result;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-<h3><span id="228-postprocessafterinitialization">2.2.8 postProcessAfterInitialization</span></h3>
+<h3 id="228-postprocessafterinitialization">2.2.8 postProcessAfterInitialization</h3>
 <p>AbstractAutoProxyCreator#postProcessAfterInitialization</p>
 <p><code>AbstractAutoProxyCreator</code>的初始化回调方法<code>postProcessAfterInitialization</code>完成了代理类的生成</p>
 <blockquote>
 <p><code>AbstractAutoProxyCreator</code>是一个抽象类，从类名也能看出是自动代理构造器；<br>
 此处为了梳理逻辑使用抽象类，至于在项目中使用的具体类，后续再说</p>
 </blockquote>
-<h1><span id="3-spring-aop事务代理生成">3 Spring AOP事务代理生成</span></h1>
+<h1 id="3-spring-aop事务代理生成">3 Spring AOP事务代理生成</h1>
 <p><img src="/images/tx_aop.png" alt=""></p>
 <p>上面IOC容器初始化最后是到<code>AbstractAutoProxyCreator#postProcessAfterInitialization</code>方法完成代理类的生成，具体生成流程方法调用时序图如上，下面简单分析下各个方法</p>
-<h2><span id="31-wrapifnecessary">3.1 wrapIfNecessary</span></h2>
+<h2 id="31-wrapifnecessary">3.1 wrapIfNecessary</h2>
 <p>AbstractAutoProxyCreator#wrapIfNecessary</p>
 <p>从下面源码能很清晰的看出代理的创建过程：</p>
 <ul>
@@ -287,9 +287,9 @@
 <li>生成代理类</li>
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Object <span class="title">wrapIfNecessary</span><span class="params">(Object bean, String beanName, Object cacheKey)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//......      略    ......</span></span><br><span class="line">	<span class="comment">// Create proxy if we have advice.</span></span><br><span class="line">	<span class="comment">//获取回调拦截器（AOP核心：代理和回调拦截器）</span></span><br><span class="line">	Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, <span class="keyword">null</span>);</span><br><span class="line">	<span class="keyword">if</span> (specificInterceptors != DO_NOT_PROXY) &#123;</span><br><span class="line">		<span class="keyword">this</span>.advisedBeans.put(cacheKey, Boolean.TRUE);</span><br><span class="line">		<span class="comment">//生成代理类</span></span><br><span class="line">		Object proxy = createProxy(</span><br><span class="line">				bean.getClass(), beanName, specificInterceptors, <span class="keyword">new</span> SingletonTargetSource(bean));</span><br><span class="line">		<span class="keyword">this</span>.proxyTypes.put(cacheKey, proxy.getClass());</span><br><span class="line">		<span class="keyword">return</span> proxy;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">this</span>.advisedBeans.put(cacheKey, Boolean.FALSE);</span><br><span class="line">	<span class="keyword">return</span> bean;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2><span id="32-获取回调拦截器">3.2 获取回调拦截器</span></h2>
+<h2 id="32-获取回调拦截器">3.2 获取回调拦截器</h2>
 <p>还是根据上面方法调用时序图的方法调用一一介绍</p>
-<h3><span id="321-获取合法的advisor">3.2.1 获取合法的advisor</span></h3>
+<h3 id="321-获取合法的advisor">3.2.1 获取合法的advisor</h3>
 <p>AbstractAdvisorAutoProxyCreator#getAdvicesAndAdvisorsForBean<br>
 AbstractAdvisorAutoProxyCreator#findEligibleAdvisors</p>
 <p><code>findEligibleAdvisors</code>方法是查找合法的advisor，包含三个主要方法：</p>
@@ -309,7 +309,7 @@ AbstractAdvisorAutoProxyCreator#findEligibleAdvisors</p>
 </ul>
 <p>AOP的核心技术是代理，只有给目标对象生成代理，才能面向切面做增强（ps：可参阅《Spring技术内幕》AOP相关部分）</p>
 <p>下面回到正题，分析下事务advisor的判断逻辑和advisor的排序</p>
-<h3><span id="322-事务advisor的判断">3.2.2 事务advisor的判断</span></h3>
+<h3 id="322-事务advisor的判断">3.2.2 事务advisor的判断</h3>
 <p>此处为何是事务advisor的判断?  获取advisor时候，会根据类型获取所有的advisor，但是本文只关注事务，所有只需要分析<code>BeanFactoryTransactionAttributeSourceAdvisor</code>即可</p>
 <blockquote>
 <p>至于为何是<code>BeanFactoryTransactionAttributeSourceAdvisor</code>类，后续再说（遗留两个问题了-_-）</p>
@@ -328,12 +328,12 @@ AbstractAdvisorAutoProxyCreator#findEligibleAdvisors</p>
 <li>若目标类的方法上的有<code>Transactional</code>注解，则生成目标类的代理类，并将回调拦截器（从上面源码中看出是advisor，包含拦截器advice）织入代理中</li>
 <li>目标类方法调用时候触发代理的回调拦截器，实现事务管理</li>
 </ul>
-<h3><span id="323-回调拦截器排序">3.2.3 回调拦截器排序</span></h3>
+<h3 id="323-回调拦截器排序">3.2.3 回调拦截器排序</h3>
 <p>可查看下<code>AbstractAdvisorAutoProxyCreator#sortAdvisors</code>源码，是通过<code>Order</code>注解指定顺序的</p>
 <blockquote>
 <p>在自定义拦截器时候，会存在拦截器先后顺序的问题，此时用到的就是Order注解指定顺序</p>
 </blockquote>
-<h2><span id="33-生成代理类">3.3 生成代理类</span></h2>
+<h2 id="33-生成代理类">3.3 生成代理类</h2>
 <p>AbstractAutoProxyCreator#createProxy</p>
 <p>从如下源码中可看出，最终调用<code>proxyFactory.getProxy</code>生成代理类</p>
 <blockquote>
@@ -341,7 +341,7 @@ AbstractAdvisorAutoProxyCreator#findEligibleAdvisors</p>
 《Spring技术内幕》一书就是从此类讲解Spring AOP源码的（包括对JDK动态代理和CGLIB的封装及选择）</p>
 </blockquote>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Object <span class="title">createProxy</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">		Class&lt;?&gt; beanClass, String beanName, Object[] specificInterceptors, TargetSource targetSource)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (<span class="keyword">this</span>.beanFactory <span class="keyword">instanceof</span> ConfigurableListableBeanFactory) &#123;</span><br><span class="line">		AutoProxyUtils.exposeTargetClass((ConfigurableListableBeanFactory) <span class="keyword">this</span>.beanFactory, beanName, beanClass);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	ProxyFactory proxyFactory = <span class="keyword">new</span> ProxyFactory();</span><br><span class="line">	proxyFactory.copyFrom(<span class="keyword">this</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!proxyFactory.isProxyTargetClass()) &#123;</span><br><span class="line">		<span class="keyword">if</span> (shouldProxyTargetClass(beanClass, beanName)) &#123;</span><br><span class="line">			proxyFactory.setProxyTargetClass(<span class="keyword">true</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			evaluateProxyInterfaces(beanClass, proxyFactory);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	Advisor[] advisors = buildAdvisors(beanName, specificInterceptors);</span><br><span class="line">	<span class="keyword">for</span> (Advisor advisor : advisors) &#123;</span><br><span class="line">		proxyFactory.addAdvisor(advisor);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	proxyFactory.setTargetSource(targetSource);</span><br><span class="line">	customizeProxyFactory(proxyFactory);</span><br><span class="line"></span><br><span class="line">	proxyFactory.setFrozen(<span class="keyword">this</span>.freezeProxy);</span><br><span class="line">	<span class="keyword">if</span> (advisorsPreFiltered()) &#123;</span><br><span class="line">		proxyFactory.setPreFiltered(<span class="keyword">true</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> proxyFactory.getProxy(getProxyClassLoader());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1><span id="4-事务">4 事务</span></h1>
+<h1 id="4-事务">4 事务</h1>
 <p>从前面 <code>Spring IOC</code> 和 <code>Spring AOP</code> 两部分可看出，对于目标类，若方法上有事务注解，则回生成代理类，并织入事务处理的advisor</p>
 <p>在调用代理类的方法，会触发回调拦截器链的处理，其中就包含上面织入的事务处理的advisor，即<code>BeanFactoryTransactionAttributeSourceAdvisor</code></p>
 <p>在上一节AOP中有提到，advisor包含pointcut和advice，advice就是拦截器，负责拦截目标方法进行AOP增强处理</p>
@@ -351,9 +351,9 @@ AbstractAdvisorAutoProxyCreator#findEligibleAdvisors</p>
 <p>事务管理就是通过<code>TransactionInterceptor</code>拦截器对代理类的事务方法进行处理，实现Spring事务的管理<br>
 具体实现可参阅《Spring技术内幕》</p>
 </blockquote>
-<h1><span id="5-遗留问题">5 遗留问题</span></h1>
+<h1 id="5-遗留问题">5 遗留问题</h1>
 <p>前面遗留了四个问题，下面分两部分来说，第一个问题是第一部分；第二、三、四个问题是第二部分</p>
-<h2><span id="51-问题二-三-四注解事务advisor">5.1 问题二、三、四：注解事务Advisor</span></h2>
+<h2 id="51-问题二-三-四注解事务advisor">5.1 问题二、三、四：注解事务Advisor</h2>
 <p>先来回顾下问题二、三、四这三个问题：</p>
 <ul>
 <li>3.3.2小节问题二：在根据类型<code>Advisor.class</code>查找所有advisor时候，为什么会有事务处理的advisor类<code>BeanFactoryTransactionAttributeSourceAdvisor</code></li>
@@ -443,7 +443,7 @@ advisorDef.getPropertyValues().add(&quot;adviceBeanName&quot;, interceptorName);
 <p><strong>总结</strong>：</p>
 <p>我们在使用注解事务，配置xml注解驱动<code>tx:annotation-driven</code>时候，会自动在Spring IOC容器中注册Bean定义<br>
 <code>BeanFactoryTransactionAttributeSourceAdvisor</code>、<code>AnnotationTransactionAttributeSource</code>和<code>TransactionInterceptor</code></p>
-<h2><span id="52-问题一自动代理构造器beanpostprocessor">5.2 问题一：自动代理构造器BeanPostProcessor</span></h2>
+<h2 id="52-问题一自动代理构造器beanpostprocessor">5.2 问题一：自动代理构造器BeanPostProcessor</h2>
 <p>先回顾下2.2.8小节的问题一，自动代理构造器我们是通过抽象类<code>AbstractAutoProxyCreator</code>来分析的，那么具体的实现类是哪个呢？又是如何注册到IOC容器中的呢？</p>
 <p>在理解自动创建代理之前，先来看下，<strong>编程式代理</strong>的使用方式（可查看<a href="https://docs.spring.io/spring/docs/4.3.12.RELEASE/spring-framework-reference/htmlsingle/#aop-prog" target="_blank" rel="noopener">官网文档programmatically</a>）</p>
 <pre><code class="language-java">ProxyFactory factory = new ProxyFactory(myBusinessInterfaceImpl);
@@ -483,7 +483,7 @@ MyBusinessInterface tb = (MyBusinessInterface) factory.getProxy();
 <blockquote>
 <p>由于<code>InfrastructureAdvisorAutoProxyCreator</code>实现了<code>BeanPostProcessor</code>，所以也相当于向Spring IOC容器中添加了一个<code>BeanPostProcessor</code></p>
 </blockquote>
-<h1><span id="6-总结">6 总结</span></h1>
+<h1 id="6-总结">6 总结</h1>
 <p>从上述内容可看出：基于注解事务是IOC、AOP和事务的集大成者</p>
 <ul>
 <li>配置xml事务注解驱动<code>tx:annotation-driven</code>,会注册自动代理的BeanPostProcessor <code>InfrastructureAdvisorAutoProxyCreator</code> 和事务advisor <code>BeanFactoryTransactionAttributeSourceAdvisor</code></li>
@@ -549,7 +549,7 @@ MyBusinessInterface tb = (MyBusinessInterface) factory.getProxy();
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-&#x5F00;&#x7BC7;">1 &#x5F00;&#x7BC7;</span></span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-spring-ioc&#x5BB9;&#x5668;&#x521D;&#x59CB;&#x5316;">2 Spring IOC&#x5BB9;&#x5668;&#x521D;&#x59CB;&#x5316;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text"><span id="21-&#x76D1;&#x542C;&#x5668;contextloaderlistener">2.1 &#x76D1;&#x542C;&#x5668;ContextLoaderListener</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text"><span id="22-&#x5BB9;&#x5668;&#x521D;&#x59CB;&#x5316;">2.2 &#x5BB9;&#x5668;&#x521D;&#x59CB;&#x5316;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.1.</span> <span class="toc-nav-text"><span id="221-refresh">2.2.1 refresh</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.2.</span> <span class="toc-nav-text"><span id="222-finishbeanfactoryinitialization">2.2.2 finishBeanFactoryInitialization</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.3.</span> <span class="toc-nav-text"><span id="223-preinstantiatesingletons">2.2.3 preInstantiateSingletons</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.4.</span> <span class="toc-nav-text"><span id="224-dogetbean">2.2.4 doGetBean</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.5.</span> <span class="toc-nav-text"><span id="225-getsingleton">2.2.5 getSingleton</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.6.</span> <span class="toc-nav-text"><span id="226-createbeanampdocreatebean">2.2.6 createBean&amp;doCreateBean</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.7.</span> <span class="toc-nav-text"><span id="227-initializebean">2.2.7 initializeBean</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.8.</span> <span class="toc-nav-text"><span id="228-postprocessafterinitialization">2.2.8 postProcessAfterInitialization</span></span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.</span> <span class="toc-nav-text"><span id="3-spring-aop&#x4E8B;&#x52A1;&#x4EE3;&#x7406;&#x751F;&#x6210;">3 Spring AOP&#x4E8B;&#x52A1;&#x4EE3;&#x7406;&#x751F;&#x6210;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text"><span id="31-wrapifnecessary">3.1 wrapIfNecessary</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text"><span id="32-&#x83B7;&#x53D6;&#x56DE;&#x8C03;&#x62E6;&#x622A;&#x5668;">3.2 &#x83B7;&#x53D6;&#x56DE;&#x8C03;&#x62E6;&#x622A;&#x5668;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.2.1.</span> <span class="toc-nav-text"><span id="321-&#x83B7;&#x53D6;&#x5408;&#x6CD5;&#x7684;advisor">3.2.1 &#x83B7;&#x53D6;&#x5408;&#x6CD5;&#x7684;advisor</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.2.2.</span> <span class="toc-nav-text"><span id="322-&#x4E8B;&#x52A1;advisor&#x7684;&#x5224;&#x65AD;">3.2.2 &#x4E8B;&#x52A1;advisor&#x7684;&#x5224;&#x65AD;</span></span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.2.3.</span> <span class="toc-nav-text"><span id="323-&#x56DE;&#x8C03;&#x62E6;&#x622A;&#x5668;&#x6392;&#x5E8F;">3.2.3 &#x56DE;&#x8C03;&#x62E6;&#x622A;&#x5668;&#x6392;&#x5E8F;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.3.</span> <span class="toc-nav-text"><span id="33-&#x751F;&#x6210;&#x4EE3;&#x7406;&#x7C7B;">3.3 &#x751F;&#x6210;&#x4EE3;&#x7406;&#x7C7B;</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">4.</span> <span class="toc-nav-text"><span id="4-&#x4E8B;&#x52A1;">4 &#x4E8B;&#x52A1;</span></span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.</span> <span class="toc-nav-text"><span id="5-&#x9057;&#x7559;&#x95EE;&#x9898;">5 &#x9057;&#x7559;&#x95EE;&#x9898;</span></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text"><span id="51-&#x95EE;&#x9898;&#x4E8C;-&#x4E09;-&#x56DB;&#x6CE8;&#x89E3;&#x4E8B;&#x52A1;advisor">5.1 &#x95EE;&#x9898;&#x4E8C;&#x3001;&#x4E09;&#x3001;&#x56DB;&#xFF1A;&#x6CE8;&#x89E3;&#x4E8B;&#x52A1;Advisor</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">5.2.</span> <span class="toc-nav-text"><span id="52-&#x95EE;&#x9898;&#x4E00;&#x81EA;&#x52A8;&#x4EE3;&#x7406;&#x6784;&#x9020;&#x5668;beanpostprocessor">5.2 &#x95EE;&#x9898;&#x4E00;&#xFF1A;&#x81EA;&#x52A8;&#x4EE3;&#x7406;&#x6784;&#x9020;&#x5668;BeanPostProcessor</span></span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">6.</span> <span class="toc-nav-text"><span id="6-&#x603B;&#x7ED3;">6 &#x603B;&#x7ED3;</span></span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#1-开篇"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">1 &#x5F00;&#x7BC7;</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#2-spring-ioc容器初始化"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">2 Spring IOC&#x5BB9;&#x5668;&#x521D;&#x59CB;&#x5316;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#21-监听器contextloaderlistener"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">2.1 &#x76D1;&#x542C;&#x5668;ContextLoaderListener</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#22-容器初始化"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">2.2 &#x5BB9;&#x5668;&#x521D;&#x59CB;&#x5316;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#221-refresh"><span class="toc-nav-number">2.2.1.</span> <span class="toc-nav-text">2.2.1 refresh</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#222-finishbeanfactoryinitialization"><span class="toc-nav-number">2.2.2.</span> <span class="toc-nav-text">2.2.2 finishBeanFactoryInitialization</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#223-preinstantiatesingletons"><span class="toc-nav-number">2.2.3.</span> <span class="toc-nav-text">2.2.3 preInstantiateSingletons</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#224-dogetbean"><span class="toc-nav-number">2.2.4.</span> <span class="toc-nav-text">2.2.4 doGetBean</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#225-getsingleton"><span class="toc-nav-number">2.2.5.</span> <span class="toc-nav-text">2.2.5 getSingleton</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#226-createbeanampdocreatebean"><span class="toc-nav-number">2.2.6.</span> <span class="toc-nav-text">2.2.6 createBean&amp;doCreateBean</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#227-initializebean"><span class="toc-nav-number">2.2.7.</span> <span class="toc-nav-text">2.2.7 initializeBean</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#228-postprocessafterinitialization"><span class="toc-nav-number">2.2.8.</span> <span class="toc-nav-text">2.2.8 postProcessAfterInitialization</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#3-spring-aop事务代理生成"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">3 Spring AOP&#x4E8B;&#x52A1;&#x4EE3;&#x7406;&#x751F;&#x6210;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#31-wrapifnecessary"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">3.1 wrapIfNecessary</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#32-获取回调拦截器"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">3.2 &#x83B7;&#x53D6;&#x56DE;&#x8C03;&#x62E6;&#x622A;&#x5668;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#321-获取合法的advisor"><span class="toc-nav-number">3.2.1.</span> <span class="toc-nav-text">3.2.1 &#x83B7;&#x53D6;&#x5408;&#x6CD5;&#x7684;advisor</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#322-事务advisor的判断"><span class="toc-nav-number">3.2.2.</span> <span class="toc-nav-text">3.2.2 &#x4E8B;&#x52A1;advisor&#x7684;&#x5224;&#x65AD;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#323-回调拦截器排序"><span class="toc-nav-number">3.2.3.</span> <span class="toc-nav-text">3.2.3 &#x56DE;&#x8C03;&#x62E6;&#x622A;&#x5668;&#x6392;&#x5E8F;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#33-生成代理类"><span class="toc-nav-number">3.3.</span> <span class="toc-nav-text">3.3 &#x751F;&#x6210;&#x4EE3;&#x7406;&#x7C7B;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#4-事务"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">4 &#x4E8B;&#x52A1;</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#5-遗留问题"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">5 &#x9057;&#x7559;&#x95EE;&#x9898;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#51-问题二-三-四注解事务advisor"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text">5.1 &#x95EE;&#x9898;&#x4E8C;&#x3001;&#x4E09;&#x3001;&#x56DB;&#xFF1A;&#x6CE8;&#x89E3;&#x4E8B;&#x52A1;Advisor</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#52-问题一自动代理构造器beanpostprocessor"><span class="toc-nav-number">5.2.</span> <span class="toc-nav-text">5.2 &#x95EE;&#x9898;&#x4E00;&#xFF1A;&#x81EA;&#x52A8;&#x4EE3;&#x7406;&#x6784;&#x9020;&#x5668;BeanPostProcessor</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#6-总结"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">6 &#x603B;&#x7ED3;</span></a></li></ol>
         
         </div>
       </aside>

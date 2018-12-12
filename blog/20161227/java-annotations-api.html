@@ -140,14 +140,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -210,12 +210,12 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2><span id="1-annotatedelement接口简介">1. AnnotatedElement接口简介</span></h2>
+                <h2 id="1-annotatedelement接口简介">1. AnnotatedElement接口简介</h2>
 <p>java.lang.reflect 包下主要包含一些实现反射功能的工具类，实际上，java.lang.reflect 包所有提供的反射API扩充了读取运行时Annotation信息的能力。当一个Annotation类型被定义为运行时的Annotation后，该注解才能是运行时可见，当class文件被装载时被保存在class文件中的Annotation才会被虚拟机读取。</p>
 <blockquote>
 <p>AnnotatedElement 接口是所有程序元素（Class、Method和Constructor）的父接口，所以程序通过反射获取了某个类的AnnotatedElement对象之后，程序就可以调用该对象的方法来访问Annotation信息。</p>
 </blockquote>
-<h2><span id="2-api方法">2. API方法</span></h2>
+<h2 id="2-api方法">2. API方法</h2>
 <ul>
 <li>
 <p><code>boolean isAnnotationPresent(Class&lt;?extends Annotation&gt; annotationClass)</code><br>
@@ -246,7 +246,7 @@
 返回直接存在于此元素上的所有注解及注解对应的重复注解容器。与此接口中的其他方法不同，该方法将忽略继承的注解。如果没有注释直接存在于此元素上，则返回长度为零的一个数组。该方法的调用者可以随意修改返回的数组，而不会对其他调用者返回的数组产生任何影响。</p>
 </li>
 </ul>
-<h2><span id="3-总结">3. 总结</span></h2>
+<h2 id="3-总结">3. 总结</h2>
 <ul>
 <li>
 <p>AnnotatedElement代表运行时JVM中的一个被注解的元素</p>
@@ -391,7 +391,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-annotatedelement&#x63A5;&#x53E3;&#x7B80;&#x4ECB;">1. AnnotatedElement&#x63A5;&#x53E3;&#x7B80;&#x4ECB;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-api&#x65B9;&#x6CD5;">2. API&#x65B9;&#x6CD5;</span></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">3.</span> <span class="toc-nav-text"><span id="3-&#x603B;&#x7ED3;">3. &#x603B;&#x7ED3;</span></span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-annotatedelement接口简介"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">1. AnnotatedElement&#x63A5;&#x53E3;&#x7B80;&#x4ECB;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-api方法"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">2. API&#x65B9;&#x6CD5;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-总结"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">3. &#x603B;&#x7ED3;</span></a></li></ol>
         
         </div>
       </aside>

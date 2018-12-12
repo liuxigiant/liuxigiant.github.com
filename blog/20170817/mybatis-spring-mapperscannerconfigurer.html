@@ -140,14 +140,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -211,11 +211,11 @@
                 post-container">
 
                 <p>在首篇<strong>MyBatis-Spring简介与用法</strong>中介绍的用法二，需要对各个Dao层接口，配置代理工厂类。在用法三中介绍的，Mybatis Spring根据D指定扫描的包路径，自动扫描接口，并生成代理类，从而使coder从大量繁琐的配置中解脱出来  -_-</p>
-<h1><span id="1-配置">1 配置</span></h1>
+<h1 id="1-配置">1 配置</h1>
 <p>首先回顾下，指定包路径扫描的配置文件的使用方式，如下：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">"org.mybatis.spring.mapper.MapperScannerConfigurer"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"basePackage"</span> <span class="attr">value</span>=<span class="string">"name.liux.share.dao"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>如上配置，只需要配置包路径，Mybatis Spring就会扫描包路径下的接口，并生成代理实现类。</p>
-<h1><span id="2-自动扫描">2. 自动扫描</span></h1>
+<h1 id="2-自动扫描">2. 自动扫描</h1>
 <p>mapper自动扫描辅助类<code>MapperScannerConfigurer</code>实现了spring的<code>BeanDefinitionRegistryPostProcessor</code>接口。</p>
 <blockquote>
 <p><strong>BeanDefinitionRegistryPostProcessor</strong>：Spring容器Bean Factory的一个后置处理器，在Spring解析完XML文件并封装完Bean定义<code>BeanDefinition</code>后、Bean初始化之前，会执行回调方法<code>postProcessBeanDefinitionRegistry</code>。主要用于修改Bean定义<code>BeanDefinition</code>。</p>
@@ -291,7 +291,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><span id="1-&#x914D;&#x7F6E;">1 &#x914D;&#x7F6E;</span></span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><span id="2-&#x81EA;&#x52A8;&#x626B;&#x63CF;">2. &#x81EA;&#x52A8;&#x626B;&#x63CF;</span></span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#1-配置"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">1 &#x914D;&#x7F6E;</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#2-自动扫描"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">2. &#x81EA;&#x52A8;&#x626B;&#x63CF;</span></a></li></ol>
         
         </div>
       </aside>
