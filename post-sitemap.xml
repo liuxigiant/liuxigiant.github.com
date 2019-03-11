@@ -7,6 +7,62 @@
     </url>
 
     <url>
+        <loc>https://www.liuxi.name/blog/20170814/mybatis-spring-sqlsessiontemplate.html</loc>
+        <lastmod>2019-03-11T13:02:50.111Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20170802/mybatis-spring-sessionfactory.html</loc>
+        <lastmod>2019-03-11T13:02:04.801Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20160607/mysql-partition-unique-key.html</loc>
+        <lastmod>2019-03-11T12:55:07.922Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20160624/mysql-save-or-update.html</loc>
+        <lastmod>2019-03-11T12:54:31.880Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20161227/java-annotations-customize.html</loc>
+        <lastmod>2019-03-11T12:52:07.844Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20161228/spring-container-extension.html</loc>
+        <lastmod>2019-03-11T12:51:29.144Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/blog/20170718/mybatis-spring-usage.html</loc>
+        <lastmod>2019-03-11T12:50:48.585Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>https://www.liuxi.name/blog/20181118/octopress-to-hexo.html</loc>
         <lastmod>2018-12-12T06:09:26.471Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -159,48 +215,8 @@
     </url>
 
     <url>
-        <loc>https://www.liuxi.name/blog/20170814/mybatis-spring-sqlsessiontemplate.html</loc>
-        <lastmod>2018-11-19T06:03:38.630Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>https://www.liuxi.name/blog/20170802/mybatis-spring-sessionfactory.html</loc>
-        <lastmod>2018-11-19T06:03:38.627Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>https://www.liuxi.name/blog/20170718/mybatis-spring-usage.html</loc>
-        <lastmod>2018-11-19T06:03:38.624Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>https://www.liuxi.name/blog/20161228/spring-container-extension.html</loc>
-        <lastmod>2018-11-19T06:03:38.620Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
         <loc>https://www.liuxi.name/blog/20161228/spring-annotations.html</loc>
         <lastmod>2018-11-19T06:03:38.617Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>https://www.liuxi.name/blog/20161227/java-annotations-customize.html</loc>
-        <lastmod>2018-11-19T06:03:38.614Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -231,24 +247,8 @@
     </url>
 
     <url>
-        <loc>https://www.liuxi.name/blog/20160624/mysql-save-or-update.html</loc>
-        <lastmod>2018-11-19T06:03:38.603Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
         <loc>https://www.liuxi.name/blog/20160608/jvm-full-gc-hourly.html</loc>
         <lastmod>2018-11-19T06:03:38.600Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>https://www.liuxi.name/blog/20160607/mysql-partition-unique-key.html</loc>
-        <lastmod>2018-11-19T06:03:38.597Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 

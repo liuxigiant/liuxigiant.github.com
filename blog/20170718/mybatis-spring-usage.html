@@ -140,14 +140,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -240,43 +240,9 @@
 <blockquote>
 <p>注意：  <code>SqlSessionTemplate</code>的方法中的第一个参数<code>statement</code>，指定sql语句，一般都是对用的Mapper文件的<code>命名空间.sql语句id</code>。当然，也可直接用sql语句id，不加命名空间，但不建议这么做，回存在sql覆盖的问题，详细分析可查看下篇<code>mybatis-spring源码解析之创建SqlSessionFactory</code>~~</p>
 </blockquote>
-<pre><code class="language-java">public class OrderDaoImpl implements OrderDao {
-
-	private SqlSessionTemplate sqlSessionTemplate;
-
-	@Override
-	public Order searchOrderById(Long id) {
-		return sqlSessionTemplate.selectOne(&quot;name.liux.share.dao.OrderDao.searchOrderById&quot;, id);
-	}
-
-	public SqlSessionTemplate getSqlSessionTemplate() {
-		return sqlSessionTemplate;
-	}
-
-	public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
-		this.sqlSessionTemplate = sqlSessionTemplate;
-	}
-}
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OrderDaoImpl</span> <span class="keyword">implements</span> <span class="title">OrderDao</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> SqlSessionTemplate sqlSessionTemplate;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Order <span class="title">searchOrderById</span><span class="params">(Long id)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> sqlSessionTemplate.selectOne(<span class="string">"name.liux.share.dao.OrderDao.searchOrderById"</span>, id);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> SqlSessionTemplate <span class="title">getSqlSessionTemplate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> sqlSessionTemplate;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSqlSessionTemplate</span><span class="params">(SqlSessionTemplate sqlSessionTemplate)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.sqlSessionTemplate = sqlSessionTemplate;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>配置文件<code>spring-config-dao-template.xml</code>中声明了<code>sqlSessionTemplate</code>,并将上上面配置的<code>sqlSessionFactory</code>注入到<code>sqlSessionTemplate</code>中，再将<code>sqlSessionTemplate</code>注入到<code>orderDaoImpl</code>中</p>
-<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
-       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-       xsi:schemaLocation=&quot;
-              http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
-
-       &lt;import resource=&quot;spring-config-datasource.xml&quot;/&gt;
-
-       &lt;bean id=&quot;sqlSessionTemplate&quot; class=&quot;org.mybatis.spring.SqlSessionTemplate&quot;&gt;
-              &lt;constructor-arg index=&quot;0&quot; ref=&quot;sqlSessionFactory&quot; /&gt;
-       &lt;/bean&gt;
-
-       &lt;bean id=&quot;orderDaoImpl&quot; class=&quot;name.liux.share.dao2.impl.OrderDaoImpl&quot;&gt;
-              &lt;property name=&quot;sqlSessionTemplate&quot; ref=&quot;sqlSessionTemplate&quot;/&gt;
-       &lt;/bean&gt;
-
-&lt;/beans&gt;
-</code></pre>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"</span></span></span><br><span class="line"><span class="tag"><span class="string">              http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">       <span class="tag">&lt;<span class="name">import</span> <span class="attr">resource</span>=<span class="string">"spring-config-datasource.xml"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">       <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"sqlSessionTemplate"</span> <span class="attr">class</span>=<span class="string">"org.mybatis.spring.SqlSessionTemplate"</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">constructor-arg</span> <span class="attr">index</span>=<span class="string">"0"</span> <span class="attr">ref</span>=<span class="string">"sqlSessionFactory"</span> /&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line">       <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"orderDaoImpl"</span> <span class="attr">class</span>=<span class="string">"name.liux.share.dao2.impl.OrderDaoImpl"</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"sqlSessionTemplate"</span> <span class="attr">ref</span>=<span class="string">"sqlSessionTemplate"</span>/&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p><strong>总结：</strong></p>
 <ol>
 <li>需要在每个<code>*DaoImpl</code>中注入<code>SqlSessionTemplate</code>，然后使用<code>SqlSessionTemplate</code>完成数据库操作，配置比较繁琐</li>
@@ -285,32 +251,9 @@
 </ol>
 <h2 id="23-用法二配置mapperfactorybean指定生成dao实现">2.3 用法二：配置MapperFactoryBean，指定生成Dao实现</h2>
 <p>下面以<code>UserDao</code>为例说明，这只是一个接口，声明了数据库操作，但是没有实现类，我们通过配置<code>MapperFactoryBean</code>为<code>UserDao</code>生成一个实现类，完成具体的数据库操作，从而去除了大量的<code>*DaoImpl</code>的代码。</p>
-<pre><code class="language-java">public interface UserDao {
-
-	User searchUserById(Long userId);
-}
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserDao</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function">User <span class="title">searchUserById</span><span class="params">(Long userId)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>通过配置生成对应Dao的实现类</p>
-<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
-       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
-       xsi:schemaLocation=&quot;
-              http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-              http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
-
-       &lt;!-- 自动扫描 --&gt;
-       &lt;context:component-scan base-package=&quot;name.liux.share&quot; /&gt;
-
-       &lt;import resource=&quot;spring-config-datasource.xml&quot;/&gt;
-
-       &lt;bean id=&quot;userMapper&quot; class=&quot;org.mybatis.spring.mapper.MapperFactoryBean&quot; &gt;
-              &lt;property name=&quot;mapperInterface&quot; value=&quot;name.liux.share.dao.UserDao&quot; /&gt;
-              &lt;property name=&quot;sqlSessionFactory&quot; ref=&quot;sqlSessionFactory&quot; /&gt;
-       &lt;/bean&gt;
-
-&lt;/beans&gt;
-</code></pre>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:context</span>=<span class="string">"http://www.springframework.org/schema/context"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"</span></span></span><br><span class="line"><span class="tag"><span class="string">              http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">              http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">       <span class="comment">&lt;!-- 自动扫描 --&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">"name.liux.share"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">       <span class="tag">&lt;<span class="name">import</span> <span class="attr">resource</span>=<span class="string">"spring-config-datasource.xml"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">       <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"userMapper"</span> <span class="attr">class</span>=<span class="string">"org.mybatis.spring.mapper.MapperFactoryBean"</span> &gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"mapperInterface"</span> <span class="attr">value</span>=<span class="string">"name.liux.share.dao.UserDao"</span> /&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"sqlSessionFactory"</span> <span class="attr">ref</span>=<span class="string">"sqlSessionFactory"</span> /&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p><strong>总结：</strong></p>
 <ol>
 <li>这种使用方式简化了<code>*DaoImpl</code>代码的编写，通过<code>MapperFactoryBean</code>（和前面类似，这个也是个工厂类，通过<code>getObject</code>生成类实例）生成对用Dao接口的实现类（其实底层就是通过JDK的动态代理实现的，所以配置中需要注入<code>mapperInterface</code>，指定代理类代理的接口）</li>
@@ -320,24 +263,7 @@
 <h2 id="24-用法三配置mapperscannerconfigurer指定扫描生成代理">2.4 用法三：配置MapperScannerConfigurer，指定扫描，生成代理</h2>
 <p>这种方式相对<strong>用法二</strong>来说，简化了配置多个<code>*DaoImpl</code>对应的代理工厂类<code>MapperFactoryBean</code>，通过配置包路径，扫描包下面的接口，自动生成接口对应的代理类</p>
 <p>接口声明如上<code>UserDao</code>，配置文件如下</p>
-<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
-       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
-       xsi:schemaLocation=&quot;
-              http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-              http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
-
-       &lt;!-- 自动扫描 --&gt;
-       &lt;context:component-scan base-package=&quot;name.liux.share&quot; /&gt;
-
-       &lt;import resource=&quot;spring-config-datasource.xml&quot;/&gt;
-
-       &lt;bean class=&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;
-              &lt;property name=&quot;basePackage&quot; value=&quot;name.liux.share.dao&quot; /&gt;
-       &lt;/bean&gt;
-&lt;/beans&gt;
-</code></pre>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:context</span>=<span class="string">"http://www.springframework.org/schema/context"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"</span></span></span><br><span class="line"><span class="tag"><span class="string">              http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">              http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">       <span class="comment">&lt;!-- 自动扫描 --&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">"name.liux.share"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">       <span class="tag">&lt;<span class="name">import</span> <span class="attr">resource</span>=<span class="string">"spring-config-datasource.xml"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">       <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">"org.mybatis.spring.mapper.MapperScannerConfigurer"</span>&gt;</span></span><br><span class="line">              <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"basePackage"</span> <span class="attr">value</span>=<span class="string">"name.liux.share.dao"</span> /&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p><strong>总结：</strong></p>
 <ol>
 <li>扫描类需要指定包路径扫描</li>
@@ -346,24 +272,7 @@
 </ol>
 <h2 id="25-用法四指定扫描路径自动扫描">2.5 用法四：指定扫描路径，自动扫描</h2>
 <p>这种方式其实是<strong>用法三</strong>的一个配置简化版，通过自定义扩展Spring Schema，简化声明方式，实现原理和<strong>用法三</strong>一致</p>
-<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
-       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
-       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
-       xmlns:mybatis=&quot;http://mybatis.org/schema/mybatis-spring&quot;
-       xsi:schemaLocation=&quot;
-              http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-              http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-              http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd&quot;&gt;
-
-       &lt;!-- 自动扫描 --&gt;
-       &lt;context:component-scan base-package=&quot;name.liux.share&quot; /&gt;
-
-       &lt;import resource=&quot;spring-config-datasource.xml&quot;/&gt;
-
-       &lt;mybatis:scan base-package=&quot;name.liux.share.dao&quot; /&gt;
-&lt;/beans&gt;
-</code></pre>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:context</span>=<span class="string">"http://www.springframework.org/schema/context"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:mybatis</span>=<span class="string">"http://mybatis.org/schema/mybatis-spring"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"</span></span></span><br><span class="line"><span class="tag"><span class="string">              http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">              http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">              http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">       <span class="comment">&lt;!-- 自动扫描 --&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">"name.liux.share"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">       <span class="tag">&lt;<span class="name">import</span> <span class="attr">resource</span>=<span class="string">"spring-config-datasource.xml"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">       <span class="tag">&lt;<span class="name">mybatis:scan</span> <span class="attr">base-package</span>=<span class="string">"name.liux.share.dao"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <h2 id="26-总结">2.6 总结</h2>
 <ol>
 <li><strong>用法一</strong>：通过读取配置生成<code>sqlSessionFactory</code>，并封装成<code>sqlSessionTemplate</code>，实现数据库操作。其实就是对mybatis使用的一个简单封装，并完成与Spring框架的集成</li>
@@ -543,7 +452,7 @@
 
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; LiuXi 2018 
+                    Copyright &copy; LiuXi 2019 
                     <br>
                     Theme by <a href="http://www.huweihuang.com">huweihuang</a> 
                     | 

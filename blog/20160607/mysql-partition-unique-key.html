@@ -140,14 +140,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -226,126 +226,19 @@
 <li>分区表达式包含的所有列不是唯一键的一部分<br>
 以下两种创建分区表的方式都是不合法的</li>
 </ul>
-<pre><code class="language-sql">CREATE TABLE t1 (
-    col1 INT NOT NULL,
-    col2 DATE NOT NULL,
-    col3 INT NOT NULL,
-    col4 INT NOT NULL,
-    UNIQUE KEY (col1, col2)
-)
-PARTITION BY HASH(col3)
-PARTITIONS 4;
-
-CREATE TABLE t2 (
-    col1 INT NOT NULL,
-    col2 DATE NOT NULL,
-    col3 INT NOT NULL,
-    col4 INT NOT NULL,
-    UNIQUE KEY (col1),
-    UNIQUE KEY (col3)
-)
-PARTITION BY HASH(col1 + col3)
-PARTITIONS 4;
-
-mysql&gt; CREATE TABLE t3 (
-    -&gt;     col1 INT NOT NULL,
-    -&gt;     col2 DATE NOT NULL,
-    -&gt;     col3 INT NOT NULL,
-    -&gt;     col4 INT NOT NULL,
-    -&gt;     UNIQUE KEY (col1, col2),
-    -&gt;     UNIQUE KEY (col3)
-    -&gt; )
-    -&gt; PARTITION BY HASH(col1 + col3)
-    -&gt; PARTITIONS 4;
-ERROR 1491 (HY000): A PRIMARY KEY must include all columns in the table's partitioning function  
-
-</code></pre>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> t1 (</span><br><span class="line">    col1 <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    col2 <span class="built_in">DATE</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    col3 <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    col4 <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    <span class="keyword">UNIQUE</span> <span class="keyword">KEY</span> (col1, col2)</span><br><span class="line">)</span><br><span class="line"><span class="keyword">PARTITION</span> <span class="keyword">BY</span> <span class="keyword">HASH</span>(col3)</span><br><span class="line"><span class="keyword">PARTITIONS</span> <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> t2 (</span><br><span class="line">    col1 <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    col2 <span class="built_in">DATE</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    col3 <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    col4 <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    <span class="keyword">UNIQUE</span> <span class="keyword">KEY</span> (col1),</span><br><span class="line">    <span class="keyword">UNIQUE</span> <span class="keyword">KEY</span> (col3)</span><br><span class="line">)</span><br><span class="line"><span class="keyword">PARTITION</span> <span class="keyword">BY</span> <span class="keyword">HASH</span>(col1 + col3)</span><br><span class="line"><span class="keyword">PARTITIONS</span> <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">mysql&gt; CREATE TABLE t3 (</span><br><span class="line">    -&gt;     col1 INT NOT NULL,</span><br><span class="line">    -&gt;     col2 DATE NOT NULL,</span><br><span class="line">    -&gt;     col3 INT NOT NULL,</span><br><span class="line">    -&gt;     col4 INT NOT NULL,</span><br><span class="line">    -&gt;     UNIQUE KEY (col1, col2),</span><br><span class="line">    -&gt;     UNIQUE KEY (col3)</span><br><span class="line">    -&gt; )</span><br><span class="line">    -&gt; PARTITION BY HASH(col1 + col3)</span><br><span class="line">    -&gt; PARTITIONS 4;</span><br><span class="line">ERROR 1491 (HY000): A PRIMARY KEY must include all columns in the table's partitioning function</span><br></pre></td></tr></table></figure>
 <p>下面给出正确的示例做对比：</p>
-<pre><code class="language-sql">CREATE TABLE t1 (
-    col1 INT NOT NULL,
-    col2 DATE NOT NULL,
-    col3 INT NOT NULL,
-    col4 INT NOT NULL,
-    UNIQUE KEY (col1, col2, col3)
-)
-PARTITION BY HASH(col3)
-PARTITIONS 4;
-
-CREATE TABLE t2 (
-    col1 INT NOT NULL,
-    col2 DATE NOT NULL,
-    col3 INT NOT NULL,
-    col4 INT NOT NULL,
-    UNIQUE KEY (col1, col3)
-)
-PARTITION BY HASH(col1 + col3)
-PARTITIONS 4;
-
-mysql&gt; CREATE TABLE t3 (
-    -&gt;     col1 INT NOT NULL,
-    -&gt;     col2 DATE NOT NULL,
-    -&gt;     col3 INT NOT NULL,
-    -&gt;     col4 INT NOT NULL,
-    -&gt;     UNIQUE KEY (col1, col2, col3),
-    -&gt;     UNIQUE KEY (col3)
-    -&gt; )
-    -&gt; PARTITION BY HASH(col3)
-    -&gt; PARTITIONS 4;
-Query OK, 0 rows affected (0.05 sec)  
-
-</code></pre>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> t1 (</span><br><span class="line">    col1 <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    col2 <span class="built_in">DATE</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    col3 <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    col4 <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    <span class="keyword">UNIQUE</span> <span class="keyword">KEY</span> (col1, col2, col3)</span><br><span class="line">)</span><br><span class="line"><span class="keyword">PARTITION</span> <span class="keyword">BY</span> <span class="keyword">HASH</span>(col3)</span><br><span class="line"><span class="keyword">PARTITIONS</span> <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> t2 (</span><br><span class="line">    col1 <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    col2 <span class="built_in">DATE</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    col3 <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    col4 <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    <span class="keyword">UNIQUE</span> <span class="keyword">KEY</span> (col1, col3)</span><br><span class="line">)</span><br><span class="line"><span class="keyword">PARTITION</span> <span class="keyword">BY</span> <span class="keyword">HASH</span>(col1 + col3)</span><br><span class="line"><span class="keyword">PARTITIONS</span> <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">mysql&gt; CREATE TABLE t3 (</span><br><span class="line">    -&gt;     col1 INT NOT NULL,</span><br><span class="line">    -&gt;     col2 DATE NOT NULL,</span><br><span class="line">    -&gt;     col3 INT NOT NULL,</span><br><span class="line">    -&gt;     col4 INT NOT NULL,</span><br><span class="line">    -&gt;     UNIQUE KEY (col1, col2, col3),</span><br><span class="line">    -&gt;     UNIQUE KEY (col3)</span><br><span class="line">    -&gt; )</span><br><span class="line">    -&gt; PARTITION BY HASH(col3)</span><br><span class="line">    -&gt; PARTITIONS 4;</span><br><span class="line">Query OK, 0 rows affected (0.05 sec)</span><br></pre></td></tr></table></figure>
 <ul>
 <li>分区表达中包含的列不是每一个唯一键的一部分，这条规则强调<code>每一个</code></li>
 </ul>
 <p>下面这种表不能分区，因为这张表的两个唯一键没有交集，没有分区列可以满足同时是这两个唯一键的一部分。</p>
-<pre><code class="language-sql">CREATE TABLE t4 (
-    col1 INT NOT NULL,
-    col2 INT NOT NULL,
-    col3 INT NOT NULL,
-    col4 INT NOT NULL,
-    UNIQUE KEY (col1, col3),
-    UNIQUE KEY (col2, col4)
-);  
-
-</code></pre>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> t4 (</span><br><span class="line">    col1 <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    col2 <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    col3 <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    col4 <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    <span class="keyword">UNIQUE</span> <span class="keyword">KEY</span> (col1, col3),</span><br><span class="line">    <span class="keyword">UNIQUE</span> <span class="keyword">KEY</span> (col2, col4)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 <ul>
 <li>若分区表中没有唯一键（包括主键），那么则对分区字段没有限制，只要分区字段的值和分区类型兼容即可<br>
 若给一个没有唯一键的分区表添加主键（通过 alter table语句），那么添加的唯一键与分区键之间同样有上述限制</li>
 </ul>
-<pre><code class="language-sql">mysql&gt; CREATE TABLE t_no_pk (c1 INT, c2 INT)
-    -&gt;     PARTITION BY RANGE(c1) (
-    -&gt;         PARTITION p0 VALUES LESS THAN (10),
-    -&gt;         PARTITION p1 VALUES LESS THAN (20),
-    -&gt;         PARTITION p2 VALUES LESS THAN (30),
-    -&gt;         PARTITION p3 VALUES LESS THAN (40)
-    -&gt;     );
-Query OK, 0 rows affected (0.12 sec)
-
-#  possible PK
-mysql&gt; ALTER TABLE t_no_pk ADD PRIMARY KEY(c1);
-Query OK, 0 rows affected (0.13 sec)
-Records: 0  Duplicates: 0  Warnings: 0
-
-# drop this PK
-mysql&gt; ALTER TABLE t_no_pk DROP PRIMARY KEY;
-Query OK, 0 rows affected (0.10 sec)
-Records: 0  Duplicates: 0  Warnings: 0
-
-#  use another possible PK
-mysql&gt; ALTER TABLE t_no_pk ADD PRIMARY KEY(c1, c2);
-Query OK, 0 rows affected (0.12 sec)
-Records: 0  Duplicates: 0  Warnings: 0
-
-# drop this PK
-mysql&gt; ALTER TABLE t_no_pk DROP PRIMARY KEY;
-Query OK, 0 rows affected (0.09 sec)
-Records: 0  Duplicates: 0  Warnings: 0
-
-#  fails with error 1503
-mysql&gt; ALTER TABLE t_no_pk ADD PRIMARY KEY(c2);
-ERROR 1503 (HY000): A PRIMARY KEY must include all columns in the table's partitioning function  
-
-</code></pre>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; CREATE TABLE t_no_pk (c1 INT, c2 INT)</span><br><span class="line">    -&gt;     PARTITION BY RANGE(c1) (</span><br><span class="line">    -&gt;         PARTITION p0 VALUES LESS THAN (10),</span><br><span class="line">    -&gt;         PARTITION p1 VALUES LESS THAN (20),</span><br><span class="line">    -&gt;         PARTITION p2 VALUES LESS THAN (30),</span><br><span class="line">    -&gt;         PARTITION p3 VALUES LESS THAN (40)</span><br><span class="line">    -&gt;     );</span><br><span class="line">Query OK, 0 rows affected (0.12 sec)</span><br><span class="line"></span><br><span class="line">#  possible PK</span><br><span class="line">mysql&gt; ALTER TABLE t_no_pk ADD PRIMARY KEY(c1);</span><br><span class="line">Query OK, 0 rows affected (0.13 sec)</span><br><span class="line">Records: 0  Duplicates: 0  Warnings: 0</span><br><span class="line"></span><br><span class="line"># drop this PK</span><br><span class="line">mysql&gt; ALTER TABLE t_no_pk DROP PRIMARY KEY;</span><br><span class="line">Query OK, 0 rows affected (0.10 sec)</span><br><span class="line">Records: 0  Duplicates: 0  Warnings: 0</span><br><span class="line"></span><br><span class="line">#  use another possible PK</span><br><span class="line">mysql&gt; ALTER TABLE t_no_pk ADD PRIMARY KEY(c1, c2);</span><br><span class="line">Query OK, 0 rows affected (0.12 sec)</span><br><span class="line">Records: 0  Duplicates: 0  Warnings: 0</span><br><span class="line"></span><br><span class="line"># drop this PK</span><br><span class="line">mysql&gt; ALTER TABLE t_no_pk DROP PRIMARY KEY;</span><br><span class="line">Query OK, 0 rows affected (0.09 sec)</span><br><span class="line">Records: 0  Duplicates: 0  Warnings: 0</span><br><span class="line"></span><br><span class="line">#  fails with error 1503</span><br><span class="line">mysql&gt; ALTER TABLE t_no_pk ADD PRIMARY KEY(c2);</span><br><span class="line">ERROR 1503 (HY000): A PRIMARY KEY must include all columns in the table's partitioning function</span><br></pre></td></tr></table></figure>
 
                 
 
@@ -515,7 +408,7 @@ ERROR 1503 (HY000): A PRIMARY KEY must include all columns in the table's partit
 
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; LiuXi 2018 
+                    Copyright &copy; LiuXi 2019 
                     <br>
                     Theme by <a href="http://www.huweihuang.com">huweihuang</a> 
                     | 

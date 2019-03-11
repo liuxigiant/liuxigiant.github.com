@@ -21,36 +21,8 @@
     </url>
 
     <url>
-        <loc>https://www.liuxi.name/categories/MySQL/</loc>
-        <lastmod>2018-11-19T06:03:38.603Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>https://www.liuxi.name/categories/ElasticSearch/</loc>
         <lastmod>2018-11-19T06:03:38.606Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://www.liuxi.name/categories/Java-Annotation/</loc>
-        <lastmod>2018-11-19T06:03:38.617Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://www.liuxi.name/categories/Spring-Beans/</loc>
-        <lastmod>2018-11-19T06:03:38.620Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>https://www.liuxi.name/categories/MyBatisSpring/</loc>
-        <lastmod>2018-11-19T06:03:38.630Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
@@ -77,13 +49,6 @@
     </url>
 
     <url>
-        <loc>https://www.liuxi.name/categories/MyBatis-Spring/</loc>
-        <lastmod>2018-11-19T06:03:38.661Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>https://www.liuxi.name/categories/Spring-Cache-Abstraction/</loc>
         <lastmod>2018-11-19T06:03:38.671Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -100,6 +65,34 @@
     <url>
         <loc>https://www.liuxi.name/categories/Disruptor/</loc>
         <lastmod>2018-11-19T06:03:38.686Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/categories/Spring-Beans/</loc>
+        <lastmod>2019-03-11T12:51:29.144Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/categories/Java-Annotation/</loc>
+        <lastmod>2019-03-11T12:52:07.844Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/categories/MySQL/</loc>
+        <lastmod>2019-03-11T12:55:07.922Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>https://www.liuxi.name/categories/MyBatis-Spring/</loc>
+        <lastmod>2019-03-11T13:02:50.111Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
